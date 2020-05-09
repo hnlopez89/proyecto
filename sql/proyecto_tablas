@@ -1,0 +1,6 @@
+customer (#PK_id_customer, name, surname, email_address, username, password, picture, creating_date, update_date)
+booking (#PK_id_booking, check_in_time, check_out_time, frequenzy_time, status, units, rating, creating_date,
+        update_date, holder_name, expiry_date, cvc_code, fee, payment_date, -FK_booking_business, -FK_booking_customer)
+business (#PK_id_business, name, category, username, email_address, password, pictures, opening_time, score, number_reviews, bank_account
+        update_date, creating_date, status, calendar, allotment, allotment available, city, zip_code, province, line1, line2)
+pictures (#PK_id_pictures, -FK_pictures_business, picture)
