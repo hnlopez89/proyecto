@@ -1,0 +1,3 @@
+if (cvcCode > 999 || cvcCode < 100) {
+          throw generateError("")
+      }
