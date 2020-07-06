@@ -29,8 +29,8 @@ creating_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 update_date DATETIME,
 status ENUM('OPERATIVO', 'PENDIENTE', 'CERRADO'),
 calendar DATETIME,
-allotment INT DEFAULT '0',
 allotment_available INT DEFAULT '0',
+allotment INT DEFAULT '0',
 city VARCHAR(50),
 zip_code VARCHAR(50),
 province VARCHAR(50),
@@ -41,7 +41,7 @@ line2 VARCHAR(100)
 CREATE TABLE pictures(
 PK_id_pictures INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 FK_pictures_business INT UNSIGNED,
-FOREIGN KEY (FK_pictures_business) REFERENCES business (PK_id_business),
+FOREIGN KEY (FK_pictures_business) REFERENCES business (PK_id_business) ON DELETE CASCADE,
 picture VARCHAR(20)
 );
 
@@ -61,9 +61,9 @@ cvc_code INT NOT NULL,
 fee INT DEFAULT '3',
 payment_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 FK_booking_business INT UNSIGNED,
-FOREIGN KEY (FK_booking_business) REFERENCES business (PK_id_business),
+FOREIGN KEY (FK_booking_business) REFERENCES business (PK_id_business) ON DELETE CASCADE,
 FK_booking_customer INT UNSIGNED,
-FOREIGN KEY (FK_booking_customer) REFERENCES customer (PK_id_customer)
+FOREIGN KEY (FK_booking_customer) REFERENCES customer (PK_id_customer) ON DELETE CASCADE
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
