@@ -53,8 +53,8 @@ async function newBooking(req, res, next) {
     if (isOpen) {
       throw generateError("el negocio no está abierto", 400);
     }
-    /*const [openingTimesData, closingTimesData] = await connection.query(
-        `SELECT opening_time, closing_time
+    /*  const [openingTimesData, closingTimesData] = await connection.query(
+      `SELECT opening_time, closing_time
         FROM business B
             WHERE B.id=?
             `,
@@ -66,8 +66,8 @@ async function newBooking(req, res, next) {
       openingTimes.opening_time,
       closingTimes.closing_time,
       closingTimesData[0]
-    );*/
-
+    );
+*/
     if (dateCheckInTime < now) {
       throw generateError("no puedes reservar fechas pasadas", 400);
     }
