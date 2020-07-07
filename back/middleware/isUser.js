@@ -1,7 +1,7 @@
 const jsonwebtoken = require("jsonwebtoken");
 const { getConnection } = require("../db");
 
-async function isCustomer(req, res, next) {
+async function isUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -28,7 +28,7 @@ async function isCustomer(req, res, next) {
     //que el usuario cambió su pass o email
     const [result] = await connection.query(
       `SELECT last_auth_update
-            FROM customers
+            FROM users
             WHERE id=?
             `,
       [tokenInfo.id]
@@ -41,9 +41,9 @@ async function isCustomer(req, res, next) {
     }
 
     const tokenCreatedAt = new Date(tokenInfo.iat * 1000);
-    const customerLastAuthUpdate = new Date(result[0].last_auth_update);
+    const userLastAuthUpdate = new Date(result[0].last_auth_update);
 
-    if (tokenCreatedAt < customerLastAuthUpdate) {
+    if (tokenCreatedAt < userLastAuthUpdate) {
       const error = new Error(
         "El token ya no es válido. Haz login para conseguir otro"
       );
@@ -63,4 +63,4 @@ async function isCustomer(req, res, next) {
   }
 }
 
-module.exports = isCustomer;
+module.exports = isUser;

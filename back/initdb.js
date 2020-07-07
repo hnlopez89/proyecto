@@ -17,15 +17,16 @@ async function main() {
     await connection.query("DROP TABLE IF EXISTS opening_days CASCADE");
     await connection.query("DROP TABLE IF EXISTS pictures CASCADE");
     await connection.query("DROP TABLE IF EXISTS booking CASCADE");
-    await connection.query("DROP TABLE IF EXISTS customers CASCADE");
+    await connection.query("DROP TABLE IF EXISTS users CASCADE");
     await connection.query("DROP TABLE IF EXISTS business CASCADE");
 
     // Crear las tablas de nuevo
     console.log("Creando tablas");
 
     await connection.query(`
-    CREATE TABLE customers(
+    CREATE TABLE users(
       id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      role ENUM ('customer' , 'admin') DEFAULT 'customer' NOT NULL,
       name VARCHAR(50) NOT NULL,
       surname VARCHAR(50) NOT NULL,
       email VARCHAR(50) UNIQUE NOT NULL,
@@ -39,23 +40,48 @@ async function main() {
       );
     `);
 
+    await connection.query(
+      `INSERT INTO users(
+        role,
+        name,
+        surname,
+        email,
+        password,
+        creating_date,
+        update_date,
+        last_auth_update
+        )
+        VALUES (
+          'admin',
+        "Hugo",
+        "Nogueira",
+        "esehugo@hotmail.com",
+        SHA2("${faker.internet.password()}", 512),
+        UTC_TIMESTAMP,
+        UTC_TIMESTAMP,
+        UTC_TIMESTAMP
+        )
+      `
+    );
     //poblamos tabla de customer
 
-    const customers = 20;
-    for (let index = 0; index < customers; index++) {
+    const users = 20;
+    for (let index = 0; index < users; index++) {
       const name = faker.name.firstName();
       const surname = faker.name.lastName();
       const emailAddress = faker.internet.email();
       await connection.query(
-        `INSERT INTO customers(
+        `INSERT INTO users(
             name,
             surname,
             email,
             password,
             creating_date,
             update_date,
-            last_auth_update)
-            VALUES("${name}",
+            last_auth_update
+            )
+            VALUES(
+            "${name}",
             "${surname}",
              "${emailAddress}",
              SHA2("${faker.internet.password()}", 512),
@@ -162,9 +188,10 @@ async function main() {
     await connection.query(`
     CREATE TABLE pictures(
       id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+      update_date DATETIME NOT NULL,
       id_business INT UNSIGNED,
       FOREIGN KEY (id_business) REFERENCES business (id) ON DELETE CASCADE,
-      picture VARCHAR(20)
+      picture VARCHAR(50)
     );
     `);
     //poblamos tabla de fotos de los negocios
@@ -181,16 +208,16 @@ async function main() {
         rating INT,
         creating_date TIMESTAMP NOT NULL,
         update_date DATETIME NOT NULL,
-        credit_card_number VARCHAR(20) NOT NULL,
-        holder_name VARCHAR(30) NOT NULL,
-        expiry_date DATE NOT NULL,
-        cvc_code INT NOT NULL,
+        credit_card_number VARCHAR(150) NOT NULL,
+        holder_name VARCHAR(150) NOT NULL,
+        expiry_date VARCHAR(150) NOT NULL,
+        cvc_code VARCHAR(150) NOT NULL,
         fee INT DEFAULT '3',
         payment_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         id_business INT UNSIGNED,
         FOREIGN KEY (id_business) REFERENCES business (id) ON DELETE CASCADE,
-        id_customer INT UNSIGNED,
-        FOREIGN KEY (id_customer) REFERENCES customers (id) ON DELETE CASCADE
+        id_user INT UNSIGNED,
+        FOREIGN KEY (id_user) REFERENCES users (id) ON DELETE CASCADE
         );
     
         `);
@@ -209,7 +236,7 @@ async function main() {
       const cvcCode = random(100, 9999);
       const paymentDate = formatDateToDB(faker.date.past());
       const idBusiness = random(1, business);
-      const idCustomer = random(1, customers);
+      const idUser = random(1, users);
       await connection.query(
         `INSERT INTO booking (check_in_time,
           check_out_time,
@@ -223,21 +250,21 @@ async function main() {
           creating_date,
           update_date,
           id_business,
-          id_customer
+          id_user
           )
           VALUES("${checkInTime}",
           "${checkOutTime}",
           "${frequenzyTime}",
           "${rating}",
-          "${creditCardNumber}",
-          "${holderName}",
-          "${expiryDate}",
-          "${cvcCode}",
+          SHA2("${creditCardNumber}", 512),
+          SHA2("${holderName}", 512),
+          SHA2("${expiryDate}", 512),
+          SHA2("${cvcCode}", 512),
           "${paymentDate}",
           UTC_TIMESTAMP,
           UTC_TIMESTAMP,
           "${idBusiness}",
-          "${idCustomer}"
+          "${idUser}"
           )`
       );
     }

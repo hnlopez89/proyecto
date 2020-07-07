@@ -1,7 +1,7 @@
 const { getConnection } = require("../../db");
 const { randomString, sendMail } = require("../../helpers");
 
-async function newCustomer(req, res, next) {
+async function newUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -20,7 +20,7 @@ async function newCustomer(req, res, next) {
     const [existingUser] = await connection.query(
       `
             SELECT id
-            FROM customers
+            FROM users
             WHERE email =?
             `,
       [email]
@@ -35,7 +35,7 @@ async function newCustomer(req, res, next) {
     // enviar un mensaje de confirmación de registro al email indicador
 
     const registrationCode = randomString(40);
-    const validationURL = `${process.env.PUBLIC_HOST}/customer/validation/${registrationCode}`;
+    const validationURL = `${process.env.PUBLIC_HOST}/user/validation/${registrationCode}`;
 
     //Enviamos la url anterior por mail
     try {
@@ -51,7 +51,7 @@ async function newCustomer(req, res, next) {
     // meter el nuevo usuario en la base de datos sin activar
 
     await connection.query(
-      `INSERT INTO customers(name, surname, email, password, creating_date, update_date, last_auth_update, registration_code )
+      `INSERT INTO users(name, surname, email, password, creating_date, update_date, last_auth_update, registration_code )
       VALUES(?, ?, ?, SHA2(?,512), UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
             `,
       [name, surname, email, password, registrationCode]
@@ -68,4 +68,4 @@ async function newCustomer(req, res, next) {
   }
 }
 
-module.exports = newCustomer;
+module.exports = newUser;

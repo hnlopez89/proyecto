@@ -15,8 +15,8 @@ async function listBookings(req, res, next) {
       `SELECT booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city
             FROM booking 
             INNER JOIN business ON booking.id_business = business.id
-            INNER JOIN customer ON booking.id_customer = customer.id
-            WHERE customer.id = ?
+            INNER JOIN user ON booking.id_user = user.id
+            WHERE user.id = ?
             `,
       [id]
     );

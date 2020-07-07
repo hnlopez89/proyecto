@@ -14,6 +14,8 @@ async function editUser(req, res, next) {
     const { email, name } = req.body;
     // comprobar que el id de usuario que queremos cambiar es
     // el mismo que firma la petición
+    console.log(id, req.auth.id);
+
     if (req.auth.id !== Number(id)) {
       const error = new Error("No tienes permisos para editar este usuario");
       error.httpStatus = 403;
@@ -23,7 +25,7 @@ async function editUser(req, res, next) {
     //comprobar que el usuario existe
     const [currentUser] = await connection.query(
       `SELECT id, email, picture
-            FROM customers
+            FROM users
             WHERE id=?
             `,
       [id]
@@ -40,6 +42,8 @@ async function editUser(req, res, next) {
     // si mandamos imagen guardar avatar
 
     let savedFileName;
+    console.log(req.files, req.files.avatar);
+
     if (req.files && req.files.avatar) {
       try {
         //procesar y guardar imagen
@@ -56,16 +60,13 @@ async function editUser(req, res, next) {
     }
     // si el email es diferente al actual, comprobar que no existe en la base de datos
 
-    console.log(email, currentUser[0].email);
-
     if (email !== currentUser[0].email) {
       const [existingEmail] = await connection.query(
         `SELECT id
-                FROM customers
+                FROM users
                 WHERE email=?`,
         [email]
       );
-      console.log("Iñaki pide otro console log un poco más abajo");
       if (existingEmail.length > 0) {
         const error = new Error(
           "Ya existe un usuario con este email en la base de datos"
@@ -75,7 +76,7 @@ async function editUser(req, res, next) {
       }
       //verificamos de nuevo el email recibido
       const registrationCode = randomString(40);
-      const validationURL = `${process.env.PUBLIC_HOST}/customer/validate/${registrationCode}`;
+      const validationURL = `${process.env.PUBLIC_HOST}/user/validate/${registrationCode}`;
 
       // Enviamos la url anterior por mail
       try {
@@ -91,7 +92,7 @@ async function editUser(req, res, next) {
       }
 
       await connection.query(
-        `UPDATE customers
+        `UPDATE users
                 SET name=?, email=?, picture=?, registration_code=?, update_date=UTC_TIMESTAMP(), active=false, last_auth_update=UTC_TIMESTAMP() 
                 WHERE id=?
                 `,
@@ -106,7 +107,7 @@ async function editUser(req, res, next) {
       console.log("A ver si aquí me dices algo");
       await connection.query(
         `
-                UPDATE customers
+                UPDATE users
                 SET name=?, email=?, picture=?
                 WHERE id=?
                 `,

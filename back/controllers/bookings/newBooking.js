@@ -1,15 +1,13 @@
 const { getConnection } = require("../../db");
 const { generateError } = require("../../helpers");
 const { format } = require("date-fns");
-const { formatDistanceToNow } = require("date-fns");
-const { es } = require("date-fns/locale");
 
 async function newBooking(req, res, next) {
   let connection;
+
   try {
     connection = await getConnection();
-
-    const { idCustomer, idBusiness } = req.params;
+    const { idUser, idBusiness } = req.params;
     const {
       checkInTime,
       checkOutTime,
@@ -19,11 +17,14 @@ async function newBooking(req, res, next) {
       expiryDate,
       cvcCode,
     } = req.body;
+    if (req.auth.id !== Number(idUser)) {
+      throw generateError("No estás autorizado", 401);
+    }
 
     const now = new Date();
     const dateCheckInTime = new Date(checkInTime);
     const dayWeek = format(dateCheckInTime, "i");
-    console.log(dayWeek);
+
     if (
       !idBusiness ||
       !checkInTime ||
@@ -33,46 +34,65 @@ async function newBooking(req, res, next) {
       !holderName ||
       !expiryDate ||
       !cvcCode ||
-      !idCustomer
+      !idUser
     ) {
       throw generateError("Faltan datos para realizar la reserva", 400);
     }
     const [openingDaysData] = await connection.query(
       ` SELECT day
-        FROM opening_days OD
-        WHERE OD.id_business=?
+      FROM opening_days OD
+      WHERE OD.id_business=?
                           `,
       [idBusiness]
     );
 
-    console.log(openingDaysData);
-
-    const isOpen = openingDaysData.find((d) => d.day === dayWeek);
+    const isOpen = openingDaysData.find((d) => d.day === Number(dayWeek));
     console.log(isOpen);
 
-    if (isOpen) {
+    if (!isOpen) {
       throw generateError("el negocio no está abierto", 400);
     }
-    /*  const [openingTimesData, closingTimesData] = await connection.query(
+    const dateCheckOutTime = new Date(checkOutTime);
+    const hourCheckInTime = format(dateCheckInTime, "k");
+    const hourCheckOutTime = format(dateCheckOutTime, "k");
+    const [scheduleTimesData] = await connection.query(
       `SELECT opening_time, closing_time
         FROM business B
-            WHERE B.id=?
-            `,
+        WHERE B.id=?
+        `,
       [idBusiness]
     );
-    const [openingTimes] = openingTimesData;
-    const [closingTimes] = closingTimesData;
+    const openingTime = scheduleTimesData[0].opening_time;
+    const closingTime = scheduleTimesData[0].closing_time;
+
     console.log(
-      openingTimes.opening_time,
-      closingTimes.closing_time,
-      closingTimesData[0]
+      Number(openingTime),
+      Number(hourCheckInTime),
+      Number(closingTime),
+      Number(hourCheckOutTime)
     );
-*/
+    if (
+      Number(hourCheckInTime) < Number(openingTime) ||
+      Number(hourCheckOutTime) > Number(closingTime)
+    ) {
+      throw generateError("El negocio no está abierto a esa hora", 401);
+    }
+
     if (dateCheckInTime < now) {
       throw generateError("no puedes reservar fechas pasadas", 400);
     }
+    const [allotmentAvailableData] = await connection.query(
+      `SELECT B.allotment
+        FROM business B, opening_days OD
+        WHERE B.id=?
+                AND ? BETWEEN B.opening_time AND B.closing_time
+        `,
+      [idBusiness, dayWeek, openingTime]
+    );
 
-    const [result] = await connection.query(
+    console.log(allotmentAvailableData, idBusiness, dayWeek, openingTime);
+
+    await connection.query(
       `
             INSERT INTO booking(check_in_time,
             check_out_time,
@@ -85,7 +105,7 @@ async function newBooking(req, res, next) {
             cvc_code,
             payment_date,
             id_business,
-            id_customer
+            id_user
             )
             VALUES(
                 ?, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP, ?, ?, ?, ?, UTC_TIMESTAMP, ?, ?
@@ -100,12 +120,14 @@ async function newBooking(req, res, next) {
         expiryDate,
         cvcCode,
         idBusiness,
-        idCustomer,
+        idUser,
       ]
     );
     res.send({
       status: "ok",
-      data: result,
+      data: checkInTime,
+      hora: checkOutTime,
+      unidades: units,
     });
   } catch (error) {
     next(error);

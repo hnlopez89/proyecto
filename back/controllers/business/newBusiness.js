@@ -34,7 +34,7 @@ async function newBusiness(req, res, next) {
     // enviar un mensaje de confirmación de registro
 
     const registrationCode = randomString(40);
-    const validationURL = `${process.env.PUBLIC_HOST}/customer/validation/${registrationCode}`;
+    const validationURL = `${process.env.PUBLIC_HOST}/user/validation/${registrationCode}`;
     //mirar a ver si se puede enviar un enlace con el nuevo id al admin para que revise.
     try {
       await sendMail({

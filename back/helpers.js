@@ -5,7 +5,6 @@ const path = require("path");
 const uuid = require("uuid");
 const fs = require("fs").promises;
 const sharp = require("sharp");
-const imageUploadPath = path.join(__dirname, process.env.UPLOADS_DIR);
 
 function formatDateToDB(date) {
   return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
@@ -26,27 +25,29 @@ async function sendMail({ email, title, content }) {
     subject: title,
     text: content,
     html: `
-      <div>
-        <h1>${title}</h1>
-        <p>${content}</p>
-      </div>
+    <div>
+    <h1>${title}</h1>
+    <p>${content}</p>
+    </div>
     `,
   };
   await sendgrid.send(message);
 }
 
+const imageUploadPath = path.join(__dirname, process.env.UPLOADS_DIR);
 async function processAndSaveImage(uploadedImage) {
   //creamos el directorio (con recursive: true por si hay subdirectorios y así no da error)
   await fs.mkdir(imageUploadPath, { recursive: true });
   // Leer la imagen que se subió
   const image = sharp(uploadedImage.data);
   // saco información de la imagen
-  const imageInfo = await image.metada();
+  const imageInfo = await image.metadata();
   // cambiarle el tamaño si es necesario
   if (imageInfo.width > 1000) {
     image.resize(1000);
   }
   const imageFileName = `${uuid.v4()}.jpg`;
+
   await image.toFile(path.join(imageUploadPath, imageFileName));
 
   return imageFileName;
@@ -62,6 +63,12 @@ function generateError(message, code = 500) {
   return error;
 }
 
+function showDebug(message) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(message);
+  }
+}
+
 module.exports = {
   formatDateToDB,
   randomString,
@@ -69,4 +76,5 @@ module.exports = {
   processAndSaveImage,
   deleteUpload,
   generateError,
+  showDebug,
 };

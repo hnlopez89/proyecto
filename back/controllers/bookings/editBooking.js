@@ -4,18 +4,18 @@ async function editBooking(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
-    const { idCustomer, idBooking } = req.params;
+    const { idUser, idBooking } = req.params;
     const { checkInTime, checkOutTime, frequenzyTime, units } = req.body;
     // comprobar que la booking que queremos modificar
     // tiene el mismo id de usuario que el que firma la petición
-    const [customerData] = await connection.query(
-      `SELECT id_customer
+    const [userData] = await connection.query(
+      `SELECT id_user
         FROM booking
         WHERE id=?`,
       [idBooking]
     );
-    const [idCustomerData] = customerData;
-    if (idCustomerData.id_customer !== Number(idCustomer)) {
+    const [idUserData] = userData;
+    if (idUserData.id_user !== Number(idUser)) {
       const error = new Error(
         "No estás autorizado para modificar esta reserva"
       );

@@ -1,7 +1,7 @@
 const { getConnection } = require("../../db");
 const jsonwebtoken = require("jsonwebtoken");
 
-async function loginCustomer(req, res, next) {
+async function loginUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -16,21 +16,21 @@ async function loginCustomer(req, res, next) {
     }
 
     //Seleccionar el usuario de la base de datos y comprobar que las passwords coinciden
-    const [dbCustomer] = await connection.query(
+    const [dbUser] = await connection.query(
       `SELECT id, active
-            FROM customers
+            FROM users
             WHERE email=? AND password=SHA2(?, 512)
             `,
       [email, password]
     );
 
-    if (dbCustomer.length === 0) {
+    if (dbUser.length === 0) {
       const error = new Error(
         "No hay ningún usuario registrado con ese email o la password es incorrecta"
       );
       error.httpStatus = 401;
       throw error;
-    } else if (!dbCustomer[0].active) {
+    } else if (!dbUser[0].active) {
       const error = new Error(
         "El usuario está registrado pero no activado. Por favor, revisa tu email y activalo"
       );
@@ -38,7 +38,8 @@ async function loginCustomer(req, res, next) {
       throw error;
     }
     const tokenInfo = {
-      id: dbCustomer[0].id,
+      id: dbUser[0].id,
+      role: dbUser[0].role,
     };
     const token = jsonwebtoken.sign(tokenInfo, process.env.SECRET, {
       expiresIn: "30d",
@@ -56,4 +57,4 @@ async function loginCustomer(req, res, next) {
   }
 }
 
-module.exports = loginCustomer;
+module.exports = loginUser;

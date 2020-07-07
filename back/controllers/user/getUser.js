@@ -1,6 +1,6 @@
 const { getConnection } = require("../../db");
 
-async function getCustomer(req, res, next) {
+async function getUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -8,7 +8,7 @@ async function getCustomer(req, res, next) {
     const [result] = await connection.query(
       `
         SELECT id, name, email
-        FROM customers
+        FROM users
         WHERE id=?
         `,
       [id]
@@ -20,16 +20,16 @@ async function getCustomer(req, res, next) {
       throw error;
     }
 
-    const [customerData] = result;
+    const [userData] = result;
 
     const responseData = {
-      registrationDate: customerData.registrationDate,
-      name: customerData.name,
-      image: customerData.image,
+      registrationDate: userData.registrationDate,
+      name: userData.name,
+      image: userData.image,
     };
 
-    if (customerData.id === req.auth.id) {
-      responseData.email = customerData.email;
+    if (userData.id === req.auth.id) {
+      responseData.email = userData.email;
     }
 
     res.send({
@@ -43,4 +43,4 @@ async function getCustomer(req, res, next) {
   }
 }
 
-module.exports = getCustomer;
+module.exports = getUser;

@@ -1,6 +1,6 @@
 const { getConnection } = require("../../db");
 
-async function validateCustomer(req, res, next) {
+async function validateUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -10,7 +10,7 @@ async function validateCustomer(req, res, next) {
     const [result] = await connection.query(
       `
             SELECT email
-            FROM customers
+            FROM users
             WHERE registration_code=?
             `,
       [registrationCode]
@@ -27,7 +27,7 @@ async function validateCustomer(req, res, next) {
     //actualizar la tabla de usuarios marcando como activo
     //el usuario que tenga el código recibido
     await connection.query(
-      `UPDATE customers
+      `UPDATE users
             SET active=true, registration_code=NULL
             WHERE registration_code=?
             `,
@@ -44,4 +44,4 @@ async function validateCustomer(req, res, next) {
   }
 }
 
-module.exports = validateCustomer;
+module.exports = validateUser;
