@@ -1,12 +1,15 @@
 const { getConnection } = require("../../db");
 const { randomString, sendMail } = require("../../helpers");
+const { newBusinessSchema } = require("../../validators/businessValidators")
 
 async function newBusiness(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
-    const { name, manager, category, city, email, password } = req.body;
+
     //comprobar que se reciben todos los datos necesarios
+    await newBusinessSchema.validateAsync(req.body);
+    const { name, manager, category, city, email, password } = req.body;
 
     if (!name || !manager || !category || !city || !email || !password) {
       const error = new Error(
@@ -38,12 +41,12 @@ async function newBusiness(req, res, next) {
     //mirar a ver si se puede enviar un enlace con el nuevo id al admin para que revise.
     try {
       await sendMail({
-        email: "hnlopez89@gmail.com",
-        title: `El negocio ${name} quiere trabajar contigo`,
-        content: `Enhorabuena,
-              un nuevo negocio quiere trabajar contigo. Revisa sus datos
-              para verificar que todo está correcto y dalo de alta.
-              Cuando esté todo ok, puedes activar el negocio en el siguiente enlace:
+        email: email,
+        title: `Registro en Tempo: ¡Gracias ${name} por querer trabajar con nosotros!`,
+        content: `¡Saludos ${manager}!Estás un poco más cerca de empezar a ofrecer tu disponibilidad
+                a través de nuestra plataforma. Haz click en el enlace que tienes justo
+                debajo para validar tu cuenta.
+                De este modo, podrás acceder a tu perfil y editar tu usuario y disponibilidad.
               ${validationURL}`,
       });
     } catch (error) {
@@ -59,7 +62,10 @@ async function newBusiness(req, res, next) {
     );
     res.send({
       status: "ok",
-      message: `Gracias ${manager} por registrarte con nosotros. En breve contactaremos contigo para actualizar tu disponibilidad y activar tu cuenta.`,
+      message: `Gracias ${manager} por registrar tu negocio ${name} con nosotros!
+      Te hemos mandado un email para validar tu cuenta. Sigue las instrucciones,
+      ¡Es super sencillo!
+      Un saludo,`,
     });
   } catch (error) {
     next(error);

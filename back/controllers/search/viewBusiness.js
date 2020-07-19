@@ -1,58 +1,54 @@
 const { getConnection } = require("../../db");
 
-async function getBusiness(req, res, next) {
+async function viewBusiness(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
     const { id } = req.params;
     const [result] = await connection.query(
       `
-            SELECT id,
-            name,
+            SELECT name,
             manager,
             category,
-            email,
             opening_time,
             closing_time,
-            length_booking,
             description,
-            pricing_list,
-            bank_account,
-            allotment_available,
-            allotment,
             profile_picture,
             city,
             zip_code,
             province,
             line1,
             line2,
-            status
-            FROM business
-            WHERE id=?
+            (SELECT AVG(rating)
+            FROM booking
+            WHERE id_business = B.id) AS vote_average,
+            (SELECT COUNT(rating)
+            FROM booking
+            WHERE id_business = B.id) AS count
+            FROM business B LEFT JOIN booking
+            ON id_business = B.id
+            WHERE B.id=?
             `,
       [id]
     );
-
     if (result.length === 0) {
       const error = new Error(`El negocio con id${id} no existe`);
       error.httpStatus = 404;
       throw error;
     }
-
-    const [businessData] = result;
-
-    const responseData = {
-      registrationDate: businessData.registrationDate,
-      name: businessData.name,
-    };
-
-    if (businessData.id === req.auth.id) {
-      responseData.email = businessData.email;
-    }
+    const [pictures] = await connection.query(
+      `
+        SELECT *
+        FROM pictures
+        WHERE id_business = ?
+        `,
+      [id]
+    );
 
     res.send({
       status: "ok",
       data: result,
+      pictures: pictures,
     });
   } catch (error) {
     next(error);
@@ -61,4 +57,4 @@ async function getBusiness(req, res, next) {
   }
 }
 
-module.exports = getBusiness;
+module.exports = viewBusiness;

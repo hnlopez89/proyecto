@@ -1,19 +1,18 @@
 const { getConnection } = require("../../db");
-const { randomString, sendMail } = require("../../helpers");
+const { randomString, sendMail, generateError, formatDateToDB } = require("../../helpers");
+const { newUserSchema } = require("../../validators/userValidators");
+const { differenceInYears } = require("date-fns");
 
 async function newUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
-    const { name, surname, email, password } = req.body;
+    await newUserSchema.validateAsync(req.body);
+    const { name, surname, email, password, gender, birthday, city } = req.body;
 
     // comprobar que se reciben todos los datos necesarios
-    if (!email || !password) {
-      const error = new Error(
-        "Faltan datos, es necesario especificar un email y una password"
-      );
-      error.httpStatus = 400;
-      throw error;
+    if (!email || !password || !name || !surname || !password || !gender || !birthday || !city) {
+      throw generateError("Faltan datos para poder registrarte", 400);
     }
 
     //comprobar que no existe un usuario con ese mismo email en la base de datos
@@ -32,12 +31,23 @@ async function newUser(req, res, next) {
       error.httpStatus = 409;
       throw error;
     }
-    // enviar un mensaje de confirmación de registro al email indicador
 
+    //verificar que la edad del usuario es mayor de 18
+    const birthdayDate = new Date(birthday);
+    const now = new Date();
+    const age = differenceInYears(now, birthdayDate);
+    if (age < 18) {
+      throw generateError("Para registrarte debes ser mayor de 18 años", 400)
+    }
+
+    //Pasar la fecha de nacimiento a formato de base de datos
+    const birthdayDateDB = formatDateToDB(birthdayDate);
+
+    // enviar un mensaje de confirmación de registro al email indicador
     const registrationCode = randomString(40);
     const validationURL = `${process.env.PUBLIC_HOST}/user/validation/${registrationCode}`;
 
-    //Enviamos la url anterior por mail
+    //Enviar la url anterior por mail
     try {
       await sendMail({
         email,
@@ -48,13 +58,13 @@ async function newUser(req, res, next) {
       const emailError = new Error("Error en el envío de mail");
       throw emailError;
     }
-    // meter el nuevo usuario en la base de datos sin activar
 
+    // meter el nuevo usuario en la base de datos sin activar
     await connection.query(
-      `INSERT INTO users(name, surname, email, password, creating_date, update_date, last_auth_update, registration_code )
-      VALUES(?, ?, ?, SHA2(?,512), UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
+      `INSERT INTO users(name, surname, email, password, gender, birthday, age, city, creating_date, update_date, last_auth_update, registration_code )
+      VALUES(?, ?, ?, SHA2(?,512), ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
             `,
-      [name, surname, email, password, registrationCode]
+      [name, surname, email, password, gender, birthdayDateDB, age, city, registrationCode]
     );
     res.send({
       status: "ok",

@@ -1,10 +1,14 @@
 const { getConnection } = require("../../db");
 const jsonwebtoken = require("jsonwebtoken");
+const { generateError } = require("../../helpers");
+const { loginBusinessSchema } = require("../../validators/businessValidators")
+
 
 async function loginBusiness(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
+    await loginBusinessSchema.validateAsync(req.body);
     const { email, password } = req.body;
     if (!email || !password) {
       const error = new Error(
@@ -24,17 +28,15 @@ async function loginBusiness(req, res, next) {
     );
 
     if (dbBusiness.length === 0) {
-      const error = new Error(
-        "No hay ningún usuario registrado con ese email o la password es incorrecta"
+      throw generateError(
+        "No hay ningún usuario registrado con ese email o la password es incorrecta",
+        401
       );
-      error.httpStatus = 401;
-      throw error;
-    } else if (dbBusiness[0].status !== "OPERATIVO") {
-      const error = new Error(
-        "El usuario está registrado pero no activado. Por favor, revisa tu email y activalo"
+    } else if (dbBusiness[0].status === "SIN_VALIDAR") {
+      throw generateError(
+        "El usuario está registrado pero no validado. Por favor, revisa tu email y activalo",
+        401
       );
-      error.httpStatus = 401;
-      throw error;
     }
     const tokenInfo = {
       id: dbBusiness[0].id,

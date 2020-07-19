@@ -1,10 +1,14 @@
 const { getConnection } = require("../../db");
 const jsonwebtoken = require("jsonwebtoken");
+const { loginUserSchema } = require("../../validators/userValidators");
+
 
 async function loginUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
+
+    await loginUserSchema.validateAsync(req.body);
     //comprobar que se reciben los datos necesarios
     const { email, password } = req.body;
     if (!email || !password) {
@@ -17,7 +21,7 @@ async function loginUser(req, res, next) {
 
     //Seleccionar el usuario de la base de datos y comprobar que las passwords coinciden
     const [dbUser] = await connection.query(
-      `SELECT id, active
+      `SELECT id, role, active
             FROM users
             WHERE email=? AND password=SHA2(?, 512)
             `,

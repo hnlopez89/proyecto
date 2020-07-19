@@ -1,6 +1,6 @@
 const { getConnection } = require("../../db");
 
-async function listBusiness(req, res, next) {
+async function listBusinessPending(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
@@ -17,9 +17,6 @@ async function listBusiness(req, res, next) {
     //proceso el campo de orden
     let orderBy;
     switch (order) {
-      case "voteAverage":
-        orderBy = "voteAverage";
-        break;
       case "city":
         orderBy = "city";
         break;
@@ -30,13 +27,22 @@ async function listBusiness(req, res, next) {
     let queryResults;
     if (search) {
       queryResults = await connection.query(
-        `SELECT business.name, business.category, business.opening_time, business.score, business.number_reviews, business.city,
-        (SELECT AVG(rating) FROM booking WHERE id_business = business.id) AS voteAverage      
-        FROM business
-        WHERE city LIKE ? or category LIKE ?
-        ORDER BY ${orderBy} ${orderDirection}
+        `SELECT BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
+        FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
+        WHERE BD.status = 'PENDIENTE'        
+        AND city LIKE ? or category LIKE ?
+        GROUP BY BD.id, BD.name
+        ORDER BY ${orderBy} ${orderDirection};
         `,
-        [`%${search}%`, `%${search}%`, `%${search}%`]
+        [`%${search}%`, `%${search}%`]
+      );
+    } else {
+      queryResults = await connection.query(
+        `SELECT BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
+        FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
+        WHERE BD.status = 'PENDIENTE' 
+        GROUP BY BD.id, BD.name  
+        ORDER BY ${orderBy} ${orderDirection};`
       );
     }
     // extraigo los resultados reales del resultado de la query
@@ -54,4 +60,4 @@ async function listBusiness(req, res, next) {
   }
 }
 
-module.exports = listBusiness;
+module.exports = listBusinessPending;

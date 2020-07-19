@@ -1,40 +1,35 @@
 const { getConnection } = require("../../db");
+const { generateError } = require("../../helpers");
 
 async function getUser(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
+    //OBTENER ID DE USUARIO
     const { id } = req.params;
-    const [result] = await connection.query(
+    const [profile] = await connection.query(
       `
-        SELECT id, name, email
+        SELECT id, name, surname, email, picture
         FROM users
         WHERE id=?
         `,
       [id]
     );
 
-    if (result.length === 0) {
-      const error = new Error(`El usuario con id${id} no existe`);
-      error.httpStatus = 404;
-      throw error;
+    //PROHIBIR ACCEDER A PERFILES AJENOS
+    if (Number(id) !== req.auth.id) {
+      throw generateError("No puedes acceder a perfiles ajenos")
     }
 
-    const [userData] = result;
-
-    const responseData = {
-      registrationDate: userData.registrationDate,
-      name: userData.name,
-      image: userData.image,
-    };
-
-    if (userData.id === req.auth.id) {
-      responseData.email = userData.email;
-    }
-
+    //ELABORAR DATOS DE RESPUESTA A IMPRIMIR EN EL PERFIL
+    const picture = profile[0].picture;
+    const name = profile[0].name;
+    const surname = profile[0].surname;
     res.send({
       status: "ok",
-      data: responseData,
+      name: name,
+      surname: surname,
+      avatar: picture,
     });
   } catch (error) {
     next(error);

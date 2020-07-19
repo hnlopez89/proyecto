@@ -1,13 +1,13 @@
 const { getConnection } = require("../../db");
 
-async function listBookings(req, res, next) {
+async function listUserBookings(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
     const { id } = req.params;
 
-    if (req.auth.id !== Number(id)) {
-      const error = new Error("No tienes permisos para editar ete usuario");
+    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+      const error = new Error("No tienes permisos para acceder a este usuario");
       error.httpStatus = 403;
       throw error;
     }
@@ -15,9 +15,9 @@ async function listBookings(req, res, next) {
       `SELECT booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city
             FROM booking 
             INNER JOIN business ON booking.id_business = business.id
-            INNER JOIN user ON booking.id_user = user.id
-            WHERE user.id = ?
-            `,
+            INNER JOIN users ON booking.id_user = users.id
+            WHERE users.id = ? AND booking.status = 'CANCELADO' OR
+            booking.status = 'NO_SHOW' OR booking.status = 'CHECK_OUT'`,
       [id]
     );
 
@@ -33,4 +33,4 @@ async function listBookings(req, res, next) {
   }
 }
 
-module.exports = listBookings;
+module.exports = listUserBookings;

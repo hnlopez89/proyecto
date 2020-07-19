@@ -1,17 +1,17 @@
 const { getConnection } = require("../../db");
 const { randomString, sendMail, generateError } = require("../../helpers");
-const { recoverUserPasswordSchema } = require("../../validators/userValidators");
+const { recoverBusinessPasswordSchema } = require("../../validators/businessValidators")
 
-
-async function recoverUserPassword(req, res, next) {
+async function recoverBusinessPassword(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
-    await recoverUserPasswordSchema.validateAsync(req.body);
+    await recoverBusinessPasswordSchema.validateAsync(req.body);
+
     const { email } = req.body;
     const [current] = await connection.query(
       `SELECT id
-            FROM users
+            FROM business
             WHERE email=?
             `,
       [email]
@@ -26,7 +26,7 @@ async function recoverUserPassword(req, res, next) {
     const recoverCode = randomString(40);
 
     await connection.query(
-      `UPDATE users
+      `UPDATE business
         SET registration_code=?
         WHERE email=?`,
       [recoverCode, email]
@@ -56,4 +56,4 @@ async function recoverUserPassword(req, res, next) {
   }
 }
 
-module.exports = recoverUserPassword;
+module.exports = recoverBusinessPassword;

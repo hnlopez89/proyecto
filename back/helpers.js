@@ -1,4 +1,4 @@
-const { format } = require("date-fns");
+const { format, addMinutes } = require("date-fns");
 const crypto = require("crypto");
 const sendgrid = require("@sendgrid/mail");
 const path = require("path");
@@ -6,8 +6,35 @@ const uuid = require("uuid");
 const fs = require("fs").promises;
 const sharp = require("sharp");
 
+function formatDateTimeToDB(date) {
+  let internalDate;
+  if (typeof date === "string") {
+    internalDate = new Date(date);
+  } else {
+    internalDate = date;
+  }
+  const adjustedDate = addMinutes(
+    internalDate,
+    internalDate.getTimezoneOffset()
+  );
+  return format(adjustedDate, "yyyy-MM-dd HH:mm:ss");
+}
+function minutesToDB(minutes) {
+  return minutes * 100
+}
+
 function formatDateToDB(date) {
-  return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
+  let internalDate;
+  if (typeof date === "string") {
+    internalDate = new Date(date);
+  } else {
+    internalDate = date;
+  }
+  const adjustedDate = addMinutes(
+    internalDate,
+    internalDate.getTimezoneOffset()
+  );
+  return format(adjustedDate, "yyyy-MM-dd");
 }
 
 function randomString(length = 20) {
@@ -70,7 +97,9 @@ function showDebug(message) {
 }
 
 module.exports = {
+  formatDateTimeToDB,
   formatDateToDB,
+  minutesToDB,
   randomString,
   sendMail,
   processAndSaveImage,
