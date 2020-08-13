@@ -10,7 +10,6 @@ async function editUserBooking(req, res, next) {
     //obtener id de usuario y de booking de la ruta
     const { idUser, idBooking } = req.params;
 
-    await editUserBookingTCSchema.validateAsync(req.body);
 
     //obtener id de usuario y del negocio de la reserva
     //mediante la query en la base de datos
@@ -35,22 +34,37 @@ async function editUserBooking(req, res, next) {
     console.log(statusBooking);
 
     //obtener todos los datos necesarios para hacer nueva reserva
-    const { creditCardNumber, holderName, expiryDate, cvcCode } = req.body;
+    const { creditCardNumber, holderName, expiryMonth, expiryYear, cvcCode } = req.body;
+    await editUserBookingTCSchema.validateAsync(req.body);
     const idBusinessBooking = bookingData[0].id_business;
 
+    console.log(creditCardNumber, holderName, expiryMonth, expiryYear, cvcCode);
     //prohibir nueva reserva sin los datos necesarios
     if (
       !idBusinessBooking ||
       !creditCardNumber ||
       !holderName ||
-      !expiryDate ||
+      !expiryMonth ||
+      !expiryYear ||
       !cvcCode
     ) {
       throw generateError("Faltan datos para modificar la reserva", 400);
     }
 
+    const [bookingUpdate] = await connection.query(
+      `UPDATE booking
+      SET credit_card_number = SHA2(?,512),
+      holder_name = SHA2(?,512),
+      expiry_month = SHA2(?,512),
+      expiry_year = SHA2(?,512),
+      cvc_code = SHA2(?,512)
+      WHERE id = ? ;
+      `,
+      [creditCardNumber, holderName, expiryMonth, expiryYear, cvcCode, idBooking]
+    )
     res.send({
       status: "ok",
+      data: bookingUpdate,
       message: "Reserva modificada satisfactoriamente!.",
     });
   } catch (error) {

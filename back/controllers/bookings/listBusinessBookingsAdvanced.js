@@ -1,5 +1,5 @@
 const { getConnection } = require("../../db");
-const { formatDateToDB, generateError } = require("../../helpers");
+const { formatDateToDB, formatDateTimeToDB, generateError } = require("../../helpers");
 
 async function listBusinessBookingsAdvanced(req, res, next) {
   let connection;
@@ -8,14 +8,14 @@ async function listBusinessBookingsAdvanced(req, res, next) {
 
     //OBTENER CRITORIOS DE BÚSQUEDA
     const { idBusiness } = req.params;
-    const { idBooking, checkInDay, status, creatingDate, units, order, direction } = req.body;
+    const { idBooking, name, surname, checkInDay, checkInTime, status, creatingDate, units, order, direction } = req.query;
     //PROHÍBIR ACCEDER A DATOS AJENOS
     if (req.auth.id !== Number(idBusiness)) {
       throw generateError("No tienes permisos para acceder a las reservas de otro negocio", 403)
     }
 
     //CONSTRUIR INICIO DE QUERY
-    let query = `SELECT  B.id, U.name, U.surname, B.id_user,B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, B.request, B.creating_date, B.update_date, B.rating
+    let query = `SELECT  B.id, U.name, U.surname, B.id_user,B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, B.request, B.creating_date, B.update_date, B.rating, B.rating_description
     FROM booking B
     INNER JOIN users U on B.id_user = U.id
     INNER JOIN business ON B.id_business = business.id
@@ -25,17 +25,14 @@ async function listBusinessBookingsAdvanced(req, res, next) {
     const orderDirection = (direction && direction.toLowerCase()) === "desc" ? "DESC" : "ASC";
     let orderBy;
     switch (order) {
-      case "id":
-        orderBy = "B.id";
-        break;
       case "name":
         orderBy = "U.name";
         break;
       case "surname":
         orderBy = "U.surname";
         break;
-      case "id_user":
-        orderBy = "B.id_user";
+      case "check_in_time":
+        orderBy = "B.check_in_time";
         break;
       case "check_in_day":
         orderBy = "B.check_in_day";
@@ -49,7 +46,7 @@ async function listBusinessBookingsAdvanced(req, res, next) {
       case "rating":
         orderBy = "B.rating";
         break;
-      case "creatingDate":
+      case "creating_date":
         orderBy = "B.creating_date";
         break;
       default:
@@ -58,13 +55,24 @@ async function listBusinessBookingsAdvanced(req, res, next) {
 
     const params = [];
     //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-    if (idBooking || checkInDay || status || creatingDate || units) {
+    if (idBooking || name || surname || checkInDay || checkInTime || status || creatingDate || units) {
       const conditions = [];
 
       if (idBooking) {
         conditions.push(` B.id LIKE '${idBooking}'`);
         params.push(`'%${idBooking}%'`);
       }
+
+      if (name) {
+        conditions.push(` B.id LIKE '${name}'`);
+        params.push(`'%${name}%'`);
+      }
+
+      if (surname) {
+        conditions.push(` B.id LIKE '${surname}'`);
+        params.push(`'%${surname}%'`);
+      }
+
 
       if (status) {
         conditions.push(` B.status LIKE '${status}'`);
@@ -77,21 +85,23 @@ async function listBusinessBookingsAdvanced(req, res, next) {
         params.push(`'%${dateTimeDB}%'`);
       }
 
-      if (creatingDate) {
-        const dateTimeDB = formatDateToDB(creatingDate);
-        conditions.push(` B.creating_date = '${dateTimeDB}'`);
+      if (checkInTime) {
+        const dateTimeDB = formatDateTimeToDB(checkInTime)
+        conditions.push(` B.check_in_day = '${dateTimeDB}'`);
         params.push(`'%${dateTimeDB}%'`);
       }
+
       if (units) {
         conditions.push(` B.units LIKE '${units}'`);
         params.push(`'%${units}%'`);
       }
 
-      if (!status) {
-        conditions.push(` B.status LIKE 'CONFIRMADO'
-        OR B.status LIKE 'MODIFICADO'
-        OR B.status LIKE 'PENDIENTE_DE_PAGO'`);
+      if (creatingDate) {
+        const dateTimeDB = formatDateToDB(creatingDate);
+        conditions.push(` B.creating_date = '${dateTimeDB}'`);
+        params.push(`'%${dateTimeDB}%'`);
       }
+
 
       //FINALIZAR CREACIÓN DE BÚSQUEDA Y EJECUCIÓN
       query = `${query} AND ${conditions.join(` AND `)} ORDER BY ${orderBy} ${orderDirection}`;

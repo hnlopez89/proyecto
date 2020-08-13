@@ -6,13 +6,13 @@ async function listUserBookings(req, res, next) {
     connection = await getConnection();
     const { id } = req.params;
 
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       const error = new Error("No tienes permisos para acceder a este usuario");
       error.httpStatus = 403;
       throw error;
     }
     const [result] = await connection.query(
-      `SELECT booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city
+      `SELECT booking.id, booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city
             FROM booking 
             INNER JOIN business ON booking.id_business = business.id
             INNER JOIN users ON booking.id_user = users.id

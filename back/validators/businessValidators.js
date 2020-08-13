@@ -13,6 +13,7 @@ const newBusinessSchema = Joi.object().keys({
 })
 
 const editBusinessSchema = Joi.object().keys({
+    header: Joi.any(),
     name: Joi.string().min(3).max(40).required().error(generateError("Este nombre de negocio es incorrecto", 400)),
     category: Joi.string().required().valid('BAR', 'PELUQUERÍA', 'TERRAZA', 'RESTAURANTE', 'RESERVADO').error(generateError("La categoría escogida no está disponible", 400)),
     manager: Joi.string().min(3).max(100).required().error(generateError("Este nombre es incorrecto", 400)),
@@ -22,8 +23,10 @@ const editBusinessSchema = Joi.object().keys({
     lengthBooking: Joi.number().valid(15, 30, 45, 60, 90, 120, 150, 180).error(generateError("La duración de tu reserva es incorrecta", 400)),
     description: Joi.string().min(20).max(200).error(generateError("La cantidad de caracteres no es válida", 400)),
     bankAccount: Joi.string().min(20).max(30).error(generateError("La cuenta bancaria no es correcta", 400)),
+    pricingList: Joi.string(),
     allotment: Joi.number().integer().min(1).max(500).error(generateError("El cupo establecido no es correcto", 400)),
-    profilePicture: Joi.string().error(generateError("La ruta debe ser válida", 400)),
+    allotmentAvailable: Joi.number().integer().min(1).max(500).error(generateError("El cupo establecido no es correcto", 400)),
+    profilePicture: Joi.any().error(generateError("La ruta debe ser válida", 400)),
     province: Joi.string().min(3).max(30).error(generateError("La ciudad no es válida", 400)),
     zipCode: Joi.string().min(3).max(10).error(generateError("El código postal debe ser válido", 400)),
     city: Joi.string().min(3).max(30).required().error(generateError("La provincia no es válida", 400)),

@@ -8,8 +8,10 @@ async function viewOwnBusinessRating(req, res, next) {
     const [summary] = await connection.query(
       `
     SELECT  AVG(rating) AS vote_average,
-            COUNT(rating) AS count
-            FROM booking 
+            COUNT(rating) AS count,
+            BU.name
+            FROM booking B
+            INNER JOIN business BU on BU.id = B.id_business 
             WHERE id_business=?
     `,
       [id]

@@ -45,7 +45,7 @@ async function noShowBooking(req, res, next) {
     if (
       statusBooking === "CHECK_OUT" ||
       statusBooking === "CHECK_IN" ||
-      statusBooking === "NO-SHOW"
+      statusBooking === "NO_SHOW"
     ) {
       throw generateError(
         "No puedes modificar el estado de la reserva que previamente has actualizado",
@@ -60,7 +60,7 @@ async function noShowBooking(req, res, next) {
     await connection.query(
       `
       UPDATE booking
-      SET status = 'CHECK_IN', update_date = UTC_TIMESTAMP
+      SET status = 'NO_SHOW', update_date = UTC_TIMESTAMP
       WHERE id=?;
       `,
       [idBooking]

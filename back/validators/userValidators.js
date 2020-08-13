@@ -10,7 +10,7 @@ const newUserSchema = Joi.object().keys({
     name: Joi.string().min(3).max(20).required().error(generateError("Este nombre es incorrecto", 400)),
     surname: Joi.string().min(3).max(100).required().error(generateError("Este apellido es incorrecto", 400)),
     email: Joi.string().email().required().error(generateError("La dirección de email debe ser válida", 400)),
-    password: Joi.string().min(8).required().error(generateError("La password debe de tener un mínimo de 8 caracteres", 400)),
+    password: Joi.string().min(5).required().error(generateError("La password debe de tener un mínimo de 8 caracteres", 400)),
     birthday: Joi.date().max(validAge).required(),
     gender: Joi.string().valid('VARON', 'MUJER').required(),
     city: Joi.string().min(3).max(30).required().error(generateError("Esta ciudad es incorrecta", 400)),
@@ -20,7 +20,7 @@ const newUserSchema = Joi.object().keys({
 
 const loginUserSchema = Joi.object().keys({
     email: Joi.string().email().required().error(generateError("La dirección de email debe ser válida", 400)),
-    password: Joi.string().min(8).required().error(generateError("La password debe de tener un mínimo de 8 caracteres", 400)),
+    password: Joi.string().min(5).required().error(generateError("La password debe de tener un mínimo de 8 caracteres", 400)),
 });
 
 const editUserSchema = Joi.object().keys({

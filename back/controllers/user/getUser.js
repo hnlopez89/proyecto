@@ -7,9 +7,9 @@ async function getUser(req, res, next) {
     connection = await getConnection();
     //OBTENER ID DE USUARIO
     const { id } = req.params;
-    const [profile] = await connection.query(
+    const [data] = await connection.query(
       `
-        SELECT id, name, surname, email, picture
+        SELECT *
         FROM users
         WHERE id=?
         `,
@@ -22,14 +22,9 @@ async function getUser(req, res, next) {
     }
 
     //ELABORAR DATOS DE RESPUESTA A IMPRIMIR EN EL PERFIL
-    const picture = profile[0].picture;
-    const name = profile[0].name;
-    const surname = profile[0].surname;
     res.send({
       status: "ok",
-      name: name,
-      surname: surname,
-      avatar: picture,
+      data
     });
   } catch (error) {
     next(error);

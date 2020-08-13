@@ -4,6 +4,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const cors = require("cors")
 
 // CONTROLADORES
 
@@ -69,6 +70,8 @@ const listBusinessPending = require("./controllers/admin/listAdminBusinessPendin
 
 const app = express();
 
+app.use(cors())
+
 app.use(morgan("dev"));
 
 // Procesado de body tipo json
@@ -76,6 +79,8 @@ app.use(bodyParser.json());
 
 //procesado de body tipo form-data
 app.use(fileUpload());
+
+app.use(express.static('static'));
 
 /* ********************************************* */
 //USER ENDPOINTS
@@ -146,7 +151,7 @@ app.get("/business/:id/profile", isBusiness, getBusiness);
 //VER PUNTUACIONES DE NEGOCIO PROPIO
 //GET -/BUSINESS/:id/profile/rating
 //PRIVADO
-app.get("/business/:id/profile/rating", isBusiness, viewOwnBusinessRating);
+app.get("/business/:id/profile/rating", viewOwnBusinessRating);
 
 //EDITAR INFORMACIÓN DE NEGOCIO
 //SOLO PARA NEGOCIOS REGISTRADOS

@@ -1,5 +1,5 @@
 const { getConnection } = require("../../db");
-const { generateError } = require("../../helpers");
+const { generateError, processAndSaveImage, sendMail, } = require("../../helpers");
 const { editBusinessSchema } = require("../../validators/businessValidators")
 
 
@@ -8,14 +8,13 @@ async function editBusiness(req, res, next) {
   try {
     connection = await getConnection();
 
-    await editBusinessSchema.validateAsync(req.body);
 
     const { id } = req.params;
 
     const [currentData] = await connection.query(
       `
-            SELECT id
-            FROM business
+      SELECT id, email, profile_picture
+      FROM business
             WHERE id=?
             `,
       [id]
@@ -26,13 +25,17 @@ async function editBusiness(req, res, next) {
     }
 
     const {
+      name,
+      manager,
+      category,
+      email,
       openingTime,
       closingTime,
       lengthBooking,
       description,
+      pricingList,
       bankAccount,
       allotment,
-      profilePicture,
       zipCode,
       province,
       line1,
@@ -46,12 +49,67 @@ async function editBusiness(req, res, next) {
       day7,
     } = req.body;
 
+    //SI MANDAMOS IMAGEN GUARDAR AVATAR
+    let savedFileName;
+    if (req.files && req.files.profilePicture) {
+      try {
+        savedFileName = await processAndSaveImage(req.files.avatar);
+      } catch (error) {
+        throw generateError(
+          "No se pudo procesar la imagen. Intentalo de nuevo", 400
+        );
+      }
+    } else {
+      savedFileName = currentData[0].image
+    }
+
+    if (email !== currentData[0].email) {
+      const [existingEmail] = await connection.query(
+        `
+        SELECT id
+        FROM users
+        WHERE email=? 
+      `,
+        [email]
+      );
+
+      if (existingEmail.length > 0) {
+        throw generateError(
+          "Ya existe un usuario con este email en la base de datos",
+          403
+        );
+      }
+      const registrationCode = randomString(40);
+      const validationURL = `${process.env.PUBLIC_HOST}/users/validate/${registrationCode}`;
+
+      try {
+        await sendMail({
+          email,
+          title:
+            "Cambiaste tu email en la aplicación . Por favor valida de nuevo",
+          content: `Para validar tu nuevo email en la app haz click aquí: ${validationURL}`,
+        });
+      } catch (error) {
+        throw generateError("Error en el envío de mail", 500);
+
+      }
+    }
+
+
+
+
+    //  await editBusinessSchema.validateAsync(req.body);
     await connection.query(
       `UPDATE business
-       SET opening_time = ?,
+       SET name =?,
+       manager = ?,
+       category = ?,
+       email = ?,
+       opening_time = ?,
        closing_time = ?,
        length_booking = ?,
        description = ?,
+       pricing_list = ?,
        bank_account = ?,
        allotment_available = ?,
        allotment = ?,
@@ -66,14 +124,19 @@ async function editBusiness(req, res, next) {
       
       `,
       [
+        name,
+        manager,
+        category,
+        email,
         openingTime,
         closingTime,
         lengthBooking,
         description,
+        pricingList,
         bankAccount,
         allotment,
         allotment,
-        profilePicture,
+        savedFileName,
         zipCode,
         province,
         line1,

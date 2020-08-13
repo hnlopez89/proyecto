@@ -43,9 +43,11 @@ async function newUser(req, res, next) {
     //Pasar la fecha de nacimiento a formato de base de datos
     const birthdayDateDB = formatDateToDB(birthdayDate);
 
+
     // enviar un mensaje de confirmación de registro al email indicador
     const registrationCode = randomString(40);
-    const validationURL = `${process.env.PUBLIC_HOST}/user/validation/${registrationCode}`;
+    //`${process.env.PUBLIC_HOST}/user/validate/${registrationCode}`
+    const validationURL = `${process.env.FRONTEND_URL}/activate?${registrationCode}`;
 
     //Enviar la url anterior por mail
     try {

@@ -20,12 +20,14 @@ async function getUserBooking(req, res, next) {
             BU.name,
             BU.category,
             BU.opening_time,
+            BU.closing_time,
             BU.profile_picture,
             BU.province,
             BU.city,
             BU.line1,
             BU.line2,
-            BU.zip_code
+            BU.zip_code,
+            BU.email
             FROM booking B INNER JOIN business BU ON B.id_business = BU.id
             WHERE B.id=?
             `,

@@ -30,7 +30,7 @@ async function listBusiness(req, res, next) {
     let queryResults;
     if (search) {
       queryResults = await connection.query(
-        `SELECT business.name, business.category, business.opening_time, business.score, business.number_reviews, business.city,
+        `SELECT business.id, business.name, business.category, business.opening_time, business.score, business.number_reviews, business.city,
         (SELECT AVG(rating) FROM booking WHERE id_business = business.id) AS voteAverage      
         FROM business
         WHERE city LIKE ? or category LIKE ?

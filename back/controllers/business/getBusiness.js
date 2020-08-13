@@ -33,6 +33,14 @@ async function getBusiness(req, res, next) {
       [id]
     );
 
+    const [openDays] = await connection.query(
+      `
+        SELECT *
+        FROM opening_days
+        WHERE id_business=?
+      `,
+      [id]
+    );
     if (result.length === 0) {
       const error = new Error(`El negocio con id${id} no existe`);
       error.httpStatus = 404;
@@ -53,6 +61,7 @@ async function getBusiness(req, res, next) {
     res.send({
       status: "ok",
       data: result,
+      openDays: openDays
     });
   } catch (error) {
     next(error);

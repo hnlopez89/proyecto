@@ -21,7 +21,7 @@ async function loginUser(req, res, next) {
 
     //Seleccionar el usuario de la base de datos y comprobar que las passwords coinciden
     const [dbUser] = await connection.query(
-      `SELECT id, role, active
+      `SELECT id, name, role, active
             FROM users
             WHERE email=? AND password=SHA2(?, 512)
             `,
@@ -42,6 +42,7 @@ async function loginUser(req, res, next) {
       throw error;
     }
     const tokenInfo = {
+      name: dbUser[0].name,
       id: dbUser[0].id,
       role: dbUser[0].role,
     };
@@ -51,7 +52,8 @@ async function loginUser(req, res, next) {
     res.send({
       status: "ok",
       data: {
-        token,
+        dbUser,
+        token
       },
     });
   } catch (error) {

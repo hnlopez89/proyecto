@@ -14,49 +14,78 @@ async function newBooking(req, res, next) {
 
   try {
     connection = await getConnection();
-    await newBookingSchema.validateAsync(req.body);
+    // await newBookingSchema.validateAsync(req.body);
     const { idUser, idBusiness } = req.params;
     const {
-      checkInTime,
+      date,
+      hours,
+      minutes,
       units,
       creditCardNumber,
       holderName,
-      expiryDate,
+      expiryMonth,
+      expiryYear,
       cvcCode,
     } = req.body;
 
+    console.log(date,
+      hours,
+      minutes,
+      units,
+      creditCardNumber,
+      holderName,
+      expiryMonth,
+      expiryYear,
+      cvcCode,
+      idUser,
+      idBusiness,
+      "hola");
     //prohibir nueva reserva sin los datos necesarios
-    if (
-      !idBusiness ||
-      !checkInTime ||
-      !units ||
-      !creditCardNumber ||
-      !holderName ||
-      !expiryDate ||
-      !cvcCode ||
-      !idUser
-    ) {
-      throw generateError("Faltan datos para realizar la reserva", 400);
-    }
-
+    /*  if (
+        !idBusiness ||
+        !date ||
+        !hours ||
+        !minutes ||
+        !units ||
+        !creditCardNumber ||
+        !holderName ||
+        !expiryMonth ||
+        !expiryYear ||
+        !cvcCode ||
+        !idUser
+      ) {
+        throw generateError("Faltan datos para realizar la reserva", 400);
+      }*/
     //prohibir nueva reserva si el id de usuario no es el correspondiente
     if (req.auth.id !== Number(idUser)) {
       throw generateError("No estás autorizado", 401);
     }
 
+    // checkInTimeUnix.setHours(checkInTimeUnix.getHours() + 2);
+    //console.log(checkInTimeUnix);
+    /* const queryUnixTime = checkInTimeUnix.getTime();
+     const dateTimeDB = formatDateTimeToDB(checkInTimeUnix);*/
+
     //escoger la duración impuesta por el negocio y convertirla a dato manejable
     const [lengthBookingData] = await connection.query(
       `SELECT length_booking, name
-      FROM business
-      WHERE id=?`,
+        FROM business
+        WHERE id=?`,
       [idBusiness]
     );
     const lengthBooking = lengthBookingData[0].length_booking;
     const frequenzy = minutesToDB(lengthBooking)
 
     //Si la reserva no empieza a la hora en punto o y media, la reserva no es válida
-    const dateCheckInTime = new Date(checkInTime);
+    const dateCheckInTime = new Date(date);
+    //const checkInTimeUnix = new Date(checkInTime);
+    dateCheckInTime.setHours(hours);
+    dateCheckInTime.setMinutes(minutes);
+    console.log("hola");
+    console.log(date);
+    console.log(dateCheckInTime);
     const minutesCheckInTime = dateCheckInTime.getMinutes();
+    console.log(minutesCheckInTime);
     if (minutesCheckInTime !== 0 && minutesCheckInTime !== 30) {
       throw generateError(
         "La hora de inicio de la reserva no es correcta",
@@ -151,6 +180,7 @@ async function newBooking(req, res, next) {
     const emailUser = userData[0].email;
     const businessName = lengthBookingData[0].name;
     //introducir reservar si hay disponibilidad
+    console.log("hola");
     if (ocupation < allotmentAvailable || ocupation === null) {
       await connection.query(
         `
@@ -164,7 +194,8 @@ async function newBooking(req, res, next) {
               update_date,
               credit_card_number,
               holder_name,
-              expiry_date,
+              expiry_month,
+              expiry_year,
               cvc_code,
               payment_date,
               id_business,
@@ -172,6 +203,7 @@ async function newBooking(req, res, next) {
               )
               VALUES(
                 ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
+                SHA2(?,512),
                 SHA2(?,512),
                 SHA2(?,512),
                 SHA2(?,512),
@@ -188,7 +220,8 @@ async function newBooking(req, res, next) {
           units,
           creditCardNumber,
           holderName,
-          expiryDate,
+          expiryMonth,
+          expiryYear,
           cvcCode,
           idBusiness,
           idUser,
@@ -197,7 +230,7 @@ async function newBooking(req, res, next) {
 
       //OBTENER EL ID DE LA RESERVA NUEVA
       const [newBookingData] = await connection.query(`
-      SELECT id
+      SELECT *
       FROM  booking
       ORDER BY id DESC
       LIMIT 1;  
@@ -219,7 +252,7 @@ async function newBooking(req, res, next) {
       res.send({
         status: "RESERVA CONFIRMADA",
         id: idNewBooking,
-        data: checkInTimeToDB,
+        data: newBookingData,
         hora: checkOutTimeToDB,
         unidades: units,
       });

@@ -6,7 +6,7 @@ async function listBusinessBookings(req, res, next) {
     connection = await getConnection();
     const { id } = req.params;
 
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       const error = new Error(
         "No tienes permisos para acceder a las reservas de otro negocio"
       );

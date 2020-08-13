@@ -31,7 +31,7 @@ async function editUser(req, res, next) {
     // el mismo que firma la petición
     console.log(id, req.auth.id);
 
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       const error = new Error("No tienes permisos para editar este usuario");
       error.httpStatus = 403;
       throw error;
@@ -64,10 +64,10 @@ async function editUser(req, res, next) {
 
     //guardar avatar si se manda imagen
     let savedFileName;
-    if (req.files && req.files.avatar) {
+    if (req.files && req.files.picture) {
       try {
         //procesar y guardar imagen
-        savedFileName = await processAndSaveImage(req.files.avatar);
+        savedFileName = await processAndSaveImage(req.files.picture);
       } catch (error) {
         const imageError = new Error(
           " No se pudo procesar la imagen. Intentalo de nuevo."

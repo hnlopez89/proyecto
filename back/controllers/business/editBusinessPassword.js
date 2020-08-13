@@ -11,8 +11,7 @@ async function editBusinessPassword(req, res, next) {
 
     const { id } = req.params;
     const { oldPassword, newPassword } = req.body;
-
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       throw generateError("No puedes cambiar la password de otro negocio", 403);
     }
 

@@ -20,7 +20,7 @@ async function loginBusiness(req, res, next) {
 
     // seleccionar el usuario de la base de datos y comprobar que las passwords coinciden
     const [dbBusiness] = await connection.query(
-      `SELECT id, status
+      `SELECT id, status, name, update_date
         FROM business
         WHERE email=? AND password= SHA2(?,512)
         `,
@@ -40,6 +40,8 @@ async function loginBusiness(req, res, next) {
     }
     const tokenInfo = {
       id: dbBusiness[0].id,
+      name: dbBusiness[0].name,
+
     };
     const token = jsonwebtoken.sign(tokenInfo, process.env.SECRET, {
       expiresIn: "30d",
@@ -47,6 +49,7 @@ async function loginBusiness(req, res, next) {
     res.send({
       status: "ok",
       data: {
+        dbBusiness,
         token,
       },
     });

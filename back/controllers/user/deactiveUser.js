@@ -6,9 +6,9 @@ async function deactiveUser(req, res, next) {
   try {
     connection = await getConnection();
     const { id } = req.params;
-
+    const { resignReason } = req.body;
     // PROHIBIR DESACTIVAR CUENTA AJENA
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       throw generateError(
         "No puedes desactivar la cuenta de un usuario que no es el tuyo",
         404
@@ -49,21 +49,21 @@ async function deactiveUser(req, res, next) {
       const deactiveName = deactiveAccount[0].name;
       console.log(deactiveEmail, deactiveName);
       //ENVIAR EMAIL CON LO QUÉ HA SUCEDIDO
-      try {
-        await sendMail({
-          deactiveEmail,
-          title: "Desactivación de tu cuenta en Tempo",
-          content: `Lamentamos ${deactiveName} que quieras darte de baja en nuestra aplicación.
-          Gracias por haber utilizado nuestra plataforma, esperamos volver a verte pronto!`,
-        });
-      } catch (error) {
-        throw generateError("Error al enviar el email");
-      }
+      /* try {
+         await sendMail({
+           deactiveEmail,
+           title: "Desactivación de tu cuenta en Tempo",
+           content: `Lamentamos ${deactiveName} que quieras darte de baja en nuestra aplicación.
+           Gracias por haber utilizado nuestra plataforma, esperamos volver a verte pronto!`,
+         });
+       } catch (error) {
+         throw generateError("Error al enviar el email");
+       }*/
       await connection.query(
         `UPDATE users
-        SET active=false
+        SET active=false, resign_reason=? 
         WHERE id=?`,
-        [req.auth.id]
+        [resignReason, req.auth.id]
       );
     }
     res.send({

@@ -37,11 +37,13 @@ async function main() {
       surname VARCHAR(50) NOT NULL,
       email VARCHAR(50) UNIQUE NOT NULL,
       password VARCHAR(500) NOT NULL,
+      telephone VARCHAR(20) NOT NULL,
       gender ENUM ('VARON', 'MUJER'),
       birthday DATE,
       age INT,
       city VARCHAR(50),
       picture VARCHAR(80),
+      resign_reason VARCHAR(100),
       creating_date TIMESTAMP NOT NULL,
       update_date DATETIME NOT NULL,
       active BOOLEAN DEFAULT false,
@@ -49,7 +51,7 @@ async function main() {
       last_auth_update DATETIME NOT NULL
       );
     `);
-
+    console.log("Creando admin");
     //poblamos tabla de usuarios
     await connection.query(
       `INSERT INTO users(
@@ -58,6 +60,7 @@ async function main() {
         surname,
         email,
         password,
+        telephone,
         creating_date,
         update_date,
         last_auth_update
@@ -67,15 +70,19 @@ async function main() {
         "Hugo",
         "Nogueira",
         "esehugo@hotmail.com",
-        SHA2("${faker.internet.password()}", 512),
+        SHA2("0123456789", 512),
+        652200931,
         UTC_TIMESTAMP,
         UTC_TIMESTAMP,
         UTC_TIMESTAMP
         )
       `
     );
-    const users = 20;
+    console.log("Poblando users");
+
+    const users = 40;
     const genders = ["VARON", "MUJER"];
+    const telephone = faker.phone.phoneNumber();
     const cities = ["Madrid", "Barcelona", "A Coruña", "Santiago"];
     for (let index = 0; index < users; index++) {
       const name = faker.name.firstName();
@@ -95,6 +102,7 @@ async function main() {
             surname,
             email,
             password,
+            telephone,
             gender,
             birthday,
             age,
@@ -107,7 +115,8 @@ async function main() {
             "${name}",
             "${surname}",
              "${emailAddress}",
-             SHA2("${faker.internet.password()}", 512),
+             SHA2("loremipsum", 512),
+             "${telephone}",
              "${gender}",
              "${birthdayDB}",
              "${age}",
@@ -119,6 +128,9 @@ async function main() {
             `
       );
     }
+    console.log("Creando tabla business");
+
+
     //creamos tabla de negocios
     await connection.query(`
       CREATE TABLE business(
@@ -128,6 +140,7 @@ async function main() {
         category ENUM('BAR', 'PELUQUERÍA', 'TERRAZA', 'RESTAURANTE', 'RESERVADO') NOT NULL,
         email VARCHAR(50) NOT NULL,
         password VARCHAR(500) NOT NULL,
+        telephone VARCHAR(20)  NOT NULL,
         opening_time VARCHAR(200),
         closing_time VARCHAR(200),
         length_booking INT NOT NULL DEFAULT '30',
@@ -143,12 +156,16 @@ async function main() {
         line1 VARCHAR(100),
         line2 VARCHAR(100),
         registration_code TINYTEXT,
+        resign_reason VARCHAR(100),
         creating_date DATETIME NOT NULL,
         update_date DATETIME NOT NULL,
         last_auth_update DATETIME NOT NULL,
         status ENUM('ACTIVO', 'SIN_VALIDAR', 'PENDIENTE', 'CERRADO', 'CERRADO_BY_ADMIN') DEFAULT 'SIN_VALIDAR'
         );
         `);
+
+    console.log("Poblando tabla business");
+
     // poblamos tabla de negocios
     const business = 50;
     const categories = ["BAR", "PELUQUERÍA", "TERRAZA", "RESTAURANTE"];
@@ -175,6 +192,7 @@ async function main() {
           manager,
           email,
           password,
+          telephone,
           opening_time,
           closing_time,
           description,
@@ -196,7 +214,8 @@ async function main() {
             "${category}",
             "${manager}",
             "${emailAddress}",
-            SHA2("${faker.internet.password()}", 512),
+            SHA2("loremipsum", 512),
+            "${telephone}",
             "${openingTime}",
             "${closingTime}",
             "${description}",
@@ -216,6 +235,8 @@ async function main() {
       );
     }
 
+    console.log("Creando tabla Dias de apertura");
+
     //creamos tabla de dias de apertura de los negocios
     await connection.query(`
     CREATE TABLE opening_days(
@@ -225,6 +246,8 @@ async function main() {
       day INT
       );
       `);
+
+    console.log("Poblando tabla Dias de apertura");
 
     //poblamos tabla de dias de apertura de los negocios
     for (let index = 1; index <= business; index++) {
@@ -238,6 +261,8 @@ async function main() {
       }
     }
 
+    console.log("Creando tabla de fotos");
+
     //creamos tabla de fotos de los negocios
     await connection.query(`
     CREATE TABLE pictures(
@@ -248,6 +273,8 @@ async function main() {
       picture VARCHAR(50)
       );
       `);
+
+    console.log("Creando tabla de reservas");
 
     //creamos tabla de bookings
     await connection.query(`
@@ -267,7 +294,8 @@ async function main() {
         update_date DATETIME NOT NULL,
         credit_card_number VARCHAR(150) NOT NULL,
         holder_name VARCHAR(150) NOT NULL,
-        expiry_date VARCHAR(150) NOT NULL,
+        expiry_month VARCHAR(150) NOT NULL,
+        expiry_year VARCHAR(150) NOT NULL,
         cvc_code VARCHAR(150) NOT NULL,
         fee INT DEFAULT '3',
         payment_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -279,9 +307,12 @@ async function main() {
     
         `);
 
+    console.log("Poblando tabla Dias de apertura");
+
+
     // poblamos tabla de bookings
 
-    const booking = 300;
+    const booking = 600;
     for (let index = 0; index < booking; index++) {
       const checkInTime = faker.date.future()
       const checkInTimeDB = formatDateTimeToDB(checkInTime);
@@ -291,9 +322,11 @@ async function main() {
       const checkOutDayDB = formatDateToDB(checkOutTime);
       const frequenzy = minutesToDB(30);
       const rating = random(1, 5);
+      const ratingDescription = faker.company.catchPhraseDescriptor();
       const creditCardNumber = random(4000000000000000, 5999999999999999);
       const holderName = faker.name.findName();
-      const expiryDate = formatDateToDB(faker.date.future());
+      const expiryMonth = random(1, 12);
+      const expiryYear = random(2020, 2040);
       const cvcCode = random(100, 9999);
       const paymentDate = formatDateToDB(faker.date.past());
       const idBusiness = random(1, business);
@@ -305,9 +338,11 @@ async function main() {
               check_out_day,
               frequenzy_time,
               rating,
+              rating_description,
               credit_card_number,
               holder_name,
-              expiry_date,
+              expiry_month,
+              expiry_year,
               cvc_code,
               payment_date,
               creating_date,
@@ -321,9 +356,11 @@ async function main() {
               "${checkOutDayDB}",
               "${frequenzy}",
               "${rating}",
+              "${ratingDescription}",
               SHA2("${creditCardNumber}", 512),
               SHA2("${holderName}", 512),
-              SHA2("${expiryDate}", 512),
+              SHA2("${expiryMonth}", 512),
+              SHA2("${expiryYear}", 512),
               SHA2("${cvcCode}", 512),
               "${paymentDate}",
               UTC_TIMESTAMP,
@@ -334,6 +371,9 @@ async function main() {
       );
     }
 
+    console.log("Creando vista ");
+
+
     //creamos la view en sql para filtrar facilmente los datos
     await connection.query(`
      CREATE VIEW business_details AS
@@ -341,6 +381,7 @@ async function main() {
 	COUNT(b.id) AS count, (SELECT AVG(rating) FROM booking WHERE id_business = bu.id) AS vote_average,
 	(SELECT COUNT(rating) FROM booking WHERE id_business = bu.id) AS total_votes
   FROM business bu LEFT OUTER JOIN booking b ON b.id_business = bu.id
+ WHERE NOT b.status = 'CANCELADO'  
   GROUP BY bu.id, bu.profile_picture, allotment, allotment_available, name, bu.category, bu.city, opening_time, closing_time, check_in_time, check_out_time, bu.status, vote_average, total_votes;
 
 `);

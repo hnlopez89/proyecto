@@ -8,10 +8,10 @@ async function listUserBookingsAdvanced(req, res, next) {
 
     //OBTENER CRITORIOS DE BÚSQUEDA
     const { id } = req.params;
-    const { idBooking, checkInDay, status, creatingDate, name, category, city, order, direction } = req.body;
+    const { checkInDay, status, creatingDate, name, category, city, order, direction } = req.query;
 
     //PROHÍBIR ACCEDER A DATOS AJENOS
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id)) {
       throw generateError("No tienes permisos para acceder a este usuario", 403);
     }
 
@@ -53,13 +53,9 @@ async function listUserBookingsAdvanced(req, res, next) {
 
     const params = [];
     //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-    if (idBooking || checkInDay || status || creatingDate || name || category || city) {
+    if (checkInDay || status || creatingDate || name || category || city) {
       const conditions = [];
 
-      if (idBooking) {
-        conditions.push(` B.id LIKE '${idBooking}'`);
-        params.push(`'%${idBooking}%'`);
-      }
 
       if (checkInDay) {
         const dateTimeDB = formatDateToDB(checkInDay)
@@ -93,11 +89,6 @@ async function listUserBookingsAdvanced(req, res, next) {
         params.push(`'%${city}%'`);
       }
 
-      if (!status) {
-        conditions.push(` B.status LIKE 'CONFIRMADO'
-        OR B.status LIKE 'MODIFICADO'
-        OR B.status LIKE 'PENDIENTE_DE_PAGO'`);
-      }
 
       //FINALIZAR CREACIÓN DE BÚSQUEDA Y EJECUCIÓN
       query = `${query} AND ${conditions.join(` AND `)} ORDER BY ${orderBy} ${orderDirection}`;
@@ -114,7 +105,7 @@ async function listUserBookingsAdvanced(req, res, next) {
     else {
       query = `${query} AND B.status = 'CONFIRMADO' OR B.status = 'MODIFICADO' OR B.status = 'PENDIENTE_DE_PAGO' ORDER BY ${orderBy} ${orderDirection}`;
       const [result] = await connection.query(query);
-
+      console.log(query);
 
       // mando la respuesta
       res.send({

@@ -7,7 +7,7 @@ async function viewBusiness(req, res, next) {
     const { id } = req.params;
     const [result] = await connection.query(
       `
-            SELECT name,
+            SELECT B.id,name,
             manager,
             category,
             opening_time,
@@ -28,6 +28,7 @@ async function viewBusiness(req, res, next) {
             FROM business B LEFT JOIN booking
             ON id_business = B.id
             WHERE B.id=?
+            GROUP BY B.id
             `,
       [id]
     );
