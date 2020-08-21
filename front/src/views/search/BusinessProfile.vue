@@ -1,9 +1,42 @@
 <template>
   <div>
     <button @click="goBack()">Go Back</button>
+    <img :src="setImage(details.profile_picture)" alt="Foto de perfil" />
+    <h1>{{details.name}}</h1>
+    <p>{{details.profile_picture}}</p>
+    <ul>
+      <li>
+        <b>Puntuación:</b>
+        <star-rating
+          read-only
+          :rating="Number(details.vote_average)"
+          :increment="0.5"
+          :fixed-point="1.8"
+          :star-size="20"
+          :inline="true"
+          :show-rating="false"
+        ></star-rating>
+      </li>
+      <li>
+        <b>Votos totales:</b>
+        {{details.count}}
+      </li>
+      <router-link
+        :to="{ name: 'BookingReviews', params: {id: details.id}}"
+        tag="button"
+      >Ver todas las puntuaciones</router-link>
+    </ul>
 
-    <getbusinesscomp :details="details" :pictures="pictures" />
-    <!-- <input v-model="date" type="date" placeholder="Datetime" />
+    <p>{{details.category}}</p>
+    <p>{{details.description}}</p>
+    <p>{{details.city}}</p>
+    <p>{{details.zip_code}}</p>
+    <p>{{details.province}}</p>
+    <p>{{details.line1}}</p>
+    <p>{{details.line2}}</p>
+    <p>{{details.opening_time}}</p>
+    <p>{{details.closing_time}}</p>
+    <input v-model="date" type="date" placeholder="Datetime" />
     <label for>Hora</label>
     <select v-model="hours" id="units">
       <option value="0">0</option>
@@ -51,20 +84,16 @@
       <option value="9">9</option>
     </select>
     <button @click="query()">Buscar</button>
-    <button @click="button()">Reservar</button>-->
+    <button @click="button()">Reservar</button>
   </div>
 </template>
 
 <script>
 import { getIdToken } from "../../utils";
-import getbusinesscomp from "@/components/GetBusinessComp.vue";
 import axios from "axios";
 
 export default {
   name: "BusinessProfile",
-  components: {
-    getbusinesscomp,
-  },
   data() {
     return {
       details: {},
@@ -78,6 +107,9 @@ export default {
     };
   },
   methods: {
+    setImage(img) {
+      return process.env.VUE_APP_STATIC + img;
+    },
     goBack() {
       window.history.back();
     },
@@ -156,7 +188,6 @@ export default {
   },
   created() {
     this.getBusiness();
-    //  this.queryByDefault();
   },
 };
 </script>

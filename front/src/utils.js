@@ -37,18 +37,6 @@ export function getIsAdminUser() {
     return localStorage.getItem('ROLE')
 }
 
-//FUNCIÓN PARA SABER SI ES ADMIN O NO
-export function checkIsAdminUser() {
-    let role = null
-    let admin = getIsAdminUser()
-
-    if (admin === 'true') {
-        role = "admin"
-    } else {
-        role = "customer"
-    }
-    return role
-}
 
 //FUNCION DE RECUPERAR EL NOMBRE DE USER EN LOCALSTORAGE
 export function getNameUser() {
@@ -112,8 +100,39 @@ export function isUser(token) {
     return expirationDate < new Date()
 }
 
+//FUNCIÓN PARA SABER SI ES ADMIN O NO
+export function checkIsAdminUserOriginal() {
+    let role = null
+    let admin = getIsAdminUser()
+
+    if (admin === 'true') {
+        role = "admin"
+    } else {
+        role = "customer"
+    }
+    return role === "admin"
+}
+
+//FUNCIÓN PARA SABER SI ES ADMIN O NO
+export function checkIsAdminUser() {
+    let role = null
+    let admin = getIsAdminUser()
+
+    if (admin === 'admin') {
+        role = true
+    } else {
+        role = false
+    }
+    return role
+}
+
 //FUNCIÓN QUE COMPRUEBA SI LA PERSONA ESTÁ LOGUEADA Y SU TOKEN ES VÁLIDO
 export function isLoggedInUser() {
+    let authToken = getAuthToken()
+    return !!authToken && !isExpired(authToken) && !!getNameUser();
+}
+
+export function isLoggedInAdmin() {
     let authToken = getAuthToken()
     return !!authToken && !isExpired(authToken) && !!getNameUser();
 }

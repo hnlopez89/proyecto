@@ -207,7 +207,14 @@ const routes = [
       allowAnon: false,
     }
   },
-
+  {
+    path: '/editbusiness/pictures',
+    name: 'EditPicturesBusiness',
+    component: () => import('../views/Business/EditPicturesBusiness.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
   {
     path: '/business/mybookingtoday',
     name: 'BookingBusinessToday',
@@ -250,7 +257,72 @@ const routes = [
     }
   },
 
+  ////////////////////////////////// ADMIN /////////////////////////////
 
+  {
+    path: '/check_business/:id',
+    name: 'CheckBusiness',
+    component: () => import('../views/Admin/CheckBusiness.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_business',
+    name: 'ListBusiness',
+    component: () => import('../views/Admin/ListBusiness.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_business/pending',
+    name: 'ListBusinessPending',
+    component: () => import('../views/Admin/ListBusinessPending.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_business/bad_reviews',
+    name: 'ListBusinessBadReviews',
+    component: () => import('../views/Admin/ListBusinessBadReviews.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_users',
+    name: 'ListUsers',
+    component: () => import('../views/Admin/ListUsers.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/check_user/:id',
+    name: 'CheckUser',
+    component: () => import('../views/Admin/EditUser.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_bookings/',
+    name: 'ListBookings',
+    component: () => import('../views/Admin/ListBookings.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
+  {
+    path: '/list_bookings/pending',
+    name: 'ListBookingsPending',
+    component: () => import('../views/Admin/ListBookingsPending.vue'),
+    meta: {
+      allowAnon: false,
+    }
+  },
 
 ]
 

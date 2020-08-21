@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <div id="userType">
+      <p v-show="adminWay">Soy Admin</p>
+      <router-link v-show="logged" :to="{name: 'Home'}">Tempo</router-link>
       <div v-show="!logged" id="nav">
         <router-link :to="{ name: 'LogInBusiness'}">Zona de Negocio</router-link>
         <router-link :to="{ name: 'CreateUser'}">Registrate</router-link>
@@ -23,7 +25,7 @@
 </template>
 
 <script>
-import { isLoggedInUser, isLoggedInBusiness } from "./utils";
+import { isLoggedInUser, isLoggedInBusiness, checkIsAdminUser } from "./utils";
 import { getNameUser } from "./utils";
 import { logout } from "./utils";
 import footercomp from "@/components/FooterComp.vue";
@@ -37,6 +39,7 @@ export default {
       userWay: false,
       businessWay: false,
       logged: false,
+      adminWay: false,
     };
   },
   components: {
@@ -49,9 +52,14 @@ export default {
     },
     userWayFunction() {
       this.userWay = isLoggedInUser();
+      this.logged = isLoggedInUser();
     },
     businessWayFunction() {
       this.businessWay = isLoggedInBusiness();
+      this.logged = isLoggedInUser();
+    },
+    adminWayFunction() {
+      this.adminWay = checkIsAdminUser();
     },
     logoutUser() {
       logout();
@@ -68,6 +76,7 @@ export default {
     this.setUsername();
     this.userWayFunction();
     this.businessWayFunction();
+    this.adminWayFunction();
   },
 };
 </script>
@@ -80,6 +89,7 @@ export default {
 
 html {
   min-height: 100%;
+  background-color: navy;
   color: cornflowerblue;
 }
 
@@ -89,23 +99,20 @@ html {
 }
 
 #nav {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
 }
 #nav a {
   font-weight: bold;
   color: blue;
-  padding: 0.5rem 2rem 0 2rem;
   text-decoration: none;
 }
 
 #userway {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-right: 3rem;
+  justify-content: flex-end;
+  padding: 1rem;
 }
 
 #userway > h3 {
@@ -114,12 +121,17 @@ html {
 }
 
 #userway > button {
-  padding: 0.25rem;
   padding: 0.5rem 1.5rem;
   border-radius: 0.5rem;
   display: block;
   margin: 0.5rem;
   background-color: blue;
   color: white;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.hide {
+  display: none;
 }
 </style>

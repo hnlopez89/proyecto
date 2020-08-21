@@ -3,36 +3,60 @@
     <ul>
       <!-- ESCOGEMOS VALORES DEL ARRAY DEL COMPONENTE -->
       <li v-for="(business, index) in businesses" :key="business.id">
-        <h1>
-          <router-link :to="{name: 'BusinessProfile', params: { id: business.id}}">{{business.name}}</router-link>
-        </h1>
-        <p id="category">{{business.category}}, {{business.id}}</p>
-        <p>{{business.city}}</p>
-        <p>Abre de {{business.opening_time}}:00 a {{business.closing_time}}:00</p>
-        <p>
-          Puntuación:
-          <star-rating
-            :rating="Number(business.vote_average)"
-            read-only
-            :increment="0.5"
-            :fixed-point="1.8"
-            :star-size="20"
-            :inline="true"
-            :show-rating="false"
-          ></star-rating>
-          {{business.total_votes}} Opiniones
-        </p>
+        <img
+          :class="{hide: business.profile_picture !== null}"
+          src="../assets/business.png"
+          height="100"
+        />
+        <!-- <img
+          :class="{hide: business.profile_picture === null }"
+          :src="getProfilePicture(business.profile_picture)"
+        height="200"
+        />-->
+        <article>
+          <section id="description">
+            <h1>
+              <router-link
+                :to="{name: 'BusinessProfile', params: { id: business.id}}"
+              >{{business.name}}</router-link>
+            </h1>
+            <p id="rating">
+              <star-rating
+                :rating="Number(business.vote_average)"
+                read-only
+                :increment="0.5"
+                :fixed-point="1.8"
+                :star-size="20"
+                :inline="true"
+                :show-rating="false"
+              ></star-rating>
+              {{business.total_votes}} Opiniones
+            </p>
+            <p>
+              <b>Categoría:</b>
+              {{business.category}}
+            </p>
+            <p>
+              <b>Ciudad:</b>
+              {{business.city}}
+            </p>
+            <p>
+              <b>Horario:</b>
+              Abre de {{business.opening_time}}:00 a {{business.closing_time}}:00
+            </p>
+          </section>
+          <section id="action">
+            <button @click="toggleBooking">Hacer reserva</button>
+          </section>
+        </article>
 
-        <button @click="toggleBooking">Hacer reserva</button>
-
-        <div id="rating" v-show="showBooking" class="modal">
+        <div v-show="showBooking" class="modal">
           <div class="modalBox">
             aqui formulario de reserva para la fecha
             <form>
               <input v-model="creditCardNumber" placeholder="Introduce el número de la tarjeta" />
               <input v-model="holderName" placeholder="Introduce el Titular de la tarjeta" />
               <select v-model="expiryMonth">
-                <option value="0">0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -85,6 +109,7 @@ export default {
       holderName: "",
       showBooking: "",
       creditCardNumber: "",
+      picture: "",
     };
   },
   props: {
@@ -105,14 +130,57 @@ export default {
     toggleBooking() {
       this.showBooking = !this.showBooking;
     },
+    getProfilePicture(picture) {
+      if (picture !== null) {
+        return process.env.VUE_APP_STATIC + picture;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+* {
+  padding: 0;
+  margin: 0;
+}
 ul {
   list-style: none;
 }
+li {
+  display: flex;
+  flex-direction: row;
+
+  padding: 0.5rem;
+
+  border: solid 0.2rem navy;
+  border-radius: 1rem;
+  margin: 0.5rem 0;
+}
+
+li > img {
+  object-fit: cover;
+  max-width: 35%;
+  height: 8rem;
+  margin-right: 1rem;
+}
+a {
+  font-size: 1rem;
+  text-decoration: none;
+}
+#rating {
+  padding-bottom: 0.5rem;
+}
+
+li > article p {
+  padding: 0;
+  font-size: 0.6rem;
+  text-align: left;
+}
+#description {
+  margin-bottom: 1rem;
+}
+
 div.modal button {
   border-radius: 20px;
   margin: 0.5rem;
@@ -136,8 +204,9 @@ div.modal button {
 }
 
 button {
-  padding: 0.25rem;
-  padding: 0.5rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
+  font-size: 0.7rem;
 }
 </style>

@@ -1,5 +1,3 @@
-/* en construcción
-
 const { getConnection } = require("../../db");
 const { generateError } = require("../../helpers");
 
@@ -11,10 +9,13 @@ async function listBookingsPending(req, res, next) {
             throw generateError("No estás autorizado para acceder a esta información", 400)
         }
 
-        await connection.query(`
-        SELECT id_user, id_business, check_in_time, status (SELECT AVG(rating) FROM booking WHE,
+        const [list] = await connection.query(`
+        SELECT *
         FROM booking
-        WHERE status = 'PENDIENTE_DE_PAGO'
+        WHERE status = 'PENDIENTE_DE_PAGO'`);
+        res.send({
+            data: list,
+        });
     }
     catch (error) {
         next(error);
@@ -22,4 +23,5 @@ async function listBookingsPending(req, res, next) {
         if (connection) connection.release();
     }
 }
-*/
+
+module.exports = listBookingsPending;

@@ -8,23 +8,10 @@ async function checkBusiness(req, res, next) {
     //SELECCIONAMOS TODA LA INFO NECESARIA PARA QUE
     // EL NEGOCIO PUEDA SER ACTIVADO
     const { idBusiness } = req.params;
+    console.log(idBusiness);
     const [businessData] = await connection.query(
       `
-            SELECT id, opening_time,
-            closing_time,
-            length_booking,
-            description,
-            bank_account,
-            allotment,
-            profile_picture,
-            zip_code,
-            province,
-            line1,
-            line2,
-            update_date,
-            last_auth_update,
-            registration_code,
-            status
+            SELECT *
             FROM business 
             WHERE id = ?
             `,
@@ -45,8 +32,8 @@ async function checkBusiness(req, res, next) {
 
     res.send({
       status: "ok",
-      businessData: businessData,
-      openingDays: openingDays,
+      businessData,
+      openingDays
     });
   } catch (error) {
     next(error);

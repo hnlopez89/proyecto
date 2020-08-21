@@ -9,6 +9,7 @@ async function getUserBooking(req, res, next) {
     const [result] = await connection.query(
       `
             SELECT B.id,
+            U.role,
             check_in_time,
             check_in_day,
             check_out_time,
@@ -29,6 +30,7 @@ async function getUserBooking(req, res, next) {
             BU.zip_code,
             BU.email
             FROM booking B INNER JOIN business BU ON B.id_business = BU.id
+            INNER JOIN users U ON B.id_user = U.id
             WHERE B.id=?
             `,
       [idBooking]

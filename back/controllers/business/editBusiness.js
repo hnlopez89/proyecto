@@ -1,6 +1,6 @@
 const { getConnection } = require("../../db");
 const { generateError, processAndSaveImage, sendMail, } = require("../../helpers");
-const { editBusinessSchema } = require("../../validators/businessValidators")
+const { editBusinessSchema, randomString } = require("../../validators/businessValidators")
 
 
 async function editBusiness(req, res, next) {
@@ -51,16 +51,16 @@ async function editBusiness(req, res, next) {
 
     //SI MANDAMOS IMAGEN GUARDAR AVATAR
     let savedFileName;
-    if (req.files && req.files.profilePicture) {
+    if (req.files && req.files.picture) {
       try {
-        savedFileName = await processAndSaveImage(req.files.avatar);
+        savedFileName = await processAndSaveImage(req.files.picture);
       } catch (error) {
         throw generateError(
           "No se pudo procesar la imagen. Intentalo de nuevo", 400
         );
       }
     } else {
-      savedFileName = currentData[0].image
+      savedFileName = currentData[0].profile_picture
     }
 
     if (email !== currentData[0].email) {
@@ -79,20 +79,20 @@ async function editBusiness(req, res, next) {
           403
         );
       }
-      const registrationCode = randomString(40);
-      const validationURL = `${process.env.PUBLIC_HOST}/users/validate/${registrationCode}`;
-
-      try {
-        await sendMail({
-          email,
-          title:
-            "Cambiaste tu email en la aplicación . Por favor valida de nuevo",
-          content: `Para validar tu nuevo email en la app haz click aquí: ${validationURL}`,
-        });
-      } catch (error) {
-        throw generateError("Error en el envío de mail", 500);
-
-      }
+      /*     const registrationCode = randomString(40);
+           const validationURL = `${process.env.PUBLIC_HOST}/users/validate/${registrationCode}`;
+     
+           try {
+             await sendMail({
+               email,
+               title:
+                 "Cambiaste tu email en la aplicación . Por favor valida de nuevo",
+               content: `Para validar tu nuevo email en la app haz click aquí: ${validationURL}`,
+             });
+           } catch (error) {
+             throw generateError("Error en el envío de mail", 500);
+     
+           }*/
     }
 
 

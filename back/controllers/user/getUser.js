@@ -15,9 +15,9 @@ async function getUser(req, res, next) {
         `,
       [id]
     );
-
+    console.log(req.auth.id, req.auth.role);
     //PROHIBIR ACCEDER A PERFILES AJENOS
-    if (Number(id) !== req.auth.id) {
+    if (Number(id) !== req.auth.id && req.auth.role !== "admin") {
       throw generateError("No puedes acceder a perfiles ajenos")
     }
 

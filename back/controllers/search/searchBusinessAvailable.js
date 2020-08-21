@@ -93,10 +93,12 @@ async function searchBusinessAvailable(req, res, next) {
     //BÚSQUEDA ÚNICAMENTE DE NEGOCIOS CON EL MISMO NOMBRE
     //SE PRIORIZA ENCONTRAR EL NEGOCIO A SU DISPONIBILIDAD
     if (name && date && !city && !category) {
-      query = `${query} BD.name LIKE ${name}`;
-      params.push(`'%${name}%'`)
       const conditions = [];
-
+      if (name) {
+        query = `${query} BD.name LIKE '${name}'`;
+        params.push(`'%${name}%'`)
+      }
+      console.log(query);
       if (date && units) {
         if (units) {
           params.push(`'%${units}%'`);
@@ -105,7 +107,6 @@ async function searchBusinessAvailable(req, res, next) {
         dateString.setHours(hours);
         console.log(dateString);
         dateString.setMinutes(minutes);
-        dateString.setHours(dateString.getHours() + 2);
         const queryUnixTime = dateString.getTime();
         const stringWeekDay = dateString.getDay();
         const weekDay = Number(stringWeekDay);
@@ -119,7 +120,7 @@ async function searchBusinessAvailable(req, res, next) {
             400
           );
         }
-        conditions.push(`(${weekDay} + 1) IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
+        conditions.push(`AND (${weekDay} + 1) IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
           AND ${checkInHour} BETWEEN BD.opening_time AND BD.closing_time 
           AND (( BD.check_in_time = '${dateTimeDB}' AND BD.allotment_available >= BD.count + ${units}) OR BD.check_in_time IS NULL OR
           '${dateTimeDB}' NOT IN (SELECT check_in_time FROM business_details WHERE id = BD.id))`);
@@ -129,6 +130,21 @@ async function searchBusinessAvailable(req, res, next) {
       query = `${query} ${conditions.join(
         ` AND `
       )} GROUP BY BD.id, BD.name ORDER BY ${orderBy} ${orderDirection}`;
+      console.log(query);
+      const [result] = await connection.query(query);
+
+      //ENVÍAR BÚSQUEDA DE USUARIO
+      res.send({
+        status: "ok",
+        data: result,
+      });
+    }
+    if (name && !date && !city && !category) {
+      if (name) {
+        query = `${query} BD.name LIKE '${name}' GROUP BY BD.id, BD.name`;
+        params.push(`'%${name}%'`)
+      }
+      console.log(query);
       const [result] = await connection.query(query);
 
       //ENVÍAR BÚSQUEDA DE USUARIO

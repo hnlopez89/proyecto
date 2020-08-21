@@ -5,7 +5,6 @@ async function isAdmin(req, res, next) {
   let connection;
   try {
     connection = await getConnection();
-    console.log(req.auth);
     if (req.auth.role === "admin") {
       //pasar al siguiente middleware
       next();

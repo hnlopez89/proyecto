@@ -49,8 +49,6 @@ async function editBusinessPictures(req, res, next) {
 
           images.push(processedImage);
 
-          console.log(processedImage, "holi", id);
-
           await connection.query(
             `INSERT INTO pictures (update_date, id_business, picture)
             VALUES (UTC_TIMESTAMP, ?, ?)
@@ -64,6 +62,7 @@ async function editBusinessPictures(req, res, next) {
     }
     res.send({
       status: "oki doki",
+      pictures
     });
   } catch (error) {
     next(error);

@@ -1,5 +1,11 @@
 <template>
   <div class="Welcome">
+    <img
+      :class="{hide: businesses.profile_picture !== null}"
+      src="../../assets/business.png"
+      height="200"
+    />
+    <img :class="{hide: businesses.profile_picture === null }" :src="profilePicture" height="200" />
     <p>
       <b>Establecimiento:</b>
       {{businesses.name}}
@@ -37,7 +43,7 @@
     <div id="boardData">
       <p>Datos de tu negocio</p>
       <router-link :to="{name: 'EditBusiness'}" tag="button">Editar tu negocio</router-link>
-      <router-link :to="{name: 'EditBusiness'}" tag="button">Editar tus Fotos</router-link>
+      <router-link :to="{name: 'EditPicturesBusiness'}" tag="button">Editar tus Fotos</router-link>
       <router-link :to="{name: 'EditBusinessPassword'}" tag="button">Editar tu contraseña</router-link>
     </div>
 
@@ -68,6 +74,7 @@ export default {
       businesses: [],
       explanation: false,
       reason: "",
+      profilePicture: "",
     };
   },
 
@@ -79,9 +86,21 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/business/" + getIdToken(token)
         );
+        console.log(response);
         this.businesses = response.data.data[0];
+        this.profilePicture = response.data.data[0].profile_picture;
+        if (this.profilePicture !== null) {
+          this.profilePicture =
+            process.env.VUE_APP_STATIC + this.profilePicture;
+        }
+        console.log(this.businesses.profile_picture);
       } catch (error) {
         console.log(error);
+      }
+    },
+    getProfilePicture(picture) {
+      if (picture !== null) {
+        return process.env.VUE_APP_STATIC + picture;
       }
     },
     async resign() {

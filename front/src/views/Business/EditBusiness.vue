@@ -3,6 +3,13 @@
     <button @click="goBack()">Go Back</button>
     <h1>EDITAR MI NEGOCIO</h1>
     <div>
+      <img src="../../assets/business.png" :class="{hide: profilePicture !== null}" height="200" />
+      <img
+        :src="getProfilePicture(profilePicture)"
+        :class="{hide: profilePicture === null }"
+        height="400"
+      />
+
       <input type="text" v-model="name" placeholder="Tu nombre" />
       <br />
       <input type="text" v-model="manager" placeholder="Tu gestor" />
@@ -27,7 +34,6 @@
       <br />
       <input hidden type="text" v-model="allotmentAvailable" placeholder="Tus plazas disponibles" />
       <br />
-      <img :src="profilePicture" />
       <input type="file" ref="profilePicture" @change="uploadImage" />
       <br />
       <input type="text" v-model="city" placeholder="Tu ciudad" />
@@ -124,9 +130,7 @@ export default {
       window.history.back();
     },
     uploadImage() {
-      /*this.profilePicture = this.$refs.profilePicture.files[0];*/
       this.profilePicture = event.target.files[0];
-      console.log(this.profilePicture);
     },
     async getBusiness() {
       try {
@@ -135,7 +139,6 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/business/" + getIdToken(token) + "/profile"
         );
-        data: response.data.data[0];
         this.name = response.data.data[0].name;
         this.manager = response.data.data[0].manager;
         this.category = response.data.data[0].category;
@@ -148,7 +151,7 @@ export default {
         this.bankAccount = response.data.data[0].bank_account;
         this.allotment = response.data.data[0].allotment;
         this.allotmentAvailable = response.data.data[0].allotment_available;
-        this.profilePicture = response.data.data[0].profilePicture;
+        this.profilePicture = response.data.data[0].profile_picture;
         this.city = response.data.data[0].city;
         this.telephone = response.data.data[0].telephone;
         this.zipCode = response.data.data[0].zip_code;
@@ -166,6 +169,11 @@ export default {
         console.log(error.response.data.message);
       }
     },
+    getProfilePicture(picture) {
+      if (picture !== null) {
+        return process.env.VUE_APP_STATIC + picture;
+      }
+    },
     async showUser(dataBusiness) {
       this.name = dataBusiness.name;
       this.category = dataBusiness.category;
@@ -179,7 +187,7 @@ export default {
       this.pricingList = dataBusiness.pricingList;
       this.allotment = dataBusiness.allotment;
       this.allotmentAvailable = dataBusiness.allotmentAvailable;
-      let picture = response.data.data[0].profilePicture;
+      let picture = response.data.data[0].profile_picture;
       this.profilePicture = this.setImage(picture);
       this.city = dataBusiness.city;
       this.zipCode = dataBusiness.zipCode;
@@ -207,7 +215,7 @@ export default {
         userNewData.append("openingTime", this.openingTime);
         userNewData.append("closingTime", this.closingTime);
         userNewData.append("lengthBooking", this.lengthBooking);
-        userNewData.append("profilePicture", this.profilePicture);
+        userNewData.append("picture", this.profilePicture);
         userNewData.append("description", this.description);
         userNewData.append("bankAccount", this.bankAccount);
         userNewData.append("telephone", this.telephone);

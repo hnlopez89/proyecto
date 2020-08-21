@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div>
-      <form action id="query">
-        <h1>Bienvenido a Tempo</h1>
+    <div id="query">
+      <h1>Bienvenido a Tempo</h1>
+      <button v-show="advanced" @click="advanced =! advanced">Buscar por nombre</button>
+      <button v-show="!advanced" @click="advanced =! advanced">Busqueda Avanzada</button>
+      <form v-show="advanced">
         <label>Categoría:</label>
         <select v-model="category">
           <option value="TERRAZA">Terraza</option>
@@ -13,7 +15,7 @@
         </select>
         <label>Ciudad:</label>
         <input v-model="city" type="text" placeholder="Ciudad Escogida" />
-        <input v-model="name" type="text" placeholder="Nombre del Establecimiento" />
+        <label>Fecha:</label>
         <input v-model="date" type="date" placeholder="Datetime" />
         <label for>Hora</label>
         <select v-model="hours" id="units">
@@ -41,7 +43,6 @@
           <option value="21">21</option>
           <option value="22">22</option>
           <option value="23">23</option>
-          <option value="24">24</option>
         </select>
         <label for>Minutos</label>
         <select v-model="minutes" id="units">
@@ -50,7 +51,6 @@
         </select>
         <label for>Plazas</label>
         <select v-model="units" id="units">
-          <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -61,22 +61,26 @@
           <option value="8">8</option>
           <option value="9">9</option>
         </select>
-        <button @click="query()">Buscar</button>
-        <p>
-          <label>Ordenar por:</label>
-          <select @click="query()" id="orderBy">
-            <option value="voteAverage">Puntuación</option>
-            <option value="totalVotes">Número de votos</option>
-            <option value="name">Nombre del establecimiento</option>
-          </select>
-          <label>Sentido:</label>
-          <select @click="query()" id="direction">
-            <option value="ASC">ascendente</option>
-            <option value="DESC">descendente</option>
-          </select>
-        </p>
       </form>
+      <form v-show="!advanced">
+        <legend>Nombre:</legend>
+        <input v-model="name" type="text" placeholder="Nombre del Establecimiento" />
+      </form>
+      <button @click="query()">Buscar</button>
     </div>
+    <p>
+      <label>Ordenar por:</label>
+      <select @click="query()" id="orderBy">
+        <option value="voteAverage">Puntuación</option>
+        <option value="totalVotes">Número de votos</option>
+        <option value="name">Nombre del establecimiento</option>
+      </select>
+      <label>Sentido:</label>
+      <select @click="query()" id="direction">
+        <option value="ASC">ascendente</option>
+        <option value="DESC">descendente</option>
+      </select>
+    </p>
     <businesses v-on:data="booking" :businesses="business" :date="date" />
   </div>
 </template>
@@ -103,6 +107,8 @@ export default {
       minutes: "",
       units: "",
       date: "",
+      advanced: true,
+      order: false,
     };
   },
   methods: {
@@ -135,6 +141,9 @@ export default {
         console.log(error.response);
       }
     },
+    toggleQuery() {
+      this.name = true;
+    },
     async query() {
       try {
         const firstSelect = document.getElementById("orderBy");
@@ -157,6 +166,7 @@ export default {
           },
         });
         this.business = response.data.data;
+        this.order = true;
         console.log(response);
       } catch (error) {
         console.log(error.response.data);
@@ -188,6 +198,11 @@ export default {
       console.log(error.response.data);
     }
   },
+  getProfilePicture(picture) {
+    if (picture !== null) {
+      return process.env.VUE_APP_STATIC + picture;
+    }
+  },
 };
 </script>
 
@@ -198,8 +213,8 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
 }
-#query > h1 {
-  padding: 1rem;
+h1 {
+  padding: 0.5rem;
   color: white;
   text-align: center;
 }

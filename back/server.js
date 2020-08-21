@@ -67,6 +67,13 @@ const isAdmin = require("./middleware/isAdmin");
 const activateBusiness = require("./controllers/admin/activateBusiness");
 const checkBusiness = require("./controllers/admin/adminCheckBusiness");
 const listBusinessPending = require("./controllers/admin/listAdminBusinessPending");
+const listBookings = require("./controllers/admin/listAllBookings");
+const listBusiness = require("./controllers/admin/listAllBusiness");
+const listUsers = require("./controllers/admin/listAllUsers");
+const activateAdmin = require("./controllers/admin/activateAdmin")
+const listBookingsPending = require("./controllers/admin/listBookingsPending");
+const listBusinessBadRating = require("./controllers/admin/listBusinessBadRating");
+const editAdminBooking = require("./controllers/admin/editAdminBooking");
 
 const app = express();
 
@@ -380,6 +387,70 @@ app.put(
   isUser,
   isAdmin,
   activateBusiness
+);
+
+//VER TODAS LAS RESERVAS
+//PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
+app.get(
+  "/admin/:idAdmin/bookings",
+  isUser,
+  isAdmin,
+  listBookings
+);
+
+//VER TODAS LAS RESERVAS PENDIENTES DE PAGO
+//PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
+app.get(
+  "/admin/:idAdmin/bookings_pending",
+  isUser,
+  isAdmin,
+  listBookingsPending
+);
+
+//VER TODAS LAS RESERVAS PENDIENTES DE PAGO
+//PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
+app.put(
+  "/admin/:idAdmin/booking/:idBooking/status",
+  isUser,
+  isAdmin,
+  editAdminBooking
+);
+
+
+//VER TODOS LOS NEGOCIOS
+//GET -/ADMIN/ID/BUSINESS
+app.get(
+  "/admin/:idAdmin/business",
+  isUser,
+  isAdmin,
+  listBusiness
+);
+
+//VER TODOS LOS NEGOCIOS CON PUNTUACIÓN SUSPENSA
+//GET -/ADMIN/ID/BUSINESS
+app.get(
+  "/admin/:idAdmin/business_bad_reviews",
+  isUser,
+  isAdmin,
+  listBusinessBadRating
+);
+
+//VER TODOS LOS USUARIOS
+//GET -/ADMIN/ID/USERS
+app.get(
+  "/admin/:idAdmin/users",
+  isUser,
+  isAdmin,
+  listUsers
+);
+
+//ACTIVAR USUARIO COMO ADMINISTRADOR
+//PUT -/ADMIN/IDADMIN/USER/IDUSER/ACTIVATE
+app.put(
+  "/admin/:idAdmin/users/:idUser/activate_admin",
+  isUser,
+  isAdmin,
+  activateAdmin
 );
 
 /* ********************************************* */

@@ -34,7 +34,6 @@
           <b>hora {{booking.check_in_time}}</b> y acaba a las
           <b>{{booking.check_out_time}}</b>
         </li>
-        <li></li>
       </ul>
       <ul>
         <li>
@@ -147,12 +146,25 @@
       ></textarea>
       <button @click="vote()">Envía tu puntuación</button>
     </form>
+    <form v-show="adminWay">
+      <legend>Estado de la reserva</legend>
+      <select v-model="status">
+        <option value="CONFIRMADO">Confirmado</option>
+        <option value="CANCELADO">Cancelado</option>
+        <option value="CHECK_IN">Check_in</option>
+        <option value="CHECK_OUT">Check out</option>
+        <option value="NO_SHOW">No Show</option>
+        <option value="PENDIENTE_DE_PAGO">Pendiente de pago</option>
+        <option value="MODIFICADO">Modificado</option>
+      </select>
+      <button @click="editStatus()">Confirmar cambio de Estado de la reserva</button>
+    </form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import { getIdToken } from "../../../utils";
+import { getIdToken, checkIsAdminUser } from "../../../utils";
 
 export default {
   name: "Home",
@@ -166,6 +178,7 @@ export default {
       edit: false,
       voting: false,
       editTC: false,
+      adminWay: false,
       date: "",
       time: "",
       units: "",
@@ -176,6 +189,7 @@ export default {
       cvcCode: "",
       rating: "",
       ratingDescription: "",
+      status: "",
     };
   },
 
@@ -207,6 +221,9 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    adminWayFunction() {
+      this.adminWay = checkIsAdminUser();
     },
     toggleVote() {
       this.voting = true;
@@ -274,12 +291,32 @@ export default {
         console.log(error.response.data.message);
       }
     },
+    async editStatus() {
+      try {
+        let token = localStorage.getItem("AUTH_TOKEN_KEY");
+        axios.defaults.headers.common["Authorization"] = `${token}`;
+        const response = await axios.put(
+          "http://localhost:3000/admin/" +
+            getIdToken(token) +
+            "/booking/" +
+            this.$route.params.id +
+            "/status",
+          {
+            status: this.status,
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     goBack() {
       window.history.back();
     },
   },
   created() {
     this.getBooking();
+    this.adminWayFunction();
   },
 };
 </script>

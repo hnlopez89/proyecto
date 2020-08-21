@@ -64,12 +64,12 @@ async function listBusinessBookingsAdvanced(req, res, next) {
       }
 
       if (name) {
-        conditions.push(` B.id LIKE '${name}'`);
+        conditions.push(` U.name LIKE '${name}'`);
         params.push(`'%${name}%'`);
       }
 
       if (surname) {
-        conditions.push(` B.id LIKE '${surname}'`);
+        conditions.push(` U.surname LIKE '${surname}'`);
         params.push(`'%${surname}%'`);
       }
 

@@ -17,8 +17,8 @@ async function editUser(req, res, next) {
 
     // comprobar que se reciben todos los datos necesarios
     const { id } = req.params;
-    const { name, surname, email, gender, birthday, city } = req.body;
-    if (!email || !name || !surname || !gender || !birthday || !city) {
+    const { name, surname, email, gender, telephone, birthday, city } = req.body;
+    if (!email || !name || !surname || !gender || !telephone || !birthday || !city) {
       throw generateError("Faltan datos para poder registrarte", 400);
     }
 
@@ -76,7 +76,7 @@ async function editUser(req, res, next) {
         throw imageError;
       }
     } else {
-      savedFileName = currentUser[0].image;
+      savedFileName = currentUser[0].picture;
     }
 
     // si el email es diferente al actual, comprobar que no existe en la base de datos
@@ -114,10 +114,10 @@ async function editUser(req, res, next) {
 
       await connection.query(
         `UPDATE users
-        SET name = ?, surname = ?, email=?, picture=?, gender=?, birthday=?, age=?, city=?, registration_code=?, update_date=UTC_TIMESTAMP, active=false, last_auth_update=UTC_TIMESTAMP 
+        SET name = ?, surname = ?, email=?, picture=?, telephone=?, gender=?, birthday=?, age=?, city=?, registration_code=?, update_date=UTC_TIMESTAMP, active=false, last_auth_update=UTC_TIMESTAMP 
         WHERE id=?
                 `,
-        [name, surname, email, savedFileName, gender, birthdayDateDB, age, city, registrationCode, id]
+        [name, surname, email, savedFileName, telephone, gender, birthdayDateDB, age, city, registrationCode, id]
       );
       // Dar una respuesta
       res.send({

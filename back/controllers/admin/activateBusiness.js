@@ -6,6 +6,7 @@ async function activateBusiness(req, res, next) {
   try {
     connection = await getConnection();
     const { idBusiness } = req.params;
+    const { newStatus } = req.body
     //comprobamos que el código de registro es el correcto
     const [result] = await connection.query(
       `
@@ -43,24 +44,7 @@ async function activateBusiness(req, res, next) {
     const province = result[0].province;
     const line1 = result[0].line1;
     const line2 = result[0].line2;
-    const status = result[0].status;
     const day3 = result[2].day;
-
-    if (status === "ACTIVO") {
-      throw generateError(
-        "No se puede activar el negocio porque ya está activo",
-        401
-      );
-    }
-    if (status === "CERRADO_BY_ADMIN") {
-      throw generateError(
-        "El negocio fue cerrado por el administrador. Verificar las causas y seguir la ruta correcta para activar el negocio",
-        401
-      );
-    }
-    if (status === "SIN_VALIDAR") {
-      throw generateError("El negocio todavía no ha sido validado");
-    }
 
     if (
       !openingTime ||
@@ -85,15 +69,15 @@ async function activateBusiness(req, res, next) {
     //el usuario que tenga el código recibido
     await connection.query(
       `UPDATE business
-            SET status="ACTIVO", registration_code=NULL, update_date=UTC_TIMESTAMP, last_auth_update=UTC_TIMESTAMP
+            SET status=?, registration_code=NULL, update_date=UTC_TIMESTAMP, last_auth_update=UTC_TIMESTAMP
             WHERE id=?
             `,
-      [idBusiness]
+      [newStatus, idBusiness]
     );
     res.send({
       status: "ok",
       message:
-        "Has activado el nuevo negocio, comenzará a recibir reservas en breve",
+        "El estado del negocio se ha cambiado satisfactoriamente",
     });
   } catch (error) {
     next(error);
