@@ -27,19 +27,6 @@ async function newBooking(req, res, next) {
       expiryYear,
       cvcCode,
     } = req.body;
-
-    console.log(date,
-      hours,
-      minutes,
-      units,
-      creditCardNumber,
-      holderName,
-      expiryMonth,
-      expiryYear,
-      cvcCode,
-      idUser,
-      idBusiness,
-      "hola");
     //prohibir nueva reserva sin los datos necesarios
     /*  if (
         !idBusiness ||
@@ -81,9 +68,6 @@ async function newBooking(req, res, next) {
     //const checkInTimeUnix = new Date(checkInTime);
     dateCheckInTime.setHours(hours);
     dateCheckInTime.setMinutes(minutes);
-    console.log("hola");
-    console.log(date);
-    console.log(dateCheckInTime);
     const minutesCheckInTime = dateCheckInTime.getMinutes();
     console.log(minutesCheckInTime);
     if (minutesCheckInTime !== 0 && minutesCheckInTime !== 30) {
@@ -180,10 +164,10 @@ async function newBooking(req, res, next) {
     const emailUser = userData[0].email;
     const businessName = lengthBookingData[0].name;
     //introducir reservar si hay disponibilidad
-    console.log("hola");
     if (ocupation < allotmentAvailable || ocupation === null) {
-      await connection.query(
-        `
+      if (frequenzy === 3000) {
+        await connection.query(
+          `
             INSERT INTO booking(check_in_time,
               check_in_day,
               check_out_time,
@@ -211,22 +195,70 @@ async function newBooking(req, res, next) {
                 UTC_TIMESTAMP, ?, ?
                 )
                 `,
-        [
-          checkInTimeToDB,
-          checkInDayToDB,
-          checkOutTimeToDB,
-          checkOutDayToDB,
-          frequenzy,
-          units,
-          creditCardNumber,
-          holderName,
-          expiryMonth,
-          expiryYear,
-          cvcCode,
-          idBusiness,
-          idUser,
-        ]
-      );
+          [
+            checkInTimeToDB,
+            checkInDayToDB,
+            checkOutTimeToDB,
+            checkOutDayToDB,
+            frequenzy,
+            units,
+            creditCardNumber,
+            holderName,
+            expiryMonth,
+            expiryYear,
+            cvcCode,
+            idBusiness,
+            idUser,
+          ]
+        );
+      }
+      if (frequenzy === 6000) {
+
+        await connection.query(
+          `
+            INSERT INTO booking(check_in_time,
+              check_in_day,
+              check_out_time,
+              check_out_day,
+              frequenzy_time,
+              units,
+              creating_date,
+              update_date,
+              credit_card_number,
+              holder_name,
+              expiry_month,
+              expiry_year,
+              cvc_code,
+              payment_date,
+              id_business,
+              id_user
+              )
+              VALUES(
+                ?, ?, ?, ?, 10000, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
+                SHA2(?,512),
+                SHA2(?,512),
+                SHA2(?,512),
+                SHA2(?,512),
+                SHA2(?,512),
+                UTC_TIMESTAMP, ?, ?
+                )
+                `,
+          [
+            checkInTimeToDB,
+            checkInDayToDB,
+            checkOutTimeToDB,
+            checkOutDayToDB,
+            units,
+            creditCardNumber,
+            holderName,
+            expiryMonth,
+            expiryYear,
+            cvcCode,
+            idBusiness,
+            idUser,
+          ]
+        );
+      }
 
       //OBTENER EL ID DE LA RESERVA NUEVA
       const [newBookingData] = await connection.query(`
@@ -257,10 +289,13 @@ async function newBooking(req, res, next) {
         unidades: units,
       });
     }
-    //ESTABLECER LA RESPUESTA DE ERROR EN EL PROCESO.
-    res.send({
-      message: "Hubo un problema al realizar la reserva",
-    });
+    else {
+      //ESTABLECER LA RESPUESTA DE ERROR EN EL PROCESO.
+      res.send({
+        message: "Hubo un problema al realizar la reserva",
+      });
+
+    }
   } catch (error) {
     next(error);
   } finally {

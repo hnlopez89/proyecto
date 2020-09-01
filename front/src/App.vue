@@ -1,34 +1,41 @@
 <template>
   <div id="app">
+    <sideBarComp v-if="logged" id="sidebar" />
     <div id="userType">
-      <p v-show="adminWay">Soy Admin</p>
-      <router-link v-show="logged" :to="{name: 'Home'}">Tempo</router-link>
-      <div v-show="!logged" id="nav">
+      <div class="greet" v-if="!logged" id="nav">
         <router-link :to="{ name: 'LogInBusiness'}">Zona de Negocio</router-link>
         <router-link :to="{ name: 'CreateUser'}">Registrate</router-link>
         <router-link :to="{ name: 'LogInUser'}">Iniciar Sesión</router-link>
       </div>
-      <div v-show="userWay" id="userway">
-        <h3>Hola {{name}}!</h3>
-        <router-link :to="{ name: 'GetUser'}" tag="button">Mi perfil</router-link>
-        <button @click="logoutUser()">LogOut</button>
+      <div v-show="userWay" class="greet">
+        <h3>¡Hola {{name}}!</h3>
+        <div id="burgerButton">
+          <button @click="showPanel">Mostrar</button>
+        </div>
       </div>
-      <div v-show="businessWay" id="businessway">
-        <h3>Hola {{name}}!</h3>
-        <router-link :to="{ name: 'GetBusiness'}" tag="button">Mi perfil de Negocio</router-link>
-        <button @click="logoutBusiness()">LogOut</button>
+      <div class="greet" v-show="businessWay">
+        <h3>¡Hola {{name}}!</h3>
+        <div id="burgerButton">
+          <button @click="showPanel">Mostrar</button>
+        </div>
       </div>
     </div>
-    <router-view />
-    <footercomp />
+    <div id>
+      <div :class="{interfacePrivate:logged === true, interfacePublic:logged === false }">
+        <router-view @login="userWayFunction" @login2="businessWayFunction" />
+        <footercomp />
+      </div>
+    </div>
+    <slideout-panel></slideout-panel>
   </div>
 </template>
 
 <script>
 import { isLoggedInUser, isLoggedInBusiness, checkIsAdminUser } from "./utils";
-import { getNameUser } from "./utils";
+import { getNameUser, getNameBusiness } from "./utils";
 import { logout } from "./utils";
 import footercomp from "@/components/FooterComp.vue";
+import sideBarComp from "@/components/SideBarComp.vue";
 
 export default {
   name: "Home",
@@ -40,26 +47,60 @@ export default {
       businessWay: false,
       logged: false,
       adminWay: false,
+      isDeploy: false,
     };
   },
   components: {
     footercomp,
+    sideBarComp,
   },
 
   methods: {
+    showPanel() {
+      const panel1Handle = this.$showPanel({
+        component: sideBarComp,
+        openOn: "right",
+        width: 300,
+        props: {
+          //any data you want passed to your component
+        },
+        closePanel() {
+          this.$emit("closePanel", {});
+        },
+      });
+
+      panel1Handle.promise.then((result) => {});
+    },
+    hidePanel() {
+      this.panelResult.hide();
+    },
     setUsername() {
-      this.name = getNameUser();
+      if (isLoggedInUser() === true) {
+        this.name = getNameUser();
+      }
+    },
+    setBusinessname() {
+      if (isLoggedInBusiness() === true) {
+        this.name = getNameBusiness();
+      }
     },
     userWayFunction() {
-      this.userWay = isLoggedInUser();
-      this.logged = isLoggedInUser();
+      if (isLoggedInUser() === true) {
+        this.userWay = isLoggedInUser();
+        this.logged = isLoggedInUser();
+      }
     },
     businessWayFunction() {
-      this.businessWay = isLoggedInBusiness();
-      this.logged = isLoggedInUser();
+      if (isLoggedInBusiness() === true) {
+        this.logged = isLoggedInBusiness();
+        this.businessWay = isLoggedInBusiness();
+      }
     },
     adminWayFunction() {
-      this.adminWay = checkIsAdminUser();
+      if (checkIsAdminUser() === true) {
+        this.adminWay = checkIsAdminUser();
+        this.logged = isLoggedInUser();
+      }
     },
     logoutUser() {
       logout();
@@ -74,9 +115,10 @@ export default {
   },
   created() {
     this.setUsername();
+    this.setBusinessname();
     this.userWayFunction();
-    this.businessWayFunction();
     this.adminWayFunction();
+    this.businessWayFunction();
   },
 };
 </script>
@@ -87,15 +129,26 @@ export default {
   padding: 0;
 }
 
+.slideout {
+  background-color: black;
+}
+
 html {
-  min-height: 100%;
-  background-color: navy;
+  background-color: grey;
   color: cornflowerblue;
+}
+
+body {
+  margin: 0;
 }
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
+  background-color: white;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
 }
 
 #nav {
@@ -105,8 +158,16 @@ html {
 }
 #nav a {
   font-weight: bold;
-  color: blue;
+  color: coral;
   text-decoration: none;
+}
+
+#userType {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  height: 3rem;
+  background-color: white;
 }
 
 #userway {
@@ -115,23 +176,83 @@ html {
   padding: 1rem;
 }
 
-#userway > h3 {
-  font-size: 2rem;
-  color: blue;
+#userway > div button {
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid #ffffff;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  color: coral;
+  text-align: center;
+  margin-left: 0.5rem;
+}
+.greet {
+  float: inline-start;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: right;
+  padding: 0.2rem;
 }
 
-#userway > button {
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
-  display: block;
+.greet > div {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-content: right;
   margin: 0.5rem;
-  background-color: blue;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
 }
 
 .hide {
   display: none;
+}
+#burgerButton > button {
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid #ffffff;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  color: coral;
+  text-align: center;
+  margin-left: 0.5rem;
+}
+
+.interfacePrivate {
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 700px) {
+}
+
+@media (min-width: 1000px) {
+  #burgerButton {
+    display: none;
+  }
+  #sidebar {
+    display: inline-block;
+    width: 13rem;
+    height: 100vh;
+    margin: 0;
+  }
+  .interfacePrivate {
+    width: calc(100% - 13rem);
+    display: inline-block;
+    min-height: 100%;
+    float: right;
+  }
+
+  .greet {
+    text-align: center;
+  }
+
+  .interfacePublic {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1000px) {
+  #sidebar {
+    display: none;
+  }
 }
 </style>

@@ -16,7 +16,7 @@ async function listUserBookingsAdvanced(req, res, next) {
     }
 
     //CONSTRUIR INICIO DE QUERY
-    let query = `SELECT B.id, B.check_in_time, B.check_out_time, B.status, B.units, BU.name, BU.category, BU.city
+    let query = `SELECT B.id, B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, BU.name, BU.category, BU.city
             FROM booking B
             INNER JOIN business BU ON B.id_business = BU.id
             INNER JOIN users U ON B.id_user = U.id
@@ -32,8 +32,8 @@ async function listUserBookingsAdvanced(req, res, next) {
       case "name":
         orderBy = "BU.name";
         break;
-      case "check_out_time":
-        orderBy = "B.check_out_time";
+      case "check_in_time":
+        orderBy = "B.check_in_time";
         break;
       case "status":
         orderBy = "B.status";
@@ -94,6 +94,7 @@ async function listUserBookingsAdvanced(req, res, next) {
       query = `${query} AND ${conditions.join(` AND `)} ORDER BY ${orderBy} ${orderDirection}`;
       const [result] = await connection.query(query);
 
+      console.log(query);
       //RESPUESTA A LA PETICIÓN
       res.send({
         status: "ok",
@@ -103,7 +104,7 @@ async function listUserBookingsAdvanced(req, res, next) {
 
     //EJECUTAR BÚSQUEDA POR DEFECTO
     else {
-      query = `${query} AND B.status = 'CONFIRMADO' OR B.status = 'MODIFICADO' OR B.status = 'PENDIENTE_DE_PAGO' ORDER BY ${orderBy} ${orderDirection}`;
+      query = `${query} AND (B.status = 'CONFIRMADO' OR B.status = 'MODIFICADO' OR B.status = 'PENDIENTE_DE_PAGO') ORDER BY ${orderBy} ${orderDirection}`;
       const [result] = await connection.query(query);
       console.log(query);
 

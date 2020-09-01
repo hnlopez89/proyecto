@@ -38,6 +38,7 @@ const deactiveBusiness = require("./controllers/business/deactiveBusiness");
 //const listBusiness = require("./controllers/business/listBusiness");
 const searchBusinessAvailable = require("./controllers/search/searchBusinessAvailable");
 const viewBusiness = require("./controllers/search/viewBusiness");
+const viewTopBusiness = require("./controllers/search/viewTopBusiness")
 const viewBusinessRating = require("./controllers/search/viewBusinessRating");
 
 // RESERVAS
@@ -74,6 +75,7 @@ const activateAdmin = require("./controllers/admin/activateAdmin")
 const listBookingsPending = require("./controllers/admin/listBookingsPending");
 const listBusinessBadRating = require("./controllers/admin/listBusinessBadRating");
 const editAdminBooking = require("./controllers/admin/editAdminBooking");
+
 
 const app = express();
 
@@ -357,6 +359,11 @@ app.get("/business/:id", viewBusiness);
 //GET -/BUSINESS/:id/rating
 //PÚBLICO
 app.get("/business/:id/rating", viewBusinessRating);
+
+//VER NEGOCIOS TOP
+//GET -/viewtopbusiness
+//PÚBLICO
+app.get("/viewTopBusiness", viewTopBusiness);
 
 /* ********************************************* */
 

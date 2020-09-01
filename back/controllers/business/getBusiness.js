@@ -7,26 +7,9 @@ async function getBusiness(req, res, next) {
     const { id } = req.params;
     const [result] = await connection.query(
       `
-            SELECT id,
-            name,
-            manager,
-            category,
-            email,
-            opening_time,
-            closing_time,
-            length_booking,
-            description,
-            pricing_list,
-            bank_account,
-            allotment_available,
-            allotment,
-            profile_picture,
-            city,
-            zip_code,
-            province,
-            line1,
-            line2,
-            status
+            SELECT
+            
+*
             FROM business
             WHERE id=?
             `,

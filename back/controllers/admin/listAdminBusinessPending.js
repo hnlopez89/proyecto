@@ -18,10 +18,22 @@ async function listBusinessPending(req, res, next) {
     let orderBy;
     switch (order) {
       case "city":
-        orderBy = "city";
+        orderBy = "BD.city";
+        break;
+      case "province":
+        orderBy = "BD.province";
+        break;
+      case "category":
+        orderBy = "BD.category";
+        break;
+      case "name":
+        orderBy = "BD.name";
+        break;
+      case "id":
+        orderBy = "BD.id";
         break;
       default:
-        orderBy = "name";
+        orderBy = "BD.name";
     }
     // ejecuto la query en base a si existe queryString de search o no
     let queryResults;
@@ -38,7 +50,7 @@ async function listBusinessPending(req, res, next) {
       );
     } else */if (order && direction) {
       queryResults = await connection.query(
-        `SELECT BD.id, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
+        `SELECT BD.id, BD.status, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
         FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
         WHERE BD.status = 'PENDIENTE' 
         GROUP BY BD.id, BD.name  
@@ -46,9 +58,9 @@ async function listBusinessPending(req, res, next) {
       );
 
     }
-    else if (!direction) {
+    else {
       queryResults = await connection.query(
-        `SELECT BD.id, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
+        `SELECT BD.id, BD.status, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
         FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
         WHERE BD.status = 'PENDIENTE' 
         GROUP BY BD.id, BD.name `)

@@ -15,6 +15,7 @@ async function viewBusiness(req, res, next) {
             description,
             profile_picture,
             city,
+            length_booking,
             zip_code,
             province,
             line1,

@@ -30,9 +30,7 @@ async function checkBusinessAvailability(req, res, next) {
 
     if (checkInDay) {
       const checkInDayJS = new Date(checkInDay);
-      if (checkInDayJS < now) {
-        throw generateError("No puedes consultar disponibilidad en fechas pasadas", 403)
-      }
+
       const checkInDayDB = formatDateToDB(checkInDayJS);
 
       const [result] = await connection.query(`

@@ -1,17 +1,16 @@
 <template>
-  <div>
-    <input v-model="email" type="email" placeholder="Email de usuario" />
-    <br />
-    <input v-model="password" type="password" placeholder="Password de usuario" />
-    <button @click="login()">LogIn Usuario</button>
-    <button @click="logoutUser()">LogOut Usuario</button>
-    <p>¿Te olvidaste la contraseña?</p>
-    <button @click="validatingMail()">Recupera tu contraseña</button>
-    <input
-      v-model="emailToRecover"
-      type="email"
-      placeholder="Escribe tu email para mandarte las instrucciones"
-    />
+  <div id="page">
+    <button id="back" @click="goBack()">Vuelve a inicio</button>
+    <form>
+      <input v-model="email" type="email" placeholder="Email de usuario" />
+      <input v-model="password" type="password" placeholder="Password de usuario" />
+      <button id="login" @click="login()">LogIn Usuario</button>
+      <button @click="recover =! recover">¿Has olvidado tu contraseña?</button>
+      <div v-show="recover">
+        <input v-model="emailToRecover" type="email" placeholder="Escribe tu email " />
+        <button @click="validatingMail()">Recupera tu contraseña</button>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -28,22 +27,24 @@ export default {
       email: "",
       password: "",
       emailToRecover: "",
-      loggedUser: true,
       validation: false,
       errorMsg: false,
+      recover: "",
+      logged: "",
     };
   },
   methods: {
     setUsername() {
       this.name = getNameUser();
     },
-    login() {
+    async login() {
       if (this.email === "" || this.password === "") {
         alert("Te faltan datos.");
       } else {
-        loginUser(this.email, this.password);
+        await loginUser(this.email, this.password);
+        this.$router.push("/home");
+        this.$emit("login", true);
       }
-      this.$router.push("/home");
     },
     getLoginUser() {
       this.logged = isLoggedInUser();
@@ -56,10 +57,10 @@ export default {
         this.errorMsg = false;
         this.validation = true;
 
-        this.recover();
+        this.recoverPassword();
       }
     },
-    async recover() {
+    async recoverPassword() {
       if (this.validation === true) {
         try {
           const response = await axios.post(
@@ -74,13 +75,68 @@ export default {
         }
       }
     },
+    userWayFunction() {
+      if (isLoggedInUser() === true) {
+        this.userWay = isLoggedInUser();
+        this.logged = isLoggedInUser();
+      }
+    },
+    goBack() {
+      window.history.back();
+    },
   },
   created() {
     this.setUsername();
     this.getLoginUser();
+    this.userWayFunction();
   },
 };
 </script>
 
-<style>
+<style scoped>
+#page {
+  background-image: url(../../assets/bigBen.jpeg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  min-height: 100vh;
+}
+#back {
+  margin-top: 1rem;
+  border: 0.1rem solid black;
+  background-color: #ffffff;
+  margin-bottom: 3.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+button {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid #ffffff;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  text-align: center;
+}
+
+input {
+  border-radius: 5px;
+  border: 0;
+  padding: 0.2rem;
+  margin: 0.2rem;
+  width: 12rem;
+}
+
+#login {
+  margin-bottom: 3rem;
+}
 </style>

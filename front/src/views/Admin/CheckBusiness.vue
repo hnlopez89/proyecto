@@ -1,9 +1,31 @@
 <template>
-  <div>
+  <div id="checkBusiness">
     <button @click="goBack()">Go Back</button>
+    <div id="picture">
+      <img
+        v-show="!newProfilePicture && !profilePicture && category==='BAR'"
+        src="../../assets/BAR.jpg"
+      />
+      <img
+        v-show="!newProfilePicture && !profilePicture && category==='RESTAURANTE'"
+        src="../../assets/RESTAURANTE.jpg"
+      />
+      <img
+        v-show="!newProfilePicture && !profilePicture && category==='PELUQUERÍA'"
+        src="../../assets/PELUQUERIA.jpg"
+      />
+      <img
+        v-show="!newProfilePicture && !profilePicture && category==='TERRAZA'"
+        src="../../assets/TERRAZA.jpg"
+      />
+      <img v-show="!newProfilePicture && profilePicture" :src="profilePicture" />
+      <img v-if="newProfilePicture" :src="newProfilePicture" />
+      <label id="profile" for="profilePicture">Actualiza tu foto de perfil</label>
+
+      <input type="file" ref="profilePicture" @change="uploadImage" id="profilePicture" />
+    </div>
+
     <div>
-      <img :src="profilePicture" />
-      <input type="file" ref="profilePicture" @change="uploadImage" />
       <br />
       <input type="text" v-model="name" placeholder="Tu nombre" />
       <br />
@@ -74,8 +96,8 @@
       </form>
       <button @click="updateData()">Actualizar Cliente</button>
       <div>
-        <button @click="toggleState()">Cambia el estado del negocio</button>
-        <select v-show="state">
+        <button @click="state = !state">Cambia el estado del negocio</button>
+        <select v-model="newStatus" v-show="state">
           <option value="ACTIVO">Activo</option>
           <option value="SIN_VALIDAR">Sin Validar</option>
           <option value="PENDIENTE">Pendiente</option>
@@ -129,21 +151,26 @@ export default {
       day6: "",
       day7: "",
       state: false,
+      newProfilePicture: "",
+      newStatus: "",
     };
   },
   methods: {
     setImage(img) {
       return process.env.VUE_APP_STATIC + img;
     },
-    uploadImage() {
-      /*this.profilePicture = this.$refs.profilePicture.files[0];*/
-      console.log(this.event);
+    uploadImage(event) {
       this.profilePicture = event.target.files[0];
+      this.newProfilePicture = event.target.files[0];
+      this.createImage(event.target.files[0]);
     },
-    isActive() {
-      if (this.status === "PENDIENTE") {
-        this.unactive = true;
-      }
+    createImage(file) {
+      let newProfilePicture = new Image();
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        this.newProfilePicture = e.target.result;
+      };
+      reader.readAsDataURL(file);
     },
     toggleState() {
       this.state = true;
@@ -181,6 +208,10 @@ export default {
           response.data.businessData[0].allotment_available;
         this.status = response.data.businessData[0].status;
         this.profilePicture = response.data.businessData[0].profile_picture;
+        if (this.profilePicture !== null) {
+          this.profilePicture =
+            process.env.VUE_APP_STATIC + this.profilePicture;
+        }
         this.city = response.data.businessData[0].city;
         this.telephone = response.data.businessData[0].telephone;
         this.zipCode = response.data.businessData[0].zip_code;
@@ -194,12 +225,6 @@ export default {
         this.day5 = response.data.openingDays[4].day;
         this.day6 = response.data.openingDays[5].day;
         this.day7 = response.data.openingDays[6].day;
-        console.log(this.profilePicture);
-        if (this.profilePicture !== null) {
-          this.profilePicture =
-            process.env.VUE_APP_STATIC + this.profilePicture;
-          console.log(process.env.VUE_APP_STATIC);
-        }
       } catch (error) {
         console.log(error);
       }
@@ -222,9 +247,8 @@ export default {
       this.pricingList = dataBusiness.pricingList;
       this.allotment = dataBusiness.allotment;
       this.allotmentAvailable = dataBusiness.allotmentAvailable;
-      let profilePicture = response.data.businessData[0].profilePicture;
-      this.profilePicture = this.setImage(profilePicture);
-      console.log(profilePicture);
+      let picture = response.data.data[0].profile_picture;
+      this.profilePicture = this.setImage(picture);
       this.city = dataBusiness.city;
       this.zipCode = dataBusiness.zipCode;
       this.province = dataBusiness.province;
@@ -248,7 +272,10 @@ export default {
             getIdToken(token) +
             "/business-to-activate/" +
             this.$route.params.id +
-            "/activate"
+            "/activate",
+          {
+            newStatus: this.newStatus,
+          }
         );
       } catch (error) {
         console.log(error.response);
@@ -266,7 +293,7 @@ export default {
         userNewData.append("openingTime", this.openingTime);
         userNewData.append("closingTime", this.closingTime);
         userNewData.append("lengthBooking", this.lengthBooking);
-        userNewData.append("profilePicture", this.profilePicture);
+        userNewData.append("picture", this.profilePicture);
         userNewData.append("description", this.description);
         userNewData.append("bankAccount", this.bankAccount);
         userNewData.append("telephone", this.telephone);
@@ -306,5 +333,59 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#checkBusiness {
+  background: linear-gradient(
+      rgba(141, 153, 174, 0.8),
+      rgba(141, 153, 174, 0.5)
+    ),
+    url(../../assets/tempo.jpg);
+  min-height: 100vh;
+}
+
+img {
+  display: block;
+  height: 20rem;
+  margin: 3rem;
+  margin-bottom: 1rem;
+}
+
+#picture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+[type="file"] {
+  display: none;
+}
+
+#profile {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 0.1rem solid white;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  margin-bottom: 0.5rem;
+}
+
+.hide {
+  display: none;
+}
+
+button {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid white;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  text-align: center;
+  margin: 1rem;
+  padding: 0.65rem;
+  width: 12rem;
+}
 </style>

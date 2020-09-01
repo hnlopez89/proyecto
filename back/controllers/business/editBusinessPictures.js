@@ -28,46 +28,75 @@ async function editBusinessPictures(req, res, next) {
         WHERE id_business=?`,
       [id]
     );
-    if (pictures.length >= 3) {
-      throw generateError(
-        "No puedes subir más fotos, borra alguna primero",
-        406
-      );
-    }
 
     const images = [];
-
-    if (req.files && Object.keys(req.files).length > 0) {
-      for (const [imageName, imageData] of Object.entries(req.files).slice(
-        0,
-        3
-      )) {
-        try {
-          showDebug(imageName);
-
-          const processedImage = await processAndSaveImage(imageData);
-
-          images.push(processedImage);
-
-          await connection.query(
-            `INSERT INTO pictures (update_date, id_business, picture)
-            VALUES (UTC_TIMESTAMP, ?, ?)
-            `,
-            [id, processedImage]
-          );
-        } catch (error) {
-          throw generateError("No se pudo procesar la imagen", 400);
+    if (pictures.length > 2) {
+      if (req.files && Object.keys(req.files).length > 0) {
+        await connection.query(
+          `DELETE FROM pictures 
+          WHERE id_business = ?               
+              `,
+          [id]
+        );
+        for (const [imageName, imageData] of Object.entries(req.files).slice(
+          0,
+          3
+        )) {
+          try {
+            showDebug(imageName);
+            const processedImage = await processAndSaveImage(imageData);
+            images.push(processedImage);
+            await connection.query(
+              `INSERT INTO pictures (update_date, id_business, picture)
+              VALUES (UTC_TIMESTAMP, ?, ?)
+              `,
+              [id, processedImage]
+            );
+          } catch (error) {
+            throw generateError("No se pudo procesar la imagen", 400);
+          }
         }
       }
+      res.send({
+        status: "oki doki",
+        pictures
+      });
     }
-    res.send({
-      status: "oki doki",
-      pictures
-    });
+    else {
+      if (req.files && Object.keys(req.files).length > 0) {
+        for (const [imageName, imageData] of Object.entries(req.files).slice(
+          0,
+          3
+        )) {
+          try {
+            showDebug(imageName);
+
+            const processedImage = await processAndSaveImage(imageData);
+
+            images.push(processedImage);
+
+            await connection.query(
+              `INSERT INTO pictures (update_date, id_business, picture)
+              VALUES (UTC_TIMESTAMP, ?, ?)
+              `,
+              [id, processedImage]
+            );
+          } catch (error) {
+            throw generateError("No se pudo procesar la imagen", 400);
+          }
+        }
+      }
+      res.send({
+        status: "oki doki",
+        pictures
+      });
+    }
   } catch (error) {
     next(error);
   } finally {
     if (connection) connection.release();
   }
+
+
 }
 module.exports = editBusinessPictures;

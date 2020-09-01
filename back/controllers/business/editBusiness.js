@@ -79,30 +79,29 @@ async function editBusiness(req, res, next) {
           403
         );
       }
-      /*     const registrationCode = randomString(40);
-           const validationURL = `${process.env.PUBLIC_HOST}/users/validate/${registrationCode}`;
-     
-           try {
-             await sendMail({
-               email,
-               title:
-                 "Cambiaste tu email en la aplicación . Por favor valida de nuevo",
-               content: `Para validar tu nuevo email en la app haz click aquí: ${validationURL}`,
-             });
-           } catch (error) {
-             throw generateError("Error en el envío de mail", 500);
-     
-           }*/
-    }
+      const registrationCode = randomString(40);
+      const validationURL = `${process.env.PUBLIC_HOST}/users/validate/${registrationCode}`;
+
+      try {
+        await sendMail({
+          email,
+          title:
+            "Cambiaste tu email en la aplicación . Por favor valida de nuevo",
+          content: `Para validar tu nuevo email en la app haz click aquí: ${validationURL}`,
+        });
+      } catch (error) {
+        throw generateError("Error en el envío de mail", 500);
+
+      }
 
 
 
 
-    //  await editBusinessSchema.validateAsync(req.body);
-    await connection.query(
-      `UPDATE business
-       SET name =?,
-       manager = ?,
+      //  await editBusinessSchema.validateAsync(req.body);
+      await connection.query(
+        `UPDATE business
+             SET name =?,
+             manager = ?,
        category = ?,
        email = ?,
        opening_time = ?,
@@ -121,29 +120,75 @@ async function editBusiness(req, res, next) {
        update_date = UTC_TIMESTAMP,
        last_auth_update = UTC_TIMESTAMP
        WHERE id = ?;     
-      
-      `,
-      [
-        name,
-        manager,
-        category,
-        email,
-        openingTime,
-        closingTime,
-        lengthBooking,
-        description,
-        pricingList,
-        bankAccount,
-        allotment,
-        allotment,
-        savedFileName,
-        zipCode,
-        province,
-        line1,
-        line2,
-        id,
-      ]
-    );
+       
+       `,
+        [
+          name,
+          manager,
+          category,
+          email,
+          openingTime,
+          closingTime,
+          lengthBooking,
+          description,
+          pricingList,
+          bankAccount,
+          allotment,
+          allotment,
+          savedFileName,
+          zipCode,
+          province,
+          line1,
+          line2,
+          id,
+        ]
+      );
+    }
+
+    else {
+      await connection.query(
+        `UPDATE business
+             SET name =?,
+             manager = ?,
+       category = ?,
+       opening_time = ?,
+       closing_time = ?,
+       length_booking = ?,
+       description = ?,
+       pricing_list = ?,
+       bank_account = ?,
+       allotment_available = ?,
+       allotment = ?,
+       profile_picture = ?,
+       zip_code = ?,
+       province = ?,
+       line1 = ?,
+       line2 = ?,
+       update_date = UTC_TIMESTAMP
+       WHERE id = ?;     
+       
+       `,
+        [
+          name,
+          manager,
+          category,
+          openingTime,
+          closingTime,
+          lengthBooking,
+          description,
+          pricingList,
+          bankAccount,
+          allotment,
+          allotment,
+          savedFileName,
+          zipCode,
+          province,
+          line1,
+          line2,
+          id,
+        ]
+      );
+    }
     await connection.query(
       `DELETE FROM opening_days
       WHERE id_business= ?;
@@ -153,26 +198,26 @@ async function editBusiness(req, res, next) {
 
     await connection.query(
       `INSERT INTO opening_days ( id_business, day )
-      VALUES (?, ?),
-       (?, ?),
-      (?, ?),
-       (?, ?),
-       (?, ?);
-      `,
+        VALUES (?, ?),
+        (?, ?),
+        (?, ?),
+        (?, ?),
+        (?, ?);
+        `,
       [id, day1, id, day2, id, day3, id, day4, id, day5]
     );
 
     if (day6) {
       await connection.query(
         `INSERT INTO opening_days ( id_business, day )
-      VALUES (?, ?)`,
+            VALUES (?, ?)`,
         [id, day6]
       );
     }
     if (day7) {
       await connection.query(
         `INSERT INTO opening_days ( id_business, day )
-      VALUES (?, ?)`,
+              VALUES (?, ?)`,
         [id, day7]
       );
     }
@@ -180,6 +225,7 @@ async function editBusiness(req, res, next) {
     res.send({
       status: "usuario actualizado",
     });
+
   } catch (error) {
     next(error);
   } finally {

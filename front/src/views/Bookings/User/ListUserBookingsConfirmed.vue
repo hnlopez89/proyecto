@@ -1,7 +1,12 @@
 <template>
-  <div class="GetUser">
+  <div class="ListUserBookingsConfirmed">
     <button @click="goBack()">Go Back</button>
     <h1>MIS RESERVAS CONFIRMADAS</h1>
+    <div v-if="booking.length === 0">
+      <h3>Aún no tienes reservas</h3>
+      <p>Haz click justo debajo para realizar una reserva</p>
+      <router-link tag="button" to="/home">Inicio</router-link>
+    </div>
     <getlistbooking :booking="booking" />
   </div>
 </template>
@@ -46,3 +51,16 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.ListUserBookingsConfirmed {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+      rgba(141, 153, 174, 0.8),
+      rgba(141, 153, 174, 0.5)
+    ),
+    url(../../../assets/tempo.jpg);
+}
+</style>

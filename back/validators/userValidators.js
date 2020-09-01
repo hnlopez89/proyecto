@@ -30,6 +30,7 @@ const editUserSchema = Joi.object().keys({
     surname: Joi.string().min(3).max(100).required().error(generateError("Este apellido es incorrecto", 400)),
     email: Joi.string().email().required().error(generateError("La dirección de email debe ser válida", 400)),
     birthday: Joi.date().max(validAge).required(),
+    picture: Joi.any(),
     telephone: Joi.string().min(5).required().error(generateError("El número de telefóno no es válido", 400)),
     gender: Joi.string().valid('VARON', 'MUJER').required(),
     city: Joi.string().min(3).max(30).required().error(generateError("Esta ciudad es incorrecta", 400)),

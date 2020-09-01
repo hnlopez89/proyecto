@@ -9,9 +9,9 @@ async function newBusiness(req, res, next) {
 
     //comprobar que se reciben todos los datos necesarios
     await newBusinessSchema.validateAsync(req.body);
-    const { name, manager, category, city, email, password } = req.body;
+    const { name, manager, category, telephone, city, email, password } = req.body;
 
-    if (!name || !manager || !category || !city || !email || !password) {
+    if (!name || !manager || !category || !telephone || !city || !email || !password) {
       const error = new Error(
         "Faltan datos, es necesario indicar un email y una password"
       );
@@ -37,17 +37,17 @@ async function newBusiness(req, res, next) {
     // enviar un mensaje de confirmación de registro
 
     const registrationCode = randomString(40);
-    const validationURL = `${process.env.FRONTEND_URL}/activate?${registrationCode}`;
+    const validationURL = `${process.env.FRONTEND_URL}/activateBusiness?${registrationCode}`;
     //mirar a ver si se puede enviar un enlace con el nuevo id al admin para que revise.
     try {
       await sendMail({
         email: email,
         title: `Registro en Tempo: ¡Gracias ${name} por querer trabajar con nosotros!`,
         content: `¡Saludos ${manager}!Estás un poco más cerca de empezar a ofrecer tu disponibilidad
-                a través de nuestra plataforma. Haz click en el enlace que tienes justo
-                debajo para validar tu cuenta.
-                De este modo, podrás acceder a tu perfil y editar tu usuario y disponibilidad.
-              ${validationURL}`,
+        a través de nuestra plataforma. Haz click en el enlace que tienes justo
+        debajo para validar tu cuenta.
+        De este modo, podrás acceder a tu perfil y editar tu usuario y disponibilidad.
+        ${validationURL}`,
       });
     } catch (error) {
       const emailError = new Error("Error en el envío del email");
@@ -55,10 +55,10 @@ async function newBusiness(req, res, next) {
     }
     //meter el nuevo usuario en la base de datos
     await connection.query(
-      `INSERT INTO business(name, manager, category, city, email, password, creating_date, update_date, last_auth_update, registration_code)
-          VALUES(?, ?, ?, ?, ?, SHA2(?,512), UTC_TIMESTAMP, UTC_TIMESTAMP, UTC_TIMESTAMP, ?)
+      `INSERT INTO business(name, manager, category, telephone, city, email, password, creating_date, update_date, last_auth_update, registration_code)
+          VALUES(?, ?, ?, ?, ?, ?, SHA2(?,512), UTC_TIMESTAMP, UTC_TIMESTAMP, UTC_TIMESTAMP, ?)
           `,
-      [name, manager, category, city, email, password, registrationCode]
+      [name, manager, category, telephone, city, email, password, registrationCode]
     );
     res.send({
       status: "ok",

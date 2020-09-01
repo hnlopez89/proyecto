@@ -8,10 +8,10 @@ export async function loginUser(email, password) {
         email: email,
         password: password,
     })
-    console.log(response);
     setAuthTokenUser(response.data.data.token)
     setIsAdminUser(response.data.data.dbUser[0].role)
     setNameUser(response.data.data.dbUser[0].name)
+
 
 }
 

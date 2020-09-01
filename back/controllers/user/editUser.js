@@ -29,8 +29,6 @@ async function editUser(req, res, next) {
 
     // comprobar que el id de usuario que queremos cambiar es
     // el mismo que firma la petición
-    console.log(id, req.auth.id);
-
     if (req.auth.id !== Number(id)) {
       const error = new Error("No tienes permisos para editar este usuario");
       error.httpStatus = 403;
@@ -127,7 +125,7 @@ async function editUser(req, res, next) {
     } else {
       await connection.query(
         `UPDATE users
-          SET name = ?, surname = ?, email = ?, picture=?, gender=?, birthday=?, age=?, city=?, update_date=UTC_TIMESTAMP, last_auth_update=UTC_TIMESTAMP 
+          SET name = ?, surname = ?, email = ?, picture=?, gender=?, birthday=?, age=?, city=?, update_date=UTC_TIMESTAMP
           WHERE id=?
                 `,
         [name, surname, email, savedFileName, gender, birthdayDateDB, age, city, id]

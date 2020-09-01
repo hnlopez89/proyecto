@@ -1,19 +1,30 @@
 <template>
-  <div>
+  <div id="page">
     <button @click="goBack()">Go Back</button>
     <!--<vue-headful title=" Añade un cliente | Formulario " /> -->
 
-    <h1>Formulario para añadir nuevo Negocio:</h1>
-
-    <p v-show="errorMsg">*Tienes campos vacíos</p>
-    <input type="text" v-model="name" placeholder="Nombre" />
-    <input type="text" v-model="manager" placeholder="Encargado" />
-    <input type="text" v-model="category" placeholder="Categoría" />
-    <input type="text" v-model="city" placeholder="Ciudad" />
-    <input type="text" v-model="email" placeholder="Dirección de email" />
-    <input type="password" v-model="password" placeholder="Contraseña" />
-    <button @click="validatingData()">Crear Usuario</button>
-    <button @click="goBack()">Go Back</button>
+    <h1>Introduce tus datos:</h1>
+    <p v-if="errorMsg">*Tienes campos vacíos</p>
+    <form>
+      <p>
+        <label>Categoría</label>
+        <select v-model="category">
+          <option value="TERRAZA">Terraza</option>
+          <option value="PELUQUERIA">Peluquería</option>
+          <option value="BAR">Bar</option>
+          <option value="RESTAURANTE">Restaurante</option>
+        </select>
+      </p>
+      <input type="text" v-model="name" placeholder="Nombre del establecimiento" />
+      <input type="text" v-model="manager" placeholder="Encargad@" />
+      <input type="text" v-model="city" placeholder="Ciudad" />
+      <input type="text" v-model="telephone" placeholder="Número de telefóno" />
+      <input type="text" v-model="email" placeholder="Dirección de email" />
+      <input type="password" v-model="password" placeholder="Contraseña" />
+    </form>
+    <p>
+      <button @click="validatingData()">Crear Usuario</button>
+    </p>
   </div>
 </template>
 
@@ -26,6 +37,7 @@ export default {
       name: "",
       manager: "",
       category: "",
+      telephone: "",
       city: "",
       email: "",
       password: "",
@@ -43,6 +55,7 @@ export default {
         this.name === "" ||
         this.manager === "" ||
         this.category === "" ||
+        this.telephone === "" ||
         this.city === "" ||
         this.email === "" ||
         this.password === ""
@@ -63,6 +76,7 @@ export default {
             manager: this.manager,
             category: this.category,
             city: this.city,
+            telephone: this.telephone,
             email: this.email,
             password: this.password,
           });
@@ -85,5 +99,62 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#page {
+  background-image: url(../../assets/workWithUs.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  min-height: 100vh;
+  padding-top: 1rem;
+}
+
+::placeholder {
+  color: rgba(230, 230, 230, 0.7);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input {
+  border-radius: 5px;
+  border: 0;
+  padding: 0.2rem;
+  margin: 0.2rem;
+  width: 12rem;
+  background-color: gray;
+  color: white;
+}
+select {
+  border-radius: 1rem;
+  border: 0;
+  margin: 0;
+  background-color: gray;
+  color: white;
+}
+
+label {
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+}
+p {
+  margin: 0.2rem;
+}
+
+button {
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid #ffffff;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  text-align: center;
+}
 </style>

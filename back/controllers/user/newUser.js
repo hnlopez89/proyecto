@@ -8,7 +8,7 @@ async function newUser(req, res, next) {
   try {
     connection = await getConnection();
     await newUserSchema.validateAsync(req.body);
-    const { name, surname, email, password, gender, birthday, city } = req.body;
+    const { name, surname, email, telephone, password, gender, birthday, city } = req.body;
 
     // comprobar que se reciben todos los datos necesarios
     if (!email || !password || !name || !surname || !password || !gender || !birthday || !city) {
@@ -46,6 +46,7 @@ async function newUser(req, res, next) {
 
     // enviar un mensaje de confirmación de registro al email indicador
     const registrationCode = randomString(40);
+    console.log(process.env.FRONTEND_URL);
     //`${process.env.PUBLIC_HOST}/user/validate/${registrationCode}`
     const validationURL = `${process.env.FRONTEND_URL}/activate?${registrationCode}`;
 
@@ -63,10 +64,10 @@ async function newUser(req, res, next) {
 
     // meter el nuevo usuario en la base de datos sin activar
     await connection.query(
-      `INSERT INTO users(name, surname, email, password, gender, birthday, age, city, creating_date, update_date, last_auth_update, registration_code )
-      VALUES(?, ?, ?, SHA2(?,512), ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
+      `INSERT INTO users(name, surname, email, password, telephone, gender, birthday, age, city, creating_date, update_date, last_auth_update, registration_code )
+      VALUES(?, ?, ?, SHA2(?,512), ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
             `,
-      [name, surname, email, password, gender, birthdayDateDB, age, city, registrationCode]
+      [name, surname, email, password, telephone, gender, birthdayDateDB, age, city, registrationCode]
     );
     res.send({
       status: "ok",

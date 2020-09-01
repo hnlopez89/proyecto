@@ -16,10 +16,10 @@ async function editUserBooking(req, res, next) {
     const { idUser, idBooking } = req.params;
     //obtener id de usuario y del negocio de la reserva
     //mediante la query en la base de datos
-    await editUserBookingSchema.validateAsync(req.body);
+    //await editUserBookingSchema.validateAsync(req.body);
 
     const [idBookingData] = await connection.query(
-      `SELECT id_user, id_business
+      `SELECT id_user, id_business, status
       FROM booking
       WHERE id=?`,
       [idBooking]
@@ -34,11 +34,11 @@ async function editUserBooking(req, res, next) {
       );
     }
     //obtener todos los datos necesarios para hacer nueva reserva
-    const { checkInTime, units } = req.body;
+    const { date, hours, minutes, units } = req.body;
     const idBusinessBooking = idBookingData[0].id_business;
 
     //prohibir nueva reserva sin los datos necesarios
-    if (!idBusinessBooking || !checkInTime || !units || !idUser) {
+    if (!idBusinessBooking || !date || !hours || !minutes || !units || !idUser) {
       throw generateError("Faltan datos para modificar la reserva", 400);
     }
 
@@ -51,8 +51,21 @@ async function editUserBooking(req, res, next) {
     );
     const lengthBooking = lengthBookingData[0].length_booking;
 
-    //establecer fechas de check in y out de la reserva en base a la duración de la misma
-    const dateCheckInTime = new Date(checkInTime);
+
+    //Si la reserva no empieza a la hora en punto o y media, la reserva no es válida
+    const dateCheckInTime = new Date(date);
+    //const checkInTimeUnix = new Date(checkInTime);
+    dateCheckInTime.setHours(hours);
+    dateCheckInTime.setMinutes(minutes);
+    const minutesCheckInTime = dateCheckInTime.getMinutes();
+    console.log(minutesCheckInTime);
+    if (minutesCheckInTime !== 0 && minutesCheckInTime !== 30) {
+      throw generateError(
+        "La hora de inicio de la reserva no es correcta",
+        400
+      );
+    }
+    //establecer fechas de check out de la reserva en base a la duración de la misma
     const dateCheckOutTime = addMinutes(dateCheckInTime, lengthBooking);
 
     //pasar fechas a formato SQL
@@ -104,15 +117,6 @@ async function editUserBooking(req, res, next) {
       throw generateError("El negocio no está abierto a esa hora", 401);
     }
 
-    //Si la reserva no empieza a la hora en punto o y media, la reserva no es válida
-    const minutesCheckInTime = dateCheckInTime.getMinutes();
-    if (minutesCheckInTime !== 0 && minutesCheckInTime !== 30) {
-      throw generateError(
-        "La hora de inicio de la reserva no es correcta",
-        400
-      );
-    }
-
     //Obtener ocupación de las plazas necesarias
     //para una determinada franja horaria
     const [ocupationData] = await connection.query(
@@ -133,29 +137,55 @@ async function editUserBooking(req, res, next) {
     );
     const allotmentAvailable = allotmentAvailableData[0].allotment_available;
 
+
+    const status = idBookingData[0].status;
     //introducir reservar salvo si no hay disponibilidad
     if (ocupation < allotmentAvailable || ocupation === null) {
-      await connection.query(
-        `
-            UPDATE booking
-            SET check_in_time = ?,
-            check_in_day = ?,
-              check_out_time = ?,
-              check_out_day = ?,
-              units = ?,
-              update_date = UTC_TIMESTAMP,
-              status = 'MODIFICADO'
-              WHERE id = ?;
-                `,
-        [
-          checkInTimeToDB,
-          checkInDayToDB,
-          checkOutTimeToDB,
-          checkOutDayToDB,
-          units,
-          idBooking,
-        ]
-      );
+      if (status === 'PENDIENTE_DE_PAGO') {
+        await connection.query(
+          `
+              UPDATE booking
+              SET check_in_time = ?,
+              check_in_day = ?,
+                check_out_time = ?,
+                check_out_day = ?,
+                units = ?,
+                update_date = UTC_TIMESTAMP
+                WHERE id = ?;
+                  `,
+          [
+            checkInTimeToDB,
+            checkInDayToDB,
+            checkOutTimeToDB,
+            checkOutDayToDB,
+            units,
+            idBooking,
+          ]
+        );
+      }
+      else {
+        await connection.query(
+          `
+              UPDATE booking
+              SET check_in_time = ?,
+              check_in_day = ?,
+                check_out_time = ?,
+                check_out_day = ?,
+                units = ?,
+                update_date = UTC_TIMESTAMP,
+                status = 'MODIFICADO'
+                WHERE id = ?;
+                  `,
+          [
+            checkInTimeToDB,
+            checkInDayToDB,
+            checkOutTimeToDB,
+            checkOutDayToDB,
+            units,
+            idBooking,
+          ]
+        );
+      }
     } else if (allotmentAvailable === null) {
       throw generateError("No quedan plazas", 400);
     } else {

@@ -9,7 +9,7 @@ async function editUserPassword(req, res, next) {
     const { id } = req.params;
     const { oldPassword, newPassword } = req.body;
 
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id) && req.auth.role !== "admin") {
       throw generateError("No puedes cambiar la password de otro usuario", 403);
     }
 
@@ -20,7 +20,6 @@ async function editUserPassword(req, res, next) {
             `,
       [id, oldPassword]
     );
-
     if (currentUser.length === 0) {
       throw generateError("Tu password antigua no es correcta", 401);
     }

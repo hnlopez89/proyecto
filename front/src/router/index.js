@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import { isLoggedInBusiness } from '../utils'
-import { isLoggedInUser } from '../utils'
-import { checkIsAdmin } from '../utils'
+import { isLoggedInUser, isLoggedInAdmin } from '../utils'
+import { checkIsAdminUser } from '../utils'
 
 Vue.use(VueRouter)
 
@@ -33,14 +33,14 @@ const routes = [
       allowAnon: true,
     }
   },
-  {
-    path: '/help',
-    name: 'Help',
-    component: () => import('../views/Help.vue'),
-    meta: {
-      allowAnon: true,
-    }
-  },
+  /*  {
+      path: '/help',
+      name: 'Help',
+      component: () => import('../views/Help.vue'),
+      meta: {
+        allowAnon: true,
+      }
+    },*/
   {
     path: '/createbusiness',
     name: 'CreateBusiness',
@@ -114,15 +114,13 @@ const routes = [
     }
   },
   {
-    path: '/business/reset-password',
+    path: '/reset-password/business',
     name: 'ResetBusinessPassword',
     component: () => import('../views/Business/ResetBusinessPassword.vue'),
     meta: {
       allowAnon: true,
     }
   },
-
-
   ///////////////////////////////RUTAS PRIVADAS - USUARIO ///////////////////////////
   {
     path: '/myprofile',
@@ -136,14 +134,6 @@ const routes = [
     path: '/edituser',
     name: 'EditUser',
     component: () => import('../views/User/EditUser.vue'),
-    meta: {
-      allowAnon: false,
-    }
-  },
-  {
-    path: '/edituserpassword',
-    name: 'EditUserPassword',
-    component: () => import('../views/User/EditUserPassword.vue'),
     meta: {
       allowAnon: false,
     }
@@ -180,8 +170,6 @@ const routes = [
       allowAnon: false,
     }
   },
-
-
   ////////////////////////////////////RUTAS PRIVADAS - BUSINESS //////////////////////
   {
     path: '/mybusiness',
@@ -200,14 +188,6 @@ const routes = [
     }
   },
   {
-    path: '/editbusinesspassword',
-    name: 'EditBusinessPassword',
-    component: () => import('../views/Business/EditBusinessPassword.vue'),
-    meta: {
-      allowAnon: false,
-    }
-  },
-  {
     path: '/editbusiness/pictures',
     name: 'EditPicturesBusiness',
     component: () => import('../views/Business/EditPicturesBusiness.vue'),
@@ -216,7 +196,7 @@ const routes = [
     }
   },
   {
-    path: '/business/mybookingtoday',
+    path: '/mybusiness/mybookingtoday',
     name: 'BookingBusinessToday',
     component: () => import('../views/Bookings/Business/ListBusinessBookingsToday.vue'),
     meta: {
@@ -224,7 +204,7 @@ const routes = [
     }
   },
   {
-    path: '/business/mybookingtomorrow',
+    path: '/mybusiness/mybookingtomorrow',
     name: 'BookingBusinessTomorrow',
     component: () => import('../views/Bookings/Business/ListBusinessBookingsTomorrow.vue'),
     meta: {
@@ -232,7 +212,7 @@ const routes = [
     }
   },
   {
-    path: '/business/mybookings',
+    path: '/mybusiness/mybookings',
     name: 'BookingsBusiness',
     component: () => import('../views/Bookings/Business/ListBusinessBookings.vue'),
     meta: {
@@ -249,22 +229,31 @@ const routes = [
     }
   },
   {
-    path: '/business/availability',
+    path: '/business_availability',
     name: 'CheckAvailability',
     component: () => import('../views/Business/CheckAvailability.vue'),
     meta: {
       allowAnon: false,
     }
   },
-
   ////////////////////////////////// ADMIN /////////////////////////////
-
   {
     path: '/check_business/:id',
     name: 'CheckBusiness',
     component: () => import('../views/Admin/CheckBusiness.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -273,6 +262,17 @@ const routes = [
     component: () => import('../views/Admin/ListBusiness.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -281,6 +281,17 @@ const routes = [
     component: () => import('../views/Admin/ListBusinessPending.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -289,6 +300,17 @@ const routes = [
     component: () => import('../views/Admin/ListBusinessBadReviews.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -297,14 +319,36 @@ const routes = [
     component: () => import('../views/Admin/ListUsers.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
     path: '/check_user/:id',
     name: 'CheckUser',
-    component: () => import('../views/Admin/EditUser.vue'),
+    component: () => import('../views/Admin/CheckUser.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -313,6 +357,17 @@ const routes = [
     component: () => import('../views/Admin/ListBookings.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
   {
@@ -321,6 +376,17 @@ const routes = [
     component: () => import('../views/Admin/ListBookingsPending.vue'),
     meta: {
       allowAnon: false,
+      onlyAdmin: true
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
+        next({
+          path: '/home',
+          query: { redirect: to.fullPath }
+        })
+      } else {
+        next()
+      }
     }
   },
 

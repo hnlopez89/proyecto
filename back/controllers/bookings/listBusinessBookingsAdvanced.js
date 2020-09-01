@@ -17,14 +17,17 @@ async function listBusinessBookingsAdvanced(req, res, next) {
     //CONSTRUIR INICIO DE QUERY
     let query = `SELECT  B.id, U.name, U.surname, B.id_user,B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, B.request, B.creating_date, B.update_date, B.rating, B.rating_description
     FROM booking B
-    INNER JOIN users U on B.id_user = U.id
-    INNER JOIN business ON B.id_business = business.id
-    WHERE business.id = '${idBusiness}'`;
+    LEFT OUTER JOIN  users U on B.id_user = U.id
+    LEFT OUTER JOIN business ON B.id_business = business.id
+    WHERE B.id_business = '${idBusiness}'`;
 
     //ESTABLECER ORDEN Y SENTIDO DE BÚSQUEDA
     const orderDirection = (direction && direction.toLowerCase()) === "desc" ? "DESC" : "ASC";
     let orderBy;
     switch (order) {
+      case "id":
+        orderBy = "B.id";
+        break;
       case "name":
         orderBy = "U.name";
         break;
@@ -115,9 +118,9 @@ async function listBusinessBookingsAdvanced(req, res, next) {
     }
     //EJECUTAR BÚSQUEDA POR DEFECTO
     else {
-      query = `${query} AND B.status = 'CONFIRMADO' OR B.status = 'MODIFICADO' OR B.status = 'PENDIENTE_DE_PAGO' ORDER BY ${orderBy} ${orderDirection}`;
+      query = `${query} ORDER BY ${orderBy} ${orderDirection}`;
       const [result] = await connection.query(query);
-
+      console.log(query);
       //RESPUESTA A LA PETICIÓN
       res.send({
         status: "ok",
