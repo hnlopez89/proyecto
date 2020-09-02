@@ -222,10 +222,21 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 0;
+  padding-bottom: 1rem;
+}
+
+li > button {
+  margin: 0.5rem;
 }
 
 li {
   list-style: none;
+}
+
+h1 {
+  margin-top: 0;
+  padding-top: 1rem;
 }
 
 button {

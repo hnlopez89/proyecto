@@ -168,6 +168,7 @@ body {
   top: 0;
   height: 3rem;
   background-color: white;
+  margin-bottom: 1rem;
 }
 
 #userway {

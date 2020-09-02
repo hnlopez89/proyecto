@@ -76,9 +76,10 @@
           </form>
         </div>
 
-        <form>
-          <label>Lista de precios</label>
+        <!--         <label>Lista de precios</label>
           <input type="text" v-model="pricingList" placeholder="Tu lista de precios" />
+        -->
+        <form>
           <label>Descripción</label>
           <textarea
             rows="10"
@@ -299,7 +300,7 @@
       </div>
       <button @click="updateData()">Actualizar Cliente</button>
       <button class="deploy" @click="explanation = !explanation">Darte de baja</button>
-      <form v-show="explanation">
+      <form v-show="explanation" id="quit">
         <textarea v-model="reason" type="text" placeholder="¿Porqué quieres darte de baja?" />
         <button @click="resign()">Confirmar darte de baja</button>
       </form>
@@ -310,7 +311,7 @@
 import axios from "axios";
 import { format } from "date-fns";
 import { getIdToken } from "../../utils";
-
+import Swal from "sweetalert2";
 export default {
   name: "EditBusiness",
   data() {
@@ -324,7 +325,7 @@ export default {
       closingTime: "",
       lengthBooking: "",
       description: "",
-      pricingList: "",
+      //   pricingList: "",
       bankAccount: "",
       telephone: "",
       allotmentAvailable: "",
@@ -390,7 +391,7 @@ export default {
         this.closingTime = response.data.data[0].closing_time;
         this.lengthBooking = response.data.data[0].length_booking;
         this.description = response.data.data[0].description;
-        this.pricingList = response.data.data[0].pricing_list;
+        //      this.pricingList = response.data.data[0].pricing_list;
         this.bankAccount = response.data.data[0].bank_account;
         this.allotment = response.data.data[0].allotment;
         this.allotmentAvailable = response.data.data[0].allotment_available;
@@ -431,7 +432,7 @@ export default {
       this.lengthBooking = dataBusiness.lengthBooking;
       this.description = dataBusiness.description;
       this.bankAccount = dataBusiness.bankAccount;
-      this.pricingList = dataBusiness.pricingList;
+      //      this.pricingList = dataBusiness.pricingList;
       this.allotment = dataBusiness.allotment;
       this.allotmentAvailable = dataBusiness.allotmentAvailable;
       let picture = response.data.data[0].profile_picture;
@@ -466,7 +467,7 @@ export default {
         userNewData.append("description", this.description);
         userNewData.append("bankAccount", this.bankAccount);
         userNewData.append("telephone", this.telephone);
-        userNewData.append("pricingList", this.pricingList);
+        //     userNewData.append("pricingList", this.pricingList);
         userNewData.append("allotment", this.allotmentAvailable);
         userNewData.append("allotmentAvailable", this.allotmentAvailable);
         userNewData.append("province", this.province);
@@ -489,28 +490,61 @@ export default {
             header: { "Content-type": "multipart/form-data" },
           }
         );
-        console.log(response);
+        Swal.fire({
+          icon: "success",
+          title:
+            "Tu usuario se ha dado de baja correctamente. Te echaremos de menos.",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log(error.response.data);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
       //location.reload;
     },
     async resign() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
-          {
-            resignReason: this.reason,
-          }
-        );
-        axios.defaults.headers.common["Authorization"] = "";
-        localStorage.removeItem("AUTH_TOKEN_KEY");
-        localStorage.removeItem("ROLE");
-        localStorage.removeItem("NAME");
-      } catch (error) {
-        console.log(error.response.data);
+      const result = await Swal.fire({
+        title: "¿Estás seguro de querer darte de baja?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, ¡estoy seguro!",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
+            {
+              resignReason: this.reason,
+            }
+          );
+          axios.defaults.headers.common["Authorization"] = "";
+          localStorage.removeItem("AUTH_TOKEN_KEY");
+          localStorage.removeItem("ROLE");
+          localStorage.removeItem("NAME");
+          Swal.fire({
+            icon: "success",
+            title: "Tu usuario ha sido actualizado correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Baja cancelada",
+          icon: "error",
+        });
       }
     },
     async updatePassword() {
@@ -524,9 +558,17 @@ export default {
             newPassword: this.newPassword,
           }
         );
-        console.log(response);
+        Swal.fire({
+          icon: "success",
+          title: "Tu contraseña ha sido actualizado correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data);
+        console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
   },
@@ -614,7 +656,6 @@ form > input {
 }
 
 .deploy {
-  display: inline-block;
   padding: 0.3rem 1rem;
   border: 0.1rem solid black;
   border-radius: 0.12em;
@@ -625,6 +666,20 @@ form > input {
   text-align: center;
   margin-bottom: 0.5rem;
   width: 12rem;
+}
+
+#quit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 1rem;
+  height: auto;
+}
+#quit > textarea {
+  width: 15rem;
+  height: 10rem;
 }
 
 button {

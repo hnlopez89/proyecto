@@ -6,6 +6,16 @@ import VueSnap from 'vue-snap'
 import 'vue-snap/dist/vue-snap.css'
 import VueSlideoutPanel from 'vue2-slideout-panel';
 
+const Swal = require('sweetalert2')
+
+const options = {
+  confirmButtonColor: '#41b882',
+  cancelButtonColor: '#ff7674',
+};
+
+
+
+
 Vue.use(VueSlideoutPanel);
 Vue.use(VueSnap)
 

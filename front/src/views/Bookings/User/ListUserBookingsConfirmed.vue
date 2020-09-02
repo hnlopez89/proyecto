@@ -55,12 +55,25 @@ export default {
 <style scoped>
 .ListUserBookingsConfirmed {
   width: 100%;
-  height: 100%;
   min-height: 100vh;
   background: linear-gradient(
       rgba(141, 153, 174, 0.8),
       rgba(141, 153, 174, 0.5)
     ),
     url(../../../assets/tempo.jpg);
+}
+button {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 0.1rem solid white;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  text-align: center;
+  margin: 1rem;
+  padding: 0.65rem;
+  width: 12rem;
 }
 </style>

@@ -24,6 +24,7 @@
     "vue-router": "^3.2.0",
     "vue-snap": "0.1.0-beta.9",
     "vue-star-rating": "^1.6.1",
+    "vue-sweetalert2": "^3.0.8",
     "yarn": "^1.22.5"
   },
   "devDependencies": {

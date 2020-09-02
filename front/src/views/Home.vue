@@ -585,7 +585,9 @@ export default {
   border-radius: 1rem;
   border: 0.1rem coral solid;
 }
-
+h2 > b {
+  color: coral;
+}
 #responsive > h1 {
   color: black;
 }
@@ -611,11 +613,6 @@ section {
   flex-direction: row;
   flex-wrap: wrap;
 }
-
-/*
-li.hooper-slide.is-active.is-current img {
-  height: 5%;
-}*/
 
 #cover {
   background-color: coral;
@@ -808,7 +805,7 @@ button {
     border-radius: 1rem;
     width: 12rem;
     background-color: rgba(255, 127, 80, 0.9);
-    height: 15.5rem;
+    height: 16.5rem;
   }
   #byName {
     padding: 1rem;
@@ -816,7 +813,7 @@ button {
     border-radius: 1rem;
     width: 12rem;
     background-color: rgba(255, 127, 80, 0.8);
-    height: 15.5rem;
+    height: 16.5rem;
   }
 
   #ordered {
@@ -859,6 +856,8 @@ button {
   #top > li img {
     width: 70%;
     height: 15rem;
+    border-radius: 1rem;
+    border: coral solid 0.1rem;
     background-size: stretch;
     background-position: center;
     background-repeat: no-repeat;

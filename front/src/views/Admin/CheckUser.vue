@@ -3,7 +3,7 @@
     <button @click="goBack()">Go Back</button>
 
     <h1>EDITAR MI USUARIO</h1>
-    <form>
+    <div class="main">
       <div id="actionPicture">
         <img v-if="!newPicture && !picture" src="../../assets/default-user-avatar.jpg" height="200" />
         <img v-else-if="!newPicture" :src="setImage(picture)" />
@@ -11,8 +11,8 @@
         <label id="profile" for="profilePicture">Actualiza tu foto de perfil</label>
         <input type="file" ref="picture" @change="uploadImage" id="profilePicture" />
       </div>
-      <fieldset>
-        <legend>Tus datos:</legend>
+      <div id="data">
+        <h2>ID:{{id}}</h2>
         <label>Nombre</label>
         <input type="text" v-model="name" placeholder="Tu nombre" />
         <label>Apellidos</label>
@@ -33,35 +33,51 @@
         <label>Telefono</label>
 
         <input type="text" v-model="telephone" placeholder="Tu número de telefóno" />
-        <label>Foto</label>
 
-        <button @click="updateData()">Actualizar tu usuario</button>
-        <button class="deploy" @click="changePassword =! changePassword">Cambiar tu contraseña</button>
+        <button @click.prevent="updateData()">Actualizar tu usuario</button>
+        <button
+          class="deploy"
+          @click.prevent="changePassword =! changePassword"
+        >Cambiar tu contraseña</button>
 
         <div class="edition" v-show="changePassword">
           <input type="password" v-model="oldPassword" placeholder="Tu contraseña actual" />
           <input type="password" v-model="newPassword" placeholder="Tu nueva contraseña" />
-          <button @click="updatePassword()">Actualizar tu contraseña</button>
+          <button @click.prevent="updatePassword()">Actualizar tu contraseña</button>
         </div>
-        <button class="deploy" @click="isResign =! isResign">Darte de baja</button>
+        <p class="baja" v-if="resignReason">Motivo de baja:{{resignReason}}</p>
+        <button class="deploy" @click="isResign =! isResign">Activación de usuario</button>
         <div class="edition" v-show="isResign">
-          <form>
+          <div>
             <input v-model="resignReason" type="text" placeholder="¿Porqué quieres darte de baja?" />
             <legend>Cambia el estado del usuario</legend>
-            <select v-model="status">
-              <option value="false">Desactivado</option>
-              <option value="true">Activado</option>
+            <select v-model="active">
+              <option value="0">Desactivado</option>
+              <option value="1">Activado</option>
             </select>
-            <button @click="resign()">Confirmar darte de baja</button>
-          </form>
+            <button @click.prevent="resign">Confirmar darte de baja</button>
+          </div>
         </div>
-      </fieldset>
-    </form>
+        <button class="deploy" @click="isAdmin =! isAdmin">Cambiar rol de usuario</button>
+        <div class="edition" v-show="isAdmin">
+          <div>
+            <select v-model="role">
+              <option value="customer">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+            <button @click.prevent="addAdmin">Confirmar rol de usuario</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
+
 import { getIdToken } from "../../utils";
+import { format } from "date-fns";
 
 export default {
   name: "EditUserAsAdmin",
@@ -82,8 +98,12 @@ export default {
       changePassword: false,
       oldPassword: "",
       newPassword: "",
-      status: "",
+      active: "",
       newPicture: "",
+      resigned: "",
+      isAdmin: "",
+      role: "",
+      id: "",
     };
   },
 
@@ -121,12 +141,16 @@ export default {
         this.surname = response.data.data[0].surname;
         this.email = response.data.data[0].email;
         this.gender = response.data.data[0].gender;
-        this.birthday = this.formatDate(response.data.data[0].birthday);
         this.telephone = response.data.data[0].telephone;
         this.city = response.data.data[0].city;
         this.picture = response.data.data[0].picture;
+        this.birthday = this.formatDate(response.data.data[0].birthday);
+        this.resignReason = response.data.data[0].resign_reason;
+        this.role = response.data.data[0].role;
+        this.active = response.data.data[0].active;
+        this.id = response.data.data[0].id;
       } catch (error) {
-        console.log(error.response.data);
+        console.log(error.response);
       }
     },
     showUser(dataUser) {
@@ -138,6 +162,9 @@ export default {
       this.city = dataUser.city;
       this.picture = dataUser.picture;
       this.telephone = dataUser.telephone;
+      this.role = dataUser.role;
+      this.resignReason = dataUser.resignReason;
+      this.active = dataUser.active;
     },
     async updateData() {
       try {
@@ -157,44 +184,137 @@ export default {
             header: { "Content-type": "multipart/form-data" },
           }
         );
-        console.log(response);
+        Swal.fire({
+          icon: "success",
+          title: "Cambio de activación actualizado correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
         console.log(error.response.data);
       }
     },
     async updatePassword() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/user/" + getIdToken(token) + "/password",
-          {
-            oldPassword: this.oldPassword,
-            newPassword: this.newPassword,
-          }
-        );
-        console.log(response);
-      } catch (error) {
-        console.log(error.response.data);
+      const result = await Swal.fire({
+        title: "Estas seguro de actualizar la contraseña",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, estoy seguro!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/user/" + this.id + "/password",
+            {
+              oldPassword: this.oldPassword,
+              newPassword: this.newPassword,
+            }
+          );
+          Swal.fire({
+            icon: "success",
+            title: "Contraseña actualizada correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data.message);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Actualización cancelada",
+          icon: "error",
+        });
       }
     },
     async resign() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/admin/" +
-            getIdToken(token) +
-            "/users/" +
-            this.$route.params.id +
-            "/activate_admin",
-          {
-            status: this.status,
-            resignReason: this.resignReason,
-          }
-        );
-      } catch (error) {
-        console.log(error.response.data);
+      const result = await Swal.fire({
+        title: "Estas seguro de activar/desactivar el usuario",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, lo estoy",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/admin/" +
+              getIdToken(token) +
+              "/users/" +
+              this.$route.params.id +
+              "/activate_admin",
+            {
+              active: this.active,
+              resignReason: this.resignReason,
+            }
+          );
+          Swal.fire({
+            icon: "success",
+            title: "Cambio de activación actualizado correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Activación cancelada",
+          icon: "error",
+        });
+      }
+    },
+    async addAdmin() {
+      const result = await Swal.fire({
+        title: "Estas seguro de cambiar el rol del usuario",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, lo estoy",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+
+          const response = await axios.put(
+            "http://localhost:3000/admin/" +
+              getIdToken(token) +
+              "/users/" +
+              this.$route.params.id +
+              "/activate_admin",
+            {
+              role: this.role,
+            }
+          );
+          Swal.fire({
+            icon: "success",
+            title: "Rol actualizado correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Activación cancelada",
+          icon: "error",
+        });
       }
     },
   },
@@ -213,13 +333,18 @@ export default {
     url(../../assets/tempo.jpg);
   min-height: 100vh;
 }
-form {
+#data {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 [type="file"] {
   display: none;
+}
+.baja {
+  background-color: white;
+  color: red;
+  padding: 0.3rem;
 }
 
 img {
@@ -228,7 +353,7 @@ img {
   border-radius: 10rem;
   border: solid 0.3rem grey;
   width: 18rem;
-  margin: 0 1rem;
+  margin: auto;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -245,14 +370,12 @@ img {
   margin-bottom: 0.5rem;
 }
 
-fieldset {
+/*div {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 3rem;
-  padding: 1rem 4rem;
   border-radius: 1rem;
-}
+} */
 input {
   width: 14rem;
   text-align: center;
@@ -300,5 +423,14 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+@media (min-width: 700px) {
+  .main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
 }
 </style>

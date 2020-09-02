@@ -56,7 +56,7 @@ async function editUser(req, res, next) {
         if (active && resignReason) {
             await connection.query(
                 `UPDATE users
-            SET  update_date=UTC_TIMESTAMP, active=?, resign_reason=? last_auth_update=UTC_TIMESTAMP 
+            SET  update_date=UTC_TIMESTAMP, active=?, resign_reason=?, last_auth_update=UTC_TIMESTAMP 
             WHERE id=?
                     `,
                 [active, resignReason, idUser]

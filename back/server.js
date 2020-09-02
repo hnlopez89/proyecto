@@ -76,6 +76,7 @@ const listBookingsPending = require("./controllers/admin/listBookingsPending");
 const listBusinessBadRating = require("./controllers/admin/listBusinessBadRating");
 const editAdminBooking = require("./controllers/admin/editAdminBooking");
 
+const sendContactMail = require("./controllers/contact");
 
 const app = express();
 
@@ -90,6 +91,10 @@ app.use(bodyParser.json());
 app.use(fileUpload());
 
 app.use(express.static('static'));
+
+//CONTACTO CON ADMINISTRADOR POR EMAIL
+//POST - ANONIMO
+app.post("/contact", sendContactMail)
 
 /* ********************************************* */
 //USER ENDPOINTS

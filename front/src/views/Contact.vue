@@ -3,19 +3,38 @@
     <button @click="goBack()">Go Back</button>
     <h1>Contacta con nosotros</h1>
     <div id="contacData">
-      <input v-model="email" type="email" placeholder="Indica tu dirección de email" />
-      <input v-model="Asunto" type="text" placeholder="Indica el asunto" />
-      <textarea name id cols="80" rows="20"></textarea>
-      <button>Enviar</button>
+      <input v-model="emailAddress" type="email" placeholder="Indica tu dirección de email" />
+      <input v-model="subject" type="text" placeholder="Indica el asunto" />
+      <textarea v-model="text" cols="80" rows="20"></textarea>
+      <button @click="sendMail">Enviar</button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
+  data() {
+    return {
+      email: "",
+    };
+  },
   methods: {
     goBack() {
       window.history.back();
+    },
+    async sendMail() {
+      try {
+        const response = await axios.post("http://localhost:3000/contact/", {
+          emailAddress: this.emailAddress,
+          subject: this.subject,
+          text: this.text,
+        });
+        console.log(response);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
     },
   },
 };

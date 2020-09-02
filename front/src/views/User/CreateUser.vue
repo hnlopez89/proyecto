@@ -28,6 +28,8 @@
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
+
 export default {
   name: "CreateUser",
   data() {
@@ -81,9 +83,17 @@ export default {
             email: this.email,
             password: this.password,
           });
-          console.log(response);
+          Swal.fire({
+            icon: "success",
+            title:
+              "Has creado tu usuario correctamente, ¡bienvenido! Revisa tu email para validar tu usuario y editar tu disponibilidad",
+            confirmButtonText: "OK",
+          });
         } catch (error) {
-          console.log(error.response);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
         }
         this.createClient = false;
         this.name === "";

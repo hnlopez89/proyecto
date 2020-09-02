@@ -130,7 +130,7 @@ async function main() {
     }
     console.log("Creando tabla business");
 
-
+    //insertar pricing_list en futuro para QR Carta en PDF
     //creamos tabla de negocios
     await connection.query(`
       CREATE TABLE business(
@@ -145,7 +145,6 @@ async function main() {
         closing_time VARCHAR(200),
         length_booking INT NOT NULL DEFAULT '30',
         description VARCHAR (100),
-        pricing_list VARCHAR (50),
         bank_account VARCHAR(150),
         allotment_available INT DEFAULT '0',
         allotment INT DEFAULT '0',

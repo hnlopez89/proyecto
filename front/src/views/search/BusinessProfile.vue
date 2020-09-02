@@ -260,6 +260,7 @@ import { getIdToken } from "../../utils";
 import axios from "axios";
 import { Hooper, Slide, Navigation as HooperNavigation } from "hooper";
 import "hooper/dist/hooper.css";
+import Swal from "sweetalert2";
 
 export default {
   name: "BusinessProfile",
@@ -324,6 +325,7 @@ export default {
             minutes: this.minutes,
           },
         });
+        console.log(response);
         if (response.data.data.length > 0) {
           this.availability = true;
         } else {
@@ -377,8 +379,16 @@ export default {
             cvcCode: this.cvcCode,
           }
         );
+        Swal.fire({
+          icon: "success",
+          title: "Has reservado satisfactoriamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
   },

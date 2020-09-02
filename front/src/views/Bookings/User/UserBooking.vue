@@ -1,94 +1,102 @@
 <template>
   <div id="ÜserBooking">
     <button @click="goBack()">Go Back</button>
-    <div class="page">
-      <h1>Tu reserva en {{booking.name}}</h1>
-      <ul class="booking">
-        <h3>Numero de reserva: {{booking.id}}</h3>
-        <li>
-          <b>Estado:</b>
-          <span
-            :class="{red: booking.status === 'PENDIENTE_DE_PAGO' ||booking.status === 'CANCELADO' || booking.status === 'NO_SHOW' ,
+    <div id="screen">
+      <div class="page">
+        <h1>Tu reserva en {{booking.name}}</h1>
+        <ul class="booking">
+          <h3>Numero de reserva: {{booking.id}}</h3>
+          <li>
+            <b>Estado:</b>
+            <span
+              :class="{red: booking.status === 'PENDIENTE_DE_PAGO' ||booking.status === 'CANCELADO' || booking.status === 'NO_SHOW' ,
             green: booking.status === 'CONFIRMADO' || booking.status === 'MODIFICADO', 
             yellow: booking.status === 'CHECK_IN' || booking.status === 'CHECK_OUT'}"
-          >{{booking.status}}</span>
-        </li>
-        <li>
-          <b>Unidades:</b>
-          {{booking.id}}
-        </li>
-      </ul>
-      <img
-        v-if="booking.category === 'TERRAZA'"
-        :class="{hide: booking.profile_picture !== null}"
-        src="../../../assets/TERRAZA.jpg"
-        height="200"
-      />
-      <img
-        v-else-if="booking.category === 'BAR'"
-        :class="{hide: booking.profile_picture !== null}"
-        src="../../../assets/BAR.jpg"
-        height="200"
-      />
-      <img
-        v-else-if="booking.category === 'RESTAURANTE'"
-        :class="{hide: booking.profile_picture !== null}"
-        src="../../../assets/RESTAURANTE.jpg"
-        height="200"
-      />
-      <img
-        v-else-if="booking.category === 'PELUQUERÍA'"
-        :class="{hide: booking.profile_picture !== null}"
-        src="../../../assets/PELUQUERIA.jpg"
-        height="200"
-      />
+            >{{booking.status}}</span>
+          </li>
+          <li>
+            <b>Unidades:</b>
+            {{booking.id}}
+          </li>
+        </ul>
+      </div>
+      <div class="page">
+        <img
+          v-if="booking.category === 'TERRAZA'"
+          :class="{hide: booking.profile_picture !== null}"
+          src="../../../assets/TERRAZA.jpg"
+          height="200"
+        />
+        <img
+          v-else-if="booking.category === 'BAR'"
+          :class="{hide: booking.profile_picture !== null}"
+          src="../../../assets/BAR.jpg"
+          height="200"
+        />
+        <img
+          v-else-if="booking.category === 'RESTAURANTE'"
+          :class="{hide: booking.profile_picture !== null}"
+          src="../../../assets/RESTAURANTE.jpg"
+          height="200"
+        />
+        <img
+          v-else-if="booking.category === 'PELUQUERÍA'"
+          :class="{hide: booking.profile_picture !== null}"
+          src="../../../assets/PELUQUERIA.jpg"
+          height="200"
+        />
 
-      <img
-        :class="{hide: booking.profile_picture === null }"
-        :src="getProfilePicture(booking.profile_picture)"
-        height="200"
-      />
-      <ul id="business">
-        <h3>El establecimiento:</h3>
-        <li>
-          Categoría del establecimiento
-          <b>{{booking.name}}</b>
-          :{{booking.category}}
-        </li>
-        <li>
-          <b>Horario:</b>
-          de {{booking.opening_time}} a {{booking.closing_time}}
-        </li>
-      </ul>
-      <ul id="date">
-        <h3>¡Acuerdate!</h3>
-        <li>
-          Tu cita es el
-          <b>día {{formatDate(booking.check_in_day)}}</b>
-        </li>
-        <li>
-          Tú cita comienza a las
-          <b>{{formatDateTime(booking.check_in_time)}}</b> y acaba a las
-          <b>{{formatDateTime(booking.check_out_time)}}</b>
-        </li>
-      </ul>
-      <ul id="direction">
-        <h3>Ubicación:</h3>
-        <li>
-          <b>Dirección:</b>
-          {{booking.line1}} {{booking.line2}}, {{booking.zip_code}}
-        </li>
-        <li>{{booking.city}}, {{booking.province}}</li>
-      </ul>
-      <ul id="contact">
-        <h3>Datos de contacto:</h3>
-        <li>Dirección de email: {{booking.email}}</li>
-        <li>Número de telefóno: {{booking.telephone}}</li>
-      </ul>
-      <p v-if="booking.request > 0">
-        <b>Tu petición especial:</b>
-        {{booking.request}}
-      </p>
+        <img
+          :class="{hide: booking.profile_picture === null }"
+          :src="getProfilePicture(booking.profile_picture)"
+          height="200"
+        />
+        <ul id="business">
+          <h3>El establecimiento:</h3>
+          <li>
+            Categoría del establecimiento
+            <b>{{booking.name}}</b>
+            :{{booking.category}}
+          </li>
+          <li>
+            <b>Horario:</b>
+            de {{booking.opening_time}} a {{booking.closing_time}}
+          </li>
+        </ul>
+      </div>
+      <div class="page">
+        <ul id="date">
+          <h3>¡Acuerdate!</h3>
+          <li>
+            Tu cita es el
+            <b>día {{formatDate(booking.check_in_day)}}</b>
+          </li>
+          <li>
+            Tú cita comienza a las
+            <b>{{formatDateTime(booking.check_in_time)}}</b> y acaba a las
+            <b>{{formatDateTime(booking.check_out_time)}}</b>
+          </li>
+        </ul>
+      </div>
+      <div class="page">
+        <ul id="direction">
+          <h3>Ubicación:</h3>
+          <li>
+            <b>Dirección:</b>
+            {{booking.line1}} {{booking.line2}}, {{booking.zip_code}}
+          </li>
+          <li>{{booking.city}}, {{booking.province}}</li>
+        </ul>
+        <ul id="contact">
+          <h3>Datos de contacto:</h3>
+          <li>Dirección de email: {{booking.email}}</li>
+          <li>Número de telefóno: {{booking.telephone}}</li>
+        </ul>
+        <p v-if="booking.request > 0">
+          <b>Tu petición especial:</b>
+          {{booking.request}}
+        </p>
+      </div>
       <h4>Gracias por reservar con Tempo</h4>
     </div>
     <div id="actions">
@@ -181,7 +189,7 @@
       </form>
       <button v-if="isAvailable" @click="book()">Confirmar cambio de fechas</button>
     </form>
-    <form v-show="voting">
+    <form v-show="voting" id="rate">
       <star-rating
         v-model="rating"
         :increment="0.5"
@@ -219,6 +227,7 @@
 import axios from "axios";
 import { getIdToken, checkIsAdminUser } from "../../../utils";
 import { format } from "date-fns";
+import Swal from "sweetalert2";
 
 export default {
   name: "Home",
@@ -295,19 +304,42 @@ export default {
       }
     },
     async cancelBooking() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/user/" +
-            getIdToken(token) +
-            "/booking/" +
-            this.$route.params.id +
-            "/cancelate"
-        );
-        location.reload;
-      } catch (error) {
-        console.log(error);
+      const result = await Swal.fire({
+        title: "Estas seguro de cancelar tu reserva",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, estoy seguro",
+        cancelButtonText: "No, volver atrás",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/user/" +
+              getIdToken(token) +
+              "/booking/" +
+              this.$route.params.id +
+              "/cancelate"
+          );
+          Swal.fire({
+            icon: "success",
+            title: " Tu reserva se ha cancelado",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data.message);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "La reserva no ha sido cancelada",
+          icon: "error",
+        });
       }
     },
     async vote() {
@@ -325,8 +357,17 @@ export default {
             ratingDescription: this.ratingDescription,
           }
         );
+        Swal.fire({
+          icon: "success",
+          title: "Has puntuado tu reserva correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
         console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
     async editCreditCard() {
@@ -347,45 +388,80 @@ export default {
             cvcCode: this.cvcCode,
           }
         );
+        Swal.fire({
+          icon: "success",
+          title: "Tarjeta de crédito actualizada correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
         console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
     async editStatus() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/admin/" +
-            getIdToken(token) +
-            "/booking/" +
-            this.$route.params.id +
-            "/status",
-          {
-            status: this.status,
-          }
-        );
-        console.log(response);
-      } catch (error) {
-        console.log(error);
+      const result = await Swal.fire({
+        title: "Estas seguro de cambiar el estado de la reserva",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, estoy seguro",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/admin/" +
+              getIdToken(token) +
+              "/booking/" +
+              this.$route.params.id +
+              "/status",
+            {
+              status: this.status,
+            }
+          );
+          Swal.fire({
+            icon: "success",
+            title: "Reserva actualizada correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data.message);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Actualización cancelada",
+          icon: "error",
+        });
       }
     },
     async query() {
       try {
         const response = await axios.get("http://localhost:3000/business", {
           params: {
-            id: this.$route.params.id,
+            id: this.booking.id_business,
             date: this.date,
             hours: this.hours,
             minutes: this.minutes,
             units: this.units,
           },
         });
+        console.log(response);
+        console.log(response.data.data.length);
         if (response.data.data.length > 0) {
           this.isAvailable = true;
         } else {
           this.isAvailable = false;
         }
+        console.log(this.isAvailable);
       } catch (error) {}
     },
     async book() {
@@ -404,8 +480,17 @@ export default {
             units: this.units,
           }
         );
+        Swal.fire({
+          icon: "success",
+          title: "Tu reserva ha sido actualizada correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
         console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
     goBack() {
@@ -420,6 +505,12 @@ export default {
 </script>
 
 <style scoped>
+#screen {
+  border: 0.1rem solid coral;
+  border-radius: 1rem;
+  margin: 0.1rem;
+}
+
 #UserBooking {
   min-height: 100%;
 }
@@ -436,6 +527,12 @@ export default {
 .yellow {
   color: yellow;
   font-weight: bold;
+}
+
+#rate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 li {
@@ -467,6 +564,8 @@ img {
   background-position: center;
   background-repeat: no-repeat;
   margin: 3rem;
+  border-radius: 1rem;
+  border: coral 0.1rem solid;
 }
 .hide {
   display: none;

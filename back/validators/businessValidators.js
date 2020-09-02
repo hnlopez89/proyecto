@@ -24,7 +24,7 @@ const editBusinessSchema = Joi.object().keys({
     lengthBooking: Joi.number().valid(15, 30, 45, 60, 90, 120, 150, 180).error(generateError("La duración de tu reserva es incorrecta", 400)),
     description: Joi.string().min(20).max(200).error(generateError("La cantidad de caracteres no es válida", 400)),
     bankAccount: Joi.string().min(20).max(30).error(generateError("La cuenta bancaria no es correcta", 400)),
-    pricingList: Joi.string(),
+    // pricingList: Joi.string(),
     telephone: Joi.string().min(5).required().error(generateError("El número de telefóno no es válido", 400)),
     allotment: Joi.number().integer().min(1).max(500).error(generateError("El cupo establecido no es correcto", 400)),
     allotmentAvailable: Joi.number().integer().min(1).max(500).error(generateError("El cupo establecido no es correcto", 400)),

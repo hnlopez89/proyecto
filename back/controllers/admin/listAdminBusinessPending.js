@@ -18,22 +18,22 @@ async function listBusinessPending(req, res, next) {
     let orderBy;
     switch (order) {
       case "city":
-        orderBy = "BD.city";
+        orderBy = "city";
         break;
       case "province":
-        orderBy = "BD.province";
+        orderBy = "province";
         break;
       case "category":
-        orderBy = "BD.category";
+        orderBy = "category";
         break;
       case "name":
-        orderBy = "BD.name";
+        orderBy = "name";
         break;
       case "id":
-        orderBy = "BD.id";
+        orderBy = "id";
         break;
       default:
-        orderBy = "BD.name";
+        orderBy = "name";
     }
     // ejecuto la query en base a si existe queryString de search o no
     let queryResults;
@@ -50,20 +50,18 @@ async function listBusinessPending(req, res, next) {
       );
     } else */if (order && direction) {
       queryResults = await connection.query(
-        `SELECT BD.id, BD.status, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
-        FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
-        WHERE BD.status = 'PENDIENTE' 
-        GROUP BY BD.id, BD.name  
+        `SELECT *
+        FROM business
+        WHERE status ='PENDIENTE'
         ORDER BY ${orderBy} ${orderDirection};`
       );
 
     }
     else {
       queryResults = await connection.query(
-        `SELECT BD.id, BD.status, BD.profile_picture, BD.name, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
-        FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
-        WHERE BD.status = 'PENDIENTE' 
-        GROUP BY BD.id, BD.name `)
+        `SELECT *
+        FROM business
+        WHERE status ='PENDIENTE'        GROUP BY id, name `)
       console.log();
     }
     // extraigo los resultados reales del resultado de la query

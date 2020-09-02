@@ -56,8 +56,10 @@
   </div>
 </template>
 <script>
+import Swal from "sweetalert2";
+
 import axios from "axios";
-import { getIdToken } from "../../utils";
+import { getIdToken, logout } from "../../utils";
 import { format } from "date-fns";
 
 export default {
@@ -156,8 +158,17 @@ export default {
             header: { "Content-type": "multipart/form-data" },
           }
         );
+        Swal.fire({
+          icon: "success",
+          title: "Tu usuario ha sido actualizado correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data);
+        console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
     async updatePassword() {
@@ -171,28 +182,66 @@ export default {
             newPassword: this.newPassword,
           }
         );
-        console.log(response);
-      } catch (error) {
-        console.log(error.response.data);
-      }
-    },
-    async resign() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
-          {
-            resignReason: this.reason,
-          }
-        );
-        axios.defaults.headers.common["Authorization"] = "";
+
+        Swal.fire({
+          icon: "success",
+          title: "Contraseña actualizada correctamente",
+          confirmButtonText: "OK",
+        });
         localStorage.removeItem("AUTH_TOKEN_KEY");
         localStorage.removeItem("ROLE");
         localStorage.removeItem("NAME");
         this.$router.push("/home");
       } catch (error) {
         console.log(error.response.data);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
+      }
+    },
+    async resign() {
+      const result = await Swal.fire({
+        title: "¿Estás seguro de querer darte de baja?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, ¡estoy seguro!",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          const response = await axios.put(
+            "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
+            {
+              resignReason: this.reason,
+            }
+          );
+          Swal.fire({
+            icon: "success",
+            title:
+              "Tu usuario se ha dado de baja correctamente. Te echaremos de menos.",
+            confirmButtonText: "OK",
+          });
+          axios.defaults.headers.common["Authorization"] = "";
+          localStorage.removeItem("AUTH_TOKEN_KEY");
+          localStorage.removeItem("ROLE");
+          localStorage.removeItem("NAME");
+          this.$router.push("/home");
+        } catch (error) {
+          console.log(error.response.data);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Baja cancelada",
+          icon: "error",
+        });
       }
     },
   },
