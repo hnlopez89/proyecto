@@ -17,11 +17,11 @@ async function viewBusinessRating(req, res, next) {
     const [result] = await connection.query(
       `
             SELECT U.name,
-            check_in_time,
-            rating,
-            rating_description
-            FROM booking B LEFT OUTER JOIN users U
-            ON U.id = B.id_user
+            B.check_in_time,
+            B.rating,
+            B.rating_description,
+            B.rating_answer
+            FROM booking B LEFT OUTER JOIN users U ON B.id_user = U.id 
             WHERE B.id_business=?
             `,
       [id]

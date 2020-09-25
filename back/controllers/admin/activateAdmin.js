@@ -16,7 +16,7 @@ async function editUser(req, res, next) {
 
         // comprobar que el id de usuario es el que firma la petición
         // y que es administrador
-        if (req.auth.id !== Number(idAdmin) || req.auth.role !== "admin") {
+        if (req.auth.id !== Number(idAdmin) && req.auth.role !== "admin") {
             const error = new Error("No tienes permisos para editar este usuario");
             error.httpStatus = 403;
             throw error;

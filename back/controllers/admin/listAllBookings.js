@@ -12,10 +12,10 @@ async function listBusinessBookings(req, res, next) {
         }
 
         //OBTENER CRITORIOS DE BÚSQUEDA
-        const { idBooking, idBusiness, businessName, category, idUser, surname, checkInDay, checkInTime, status, creatingDate, units, order, direction } = req.query;
+        const { idBooking, idBusiness, businessName, category, province, idUser, surname, checkInDay, checkInTime, status, creatingDate, units, order, direction } = req.query;
 
         //CONSTRUIR INICIO DE QUERY
-        let query = `SELECT  B.id, B.id_business, BU.name, BU.category, BU.city, B.id_user, U.surname,
+        let query = `SELECT  B.id, B.id_business, BU.name, BU.category, BU.city, BU.province, B.id_user, U.surname,
         B.check_in_day, B.check_in_time, B.check_out_time, B.status,
         B.units, B.request, B.creating_date, B.update_date, B.rating, B.rating_description
     FROM booking B
@@ -45,6 +45,9 @@ async function listBusinessBookings(req, res, next) {
             case "surname":
                 orderBy = "U.surname";
                 break;
+            case "province":
+                orderBy = "BU.province";
+                break;
             case "check_in_time":
                 orderBy = "B.check_in_time";
                 break;
@@ -69,7 +72,7 @@ async function listBusinessBookings(req, res, next) {
 
         const params = [];
         //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-        if (idBooking || idBusiness || businessName || category || idUser ||
+        if (idBooking || idBusiness || businessName || category || idUser || province ||
             surname || checkInDay || checkInTime || status || creatingDate || units) {
             const conditions = [];
 
@@ -98,7 +101,10 @@ async function listBusinessBookings(req, res, next) {
                 conditions.push(` U.surname LIKE '${surname}'`);
                 params.push(`'%${surname}%'`);
             }
-
+            if (province) {
+                conditions.push(` BU.province LIKE '${province}'`);
+                params.push(`'%${province}%'`);
+            }
 
             if (status) {
                 conditions.push(` B.status LIKE '${status}'`);

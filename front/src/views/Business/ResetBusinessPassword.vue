@@ -1,6 +1,6 @@
 <template>
   <div class="resetPassword">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>Establece tu contraseña</h1>
     <input v-model="recoverCode" type="text" placeholder="Escribe tu código de recuperación" />
     <br />
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import axios from "axios";
+import Swal from "sweetalert2";
 export default {
   name: "ResetPassword",
   data() {
@@ -23,10 +25,24 @@ export default {
       window.history.back();
     },
     async resetPassword() {
-      await axios.post("http://localhost:3000/business/reset-password", {
-        recoverCode: this.recoverCode,
-        newPassword: this.newPassword,
-      });
+      try {
+        await axios.post("http://localhost:3000/business/reset-password", {
+          recoverCode: this.recoverCode,
+          newPassword: this.newPassword,
+        });
+        this.$router.push("/loginbusiness");
+        Swal.fire({
+          icon: "success",
+          title:
+            "Has creado tu usuario correctamente, ¡bienvenido! Revisa tu email para validar tu usuario y editar tu disponibilidad",
+          confirmButtonText: "OK",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
+      }
     },
   },
 };
@@ -70,5 +86,11 @@ button {
   color: coral;
   text-align: center;
   margin-bottom: 0.5rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

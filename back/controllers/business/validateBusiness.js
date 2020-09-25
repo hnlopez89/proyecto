@@ -43,7 +43,7 @@ async function validateBusiness(req, res, next) {
     );
     try {
       await sendMail({
-        email: "hnlopez89@gmail.com",
+        email: "esehugo@hotmail.com",
         title: `El negocio ${name} quiere trabajar contigo`,
         content: `Enhorabuena,
               un nuevo negocio quiere trabajar contigo. Accede a tu perfil y

@@ -1,16 +1,20 @@
 <template>
   <div id="page">
-    <h1>Bienvenido a la sección de negocio</h1>
     <button id="back" @click="goBack()">Vuelve a inicio</button>
+    <h1>Bienvenido a la sección de negocio</h1>
     <div id="user">
       <div id="logIn">
         <input v-model="emailBusiness" type="email" placeholder="Dirección de email" />
         <input v-model="passwordBusiness" type="password" placeholder="Contraseña" />
         <button @click="login2()">LogIn Negocio</button>
       </div>
-      <div id="recover">
-        <p>¿Te olvidaste la contraseña?</p>
-        <button @click="validatingMail()">Recupera tu contraseña</button>
+      <button v-show="!recover" @click="recover = !recover">¿Has olvidado tu contraseña?</button>
+      <div id="recover" v-show="recover">
+        <button v-show="recover" @click="recover = !recover">La acabo de recordar</button>
+        <div>
+          <input v-model="emailToRecover" type="email" placeholder="Escribe tu email " />
+          <button @click="validatingMail()">Recupera tu contraseña</button>
+        </div>
       </div>
       <div id="register">
         <p>¿Aún no trabajas con nosotros?</p>
@@ -25,6 +29,7 @@ import { loginBusiness } from "../../utils";
 import { isLoggedInBusiness } from "../../utils";
 import { getNameBusiness } from "../../utils";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   name: "LoginBusiness",
@@ -32,10 +37,13 @@ export default {
     return {
       emailBusiness: "",
       passwordBusiness: "",
+      emailToRecover: "",
       logged: false,
       userMood: false,
       businessWay: false,
+      recover: "",
       logged: "",
+      name: "",
     };
   },
   methods: {
@@ -43,7 +51,9 @@ export default {
       window.history.back();
     },
     setBusinessname() {
-      this.name = getNameBusiness();
+      if (isLoggedInBusiness) {
+        this.name = getNameBusiness();
+      }
     },
     async login2() {
       if (this.emailBusiness === "" || this.passwordBusiness === "") {
@@ -51,36 +61,43 @@ export default {
       } else {
         await loginBusiness(this.emailBusiness, this.passwordBusiness);
         this.$router.push("/mybusiness");
-        this.$emit("login2", true);
+        this.setBusinessname();
+        let name = this.name;
+        this.$emit("login2", name);
       }
     },
     getLoginBusiness() {
       this.logged = isLoggedInBusiness();
     },
     validatingMail() {
-      console.log("holi");
       if (this.emailToRecover === "") {
         this.errorMsg = true;
         this.validation = false;
       } else {
         this.errorMsg = false;
         this.validation = true;
-        console.log("holi");
-
-        this.recover();
+        this.recoverPassword();
       }
     },
-    async recover() {
+    async recoverPassword() {
       try {
         if (this.validation === true) {
-          await axios.post("http://localhost:3000/user/recover-password", {
+          console.log(this.emailToRecover);
+          await axios.post("http://localhost:3000/business/recover-password", {
             email: this.emailToRecover,
-          }),
-            response;
-          console.log(response);
+          });
+          Swal.fire({
+            icon: "success",
+            title:
+              "Te hemos mandado un email para que puedas resetear tu contraseña",
+            confirmButtonText: "OK",
+          });
         }
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
 
@@ -126,7 +143,7 @@ h1 {
   background-color: #ffffff;
 }
 
-#logIn > input {
+input {
   border-radius: 5px;
   border: 0;
   padding: 0.2rem;
@@ -146,6 +163,13 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
+}
+
+button:hover,
+#back:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 #recover {

@@ -49,6 +49,14 @@ async function loginUser(req, res, next) {
     const token = jsonwebtoken.sign(tokenInfo, process.env.SECRET, {
       expiresIn: "30d",
     });
+
+    await connection.query(
+      `UPDATE users
+      SET update_date=UTC_TIMESTAMP()
+      WHERE email=?
+      `,
+      [email]
+    )
     res.send({
       status: "ok",
       data: {

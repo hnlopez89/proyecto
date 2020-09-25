@@ -38,7 +38,7 @@
               <h1>
                 <router-link
                   :to="{name: 'BusinessProfile', params: { id: business.id}, 
-                  query:{date: selectedDate, hours: selectedHour, minutes: selectedMinute, units: selectedUnit}} "
+                  query:{date: selectedDate, hours: selectedHour, minutes: selectedMinute, units: selectedUnit}, hash: '#up'} "
                 >{{business.name}}</router-link>
               </h1>
               <div id="rating">
@@ -56,11 +56,11 @@
             </div>
             <p>
               <b>Categoría:</b>
-              {{business.category}}
+              {{business.category | lowcase}}
             </p>
             <p>
-              <b>Ciudad:</b>
-              {{business.city}}
+              <b>Provincia:</b>
+              {{business.province | underscore}}
             </p>
             <p>
               <b>Horario:</b>
@@ -71,71 +71,30 @@
             <router-link
               tag="button"
               :to="{name: 'BusinessProfile', params: { id: business.id}, 
-                  query:{date: selectedDate, hours: selectedHour, minutes: selectedMinute, units: selectedUnit}} "
+                  query:{date: selectedDate, hours: selectedHour, minutes: selectedMinute, units: selectedUnit}, hash: '#up'} "
             >Ver establecimiento</router-link>
           </section>
         </article>
-
-        <!--  <div v-show="showBooking" class="modal">
-          <div class="modalBox">
-            aqui formulario de reserva para la fecha
-            <form>
-              <input v-model="creditCardNumber" placeholder="Introduce el número de la tarjeta" />
-              <input v-model="holderName" placeholder="Introduce el Titular de la tarjeta" />
-              <select v-model="expiryMonth">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-              </select>
-              <select v-model="expiryYear">
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-                <option value="2031">2031</option>
-                <option value="2032">2032</option>
-              </select>
-              <input v-model="cvcCode" placeholder="Introduce el código secreto" />
-              <button @click="passData(index)">Que pasara</button>
-            </form>
-            <button @click="showBooking = !showBooking">Cancelar reserva</button>
-          </div> 
-        </div>-->
       </li>
     </ul>
     <nav v-if="businesses.length > 5">
       <ul class="pagination">
+        <li class="page-item" :class="{'disabled': currentPage -5 <= 0}">
+          <button class="page-link" @click="firstPage"><<</button>
+        </li>
         <li class="page-item" :class="{'disabled': currentPage === 0}">
-          <button class="page-link" @click="previousPage">Anterior</button>
+          <button class="page-link" @click="previousPage"><</button>
         </li>
 
-        <li
-          v-for="page in pages"
-          :key="page"
-          class="page-item"
-          :class="{'active': currentPage === page}"
-        >
+        <li v-for="page in pages" :key="page" class="page-item">
           <button class="page-link" @click="goToPage(page)">{{ page + 1 }}</button>
         </li>
 
-        <li class="page-item" :class="{'disabled': currentPage === pages.length - 1}">
-          <button class="page-link" @click="nextPage">Siguiente</button>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages}">
+          <button class="page-link" @click="nextPage">></button>
+        </li>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages - 4 }">
+          <button class="page-link" @click="lastPage">>></button>
         </li>
       </ul>
     </nav>
@@ -158,9 +117,10 @@ export default {
       creditCardNumber: "",
       picture: "",
       currentIndex: 0,
-      elementsPerPage: 5,
+      elementsPerPage: 15,
       currentPage: 0,
       sortName: 0,
+      numberOfPages: "",
     };
   },
   props: {
@@ -210,6 +170,17 @@ export default {
       this.currentPage = page;
       this.currentIndex = page * this.elementsPerPage;
     },
+    firstPage() {
+      this.currentPage = 0;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
+    },
+    lastPage() {
+      let numberOfPages = Math.ceil(
+        this.businesses.length / this.elementsPerPage
+      );
+      this.currentPage = numberOfPages - 1;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
+    },
   },
   computed: {
     showedUser() {
@@ -222,9 +193,13 @@ export default {
       let numberOfPages = Math.ceil(
         this.businesses.length / this.elementsPerPage
       );
+      this.numberOfPages = numberOfPages - 1;
+
       let pageArray = [];
-      for (let i = 0; i < numberOfPages; i++) {
-        pageArray.push(i);
+      for (let i = this.currentPage - 5; i < this.currentPage + 5; i++) {
+        if (i >= 0 && i < numberOfPages) {
+          pageArray.push(i);
+        }
       }
       return pageArray;
     },
@@ -297,23 +272,26 @@ button {
 ul.pagination {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  margin: 1rem auto;
+  margin: auto;
+  height: 5rem;
   padding: 0;
+  margin-bottom: 1rem;
 }
 
 ul.pagination > li {
   border: none;
   margin: 0;
-  padding: 0 0.3rem;
+  padding: 0;
 }
 
 ul.pagination > li button {
   display: inline-block;
   padding: 0.5rem;
-  border: 0.2rem solid coral;
-  border-radius: 0.12em;
+  border: 0.1rem solid coral;
+  border-radius: 0;
   box-sizing: border-box;
   font-weight: bold;
   background-color: black;

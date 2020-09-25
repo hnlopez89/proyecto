@@ -6,7 +6,7 @@ async function deactiveBusiness(req, res, next) {
   try {
     connection = await getConnection();
     const { id } = req.params;
-    if (req.auth.id !== Number(id) || req.auth.role !== "admin") {
+    if (req.auth.id !== Number(id) && req.auth.role !== "admin") {
       throw generateError(
         "No puedes desactivar la cuenta de otro negocio que no es el tuyo",
         404
@@ -44,12 +44,12 @@ async function deactiveBusiness(req, res, next) {
         [req.auth.id]
       );
       const deactiveEmail = deactiveAccount[0].email;
-      const deactiveManager = deactiveAccount[0].name;
+      const deactiveManager = deactiveAccount[0].manager;
       console.log(deactiveEmail, deactiveManager);
 
       try {
         await sendMail({
-          deactiveEmail,
+          email: deactiveEmail,
           title: "Desactivación de tu cuenta en Tempo",
           content: `Lamentamos ${deactiveManager} que quieras darte de baja en nuestra aplicación, vas a dejar de recibir reservas :(
                     Gracias por haber utilizado nuestra plataforma, esperamos volver a verte pronto!`,

@@ -23,6 +23,10 @@ function minutesToDB(minutes) {
   return minutes * 100
 }
 
+function daysInMonth(month, year) {
+  return new Date(year, month, 0).getDate();
+}
+
 function formatDateToDB(date) {
   let internalDate;
   if (typeof date === "string") {
@@ -106,4 +110,5 @@ module.exports = {
   deleteUpload,
   generateError,
   showDebug,
+  daysInMonth
 };

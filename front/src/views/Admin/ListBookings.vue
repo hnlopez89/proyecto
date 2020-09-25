@@ -1,6 +1,6 @@
 <template>
   <div class="ListBookings">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>REGISTRO DE RESERVAS</h1>
     <button @click="isQuery = !isQuery">Búsqueda Avanzada</button>
     <fieldset v-show="isQuery">
@@ -13,8 +13,62 @@
         <option value="TERRAZA">Terraza</option>
         <option value="BAR">Bar</option>
         <option value="RESTAURANTE">Restaurante</option>
-        <option value="PELUQUERIA">Peluquería</option>
-        <option>(todas las categorías)</option>
+        <option value="PELUQUERÍA">Peluquería</option>
+      </select>
+      <label>Provincia</label>
+      <select v-model="province" id="provincia">
+        <option value="Alava">Álava</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alicante">Alicante/Alacant</option>
+        <option value="Almeria">Almería</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Avila">Ávila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Caceres">Cáceres</option>
+        <option value="Cadiz">Cádiz</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castellon">Castellón/Castelló</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Ciudad_real">Ciudad Real</option>
+        <option value="Cordoba">Córdoba</option>
+        <option value="Cuenca">Cuenca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipuzcoa">Guipúzcoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Huesca">Huesca</option>
+        <option value="Islas_Baleares">Islas Balears</option>
+        <option value="Jaen">Jaén</option>
+        <option value="La_coruña">La Coruña</option>
+        <option value="La_rioja">La Rioja</option>
+        <option value="Las_palmas">Las Palmas</option>
+        <option value="Leon">León</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Malaga">Málaga</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Ourense">Ourense</option>
+        <option value="Palencia">Palencia</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Segovia">Segovia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Soria">Soria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Teruel">Teruel</option>
+        <option value="Toledo">Toledo</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Vizcaya">Vizcaya</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Zaragoza">Zaragoza</option>
       </select>
       <input v-model="idUser" type="text" placeholder="ID del usuario" />
       <input v-model="surname" type="text" placeholder="Apellido del usuario" />
@@ -60,37 +114,6 @@
         <option value="DESC">descendente</option>
       </select>
     </form>
-    <!-- <ul>
-        <li v-for="booking in bookings" :key="booking.id">
-          <p>
-            <router-link :to="{name: 'BookingUser', params: { id: booking.id}}">{{booking.id}}</router-link>
-          </p>
-          <p>{{booking.id_business}}</p>
-          <p>
-            <router-link
-              :to="{name: 'CheckBusiness', params: { id: booking.id_business}}"
-            >{{booking.name}}</router-link>
-          </p>
-          <p>{{booking.category}}</p>
-          <p>{{booking.city}}</p>
-          <p>{{booking.id_user}}</p>
-          <p>
-            <router-link
-              :to="{name: 'CheckUser', params: { id: booking.id_user}}"
-            >{{booking.surname}}</router-link>
-          </p>
-          <p>{{booking.check_in_day}}</p>
-          <p>{{booking.check_in_time}}</p>
-          <p>{{booking.check_out_time}}</p>
-          <p>{{booking.status}}</p>
-          <p>{{booking.units}}</p>
-          <p>{{booking.request}}</p>
-          <p>{{booking.creating_date}}</p>
-          <p>{{booking.update_date}}</p>
-          <p>{{booking.rating}}</p>
-          <p>{{booking.rating_description}}</p>
-        </li>
-    </ul>-->
     <table class="table">
       <thead>
         <tr>
@@ -98,7 +121,7 @@
           <th>ID negocio</th>
           <th>Nombre negocio</th>
           <th>Categoría</th>
-          <th>Ciudad</th>
+          <th>Provincia</th>
           <th>ID usuario</th>
           <th>Apellido Usuario</th>
           <th>Dia check in</th>
@@ -115,19 +138,21 @@
       <tbody>
         <tr v-for="booking in showedBookings" :key="booking.id">
           <td data-label="ID reserva">
-            <router-link :to="{name: 'BookingUser', params: { id: booking.id}}">{{booking.id}}</router-link>
+            <router-link
+              :to="{name: 'BookingUser', params: { id: booking.id}, hash: '#up'}"
+            >{{booking.id}}</router-link>
           </td>
           <td data-label="ID negocio">{{booking.id_business}}</td>
           <td data-label="Nombre negocio">
             <router-link
-              :to="{name: 'CheckBusiness', params: { id: booking.id_business}}"
+              :to="{name: 'CheckBusiness', params: { id: booking.id_business}, hash: '#up'}"
             >{{booking.name}}</router-link>
           </td>
-          <td data-label="Categoría">{{booking.category}}</td>
-          <td data-label="Ciudad">{{booking.city}}</td>
+          <td data-label="Categoría">{{booking.category | lowcase}}</td>
+          <td data-label="Provincia">{{booking.province | underscore | underscore | underscore }}</td>
           <td data-label="ID usuario">
             <router-link
-              :to="{name: 'CheckUser', params: { id: booking.id_user}}"
+              :to="{name: 'CheckUser', params: { id: booking.id_user}, hash: '#up'}"
             >{{booking.id_user}}</router-link>
           </td>
           <td data-label="Apellido Usuario">{{booking.surname}}</td>
@@ -137,7 +162,7 @@
           <td
             :class="{red: booking.status === 'PENDIENTE_DE_PAGO' ||booking.status === 'CANCELADO'}"
             data-label="Estado reserva"
-          >{{booking.status}}</td>
+          >{{booking.status | lowcase | underscore}}</td>
           <td data-label="Unidades">{{booking.units}}</td>
           <td data-label="Fecha creación">{{formatDateTime(booking.creating_date)}}</td>
           <td data-label="Fecha actualización">{{formatDateTime(booking.update_date)}}</td>
@@ -147,21 +172,22 @@
     </table>
     <nav>
       <ul class="pagination">
+        <li class="page-item" :class="{'disabled': currentPage -5 <= 0}">
+          <button class="page-link" @click="firstPage"><<</button>
+        </li>
         <li class="page-item" :class="{'disabled': currentPage === 0}">
-          <button class="page-link" @click="previousPage">Anterior</button>
+          <button class="page-link" @click="previousPage"><</button>
         </li>
 
-        <li
-          v-for="page in pages"
-          :key="page"
-          class="page-item"
-          :class="{'active': currentPage === page}"
-        >
+        <li v-for="page in pages" :key="page" class="page-item">
           <button class="page-link" @click="goToPage(page)">{{ page + 1 }}</button>
         </li>
 
-        <li class="page-item" :class="{'disabled': currentPage === pages.length - 1}">
-          <button class="page-link" @click="nextPage">Siguiente</button>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages}">
+          <button class="page-link" @click="nextPage">></button>
+        </li>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages - 4 }">
+          <button class="page-link" @click="lastPage">>></button>
         </li>
       </ul>
     </nav>
@@ -186,14 +212,16 @@ export default {
       surname: "",
       checkInDay: "",
       checkInTime: "",
+      province: "",
       units: "",
       creatingDate: "",
       status: "",
       category: "",
       isQuery: false,
       currentIndex: 0,
-      elementsPerPage: 20,
+      elementsPerPage: 40,
       currentPage: 0,
+      numberOfPages: "",
     };
   },
 
@@ -229,6 +257,7 @@ export default {
               checkInDay: this.checkInDay,
               checkInTime: this.checkInTime,
               units: this.units,
+              province: this.province,
               status: this.status,
               creatingDate: this.creatingDate,
               order: orderBy,
@@ -260,6 +289,7 @@ export default {
         return process.env.VUE_APP_STATIC + picture;
       }
     },
+
     previousPage() {
       this.currentPage = this.currentPage - 1;
       this.currentIndex = this.currentIndex - this.elementsPerPage;
@@ -271,6 +301,17 @@ export default {
     goToPage(page) {
       this.currentPage = page;
       this.currentIndex = page * this.elementsPerPage;
+    },
+    firstPage() {
+      this.currentPage = 0;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
+    },
+    lastPage() {
+      let numberOfPages = Math.ceil(
+        this.bookings.length / this.elementsPerPage
+      );
+      this.currentPage = numberOfPages - 1;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
     },
   },
   computed: {
@@ -284,9 +325,13 @@ export default {
       let numberOfPages = Math.ceil(
         this.bookings.length / this.elementsPerPage
       );
+      this.numberOfPages = numberOfPages - 1;
       let pageArray = [];
-      for (let i = 0; i < numberOfPages; i++) {
-        pageArray.push(i);
+
+      for (let i = this.currentPage - 5; i < this.currentPage + 5; i++) {
+        if (i >= 0 && i < numberOfPages) {
+          pageArray.push(i);
+        }
       }
       return pageArray;
     },
@@ -298,9 +343,17 @@ export default {
 </script>
 
 <style scoped>
+.disabled {
+  display: none;
+}
 .ListBookings {
   min-height: 100vh;
   height: 100%;
+  background: linear-gradient(
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.8)
+    ),
+    url(../../assets/brick.jpeg);
 }
 
 #ordered {
@@ -308,13 +361,17 @@ export default {
   flex-direction: row;
   align-items: center;
   width: 30rem;
-  margin: auto;
+  margin: 1rem auto;
   justify-content: space-evenly;
 }
 #ordered > legend {
   color: coral;
   margin: auto;
   margin-right: 0.1rem;
+  font-weight: bold;
+}
+#ordered > select {
+  background-color: white;
 }
 
 fieldset {
@@ -323,7 +380,7 @@ fieldset {
   border-radius: 1rem;
   width: 12rem;
   background-color: rgba(24, 9, 4, 0.8);
-  height: 26rem;
+  height: auto;
   justify-items: center;
 }
 
@@ -355,6 +412,8 @@ h4 {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 li {
@@ -363,7 +422,7 @@ li {
 
 button {
   display: inline-block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem;
   border: 0.1rem solid white;
   border-radius: 0.12em;
   box-sizing: border-box;
@@ -371,13 +430,20 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
-  margin-top: 0.5rem;
+  margin: 1rem 0;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 table {
   border: 1px solid coral;
   background-color: #eeeeee;
-  width: 100%;
+  width: 97%;
+  margin: auto;
   text-align: left;
   border-collapse: collapse;
 }
@@ -391,6 +457,10 @@ table td,
 table th {
   border: 1px solid #aaaaaa;
   padding: 3px 2px;
+}
+a {
+  text-decoration: none;
+  color: black;
 }
 table tbody td {
   font-size: 13px;
@@ -483,10 +553,6 @@ table tfoot .links a {
   }
 
   table td::before {
-    /*
-    * aria-label has no advantage, it won't be read inside a table
-    content: attr(aria-label);
-    */
     content: attr(data-label);
     float: left;
     font-weight: bold;

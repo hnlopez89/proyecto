@@ -1,6 +1,6 @@
 const { getConnection } = require("../../db");
-const { generateError, processAndSaveImage, sendMail, } = require("../../helpers");
-const { editBusinessSchema, randomString } = require("../../validators/businessValidators")
+const { generateError, randomString, processAndSaveImage, sendMail, } = require("../../helpers");
+const { editBusinessSchema } = require("../../validators/businessValidators")
 
 
 async function editBusiness(req, res, next) {
@@ -10,7 +10,6 @@ async function editBusiness(req, res, next) {
 
 
     const { id } = req.params;
-
     const [currentData] = await connection.query(
       `
       SELECT id, email, profile_picture
@@ -20,7 +19,7 @@ async function editBusiness(req, res, next) {
       [id]
     );
     const current = currentData[0].id;
-    if (current !== req.auth.id) {
+    if (current !== req.auth.id && req.auth.role !== "admin") {
       throw generateError("No tienes permisos para editar este negocio", 403);
     }
 
@@ -38,6 +37,7 @@ async function editBusiness(req, res, next) {
       allotment,
       zipCode,
       province,
+      city,
       line1,
       line2,
       day1,
@@ -63,7 +63,8 @@ async function editBusiness(req, res, next) {
       savedFileName = currentData[0].profile_picture
     }
 
-    if (email !== currentData[0].email) {
+
+    if (email !== currentData[0].email && req.auth.role === "admin") {
       const [existingEmail] = await connection.query(
         `
         SELECT id
@@ -100,8 +101,8 @@ async function editBusiness(req, res, next) {
       //  await editBusinessSchema.validateAsync(req.body);
       await connection.query(
         `UPDATE business
-             SET name =?,
-             manager = ?,
+        SET name =?,
+        manager = ?,
        category = ?,
        email = ?,
        opening_time = ?,
@@ -113,6 +114,7 @@ async function editBusiness(req, res, next) {
        allotment = ?,
        profile_picture = ?,
        zip_code = ?,
+      city = ?,
        province = ?,
        line1 = ?,
        line2 = ?,
@@ -137,6 +139,7 @@ async function editBusiness(req, res, next) {
           savedFileName,
           zipCode,
           province,
+          city,
           line1,
           line2,
           id,
@@ -145,6 +148,7 @@ async function editBusiness(req, res, next) {
     }
 
     else {
+      console.log(savedFileName);
       await connection.query(
         `UPDATE business
              SET name =?,
@@ -160,6 +164,7 @@ async function editBusiness(req, res, next) {
        profile_picture = ?,
        zip_code = ?,
        province = ?,
+       city = ?,
        line1 = ?,
        line2 = ?,
        update_date = UTC_TIMESTAMP
@@ -181,6 +186,7 @@ async function editBusiness(req, res, next) {
           savedFileName,
           zipCode,
           province,
+          city,
           line1,
           line2,
           id,

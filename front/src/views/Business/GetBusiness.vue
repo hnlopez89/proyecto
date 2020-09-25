@@ -21,7 +21,7 @@
         </li>
         <li>
           <router-link
-            :to="{name: 'BookingReviews', params: {id: businesses.id}}"
+            :to="{name: 'BookingReviews', params: {id: businesses.id}, hash: '#up'}"
             tag="button"
           >Ver qué opinan de tí</router-link>
         </li>
@@ -29,29 +29,51 @@
       <ul id="boardBookings">
         <h3>Reservas</h3>
         <li>
-          <router-link :to="{name: 'BookingBusinessToday'}" tag="button">¿Quien viene hoy?</router-link>
+          <router-link
+            :to="{name: 'BookingBusinessToday', hash: '#up'}"
+            tag="button"
+          >¿Quien viene hoy?</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingBusinessTomorrow'}" tag="button">¿Quien viene mañana?</router-link>
+          <router-link
+            :to="{name: 'BookingBusinessTomorrow', hash: '#up'}"
+            tag="button"
+          >¿Quien viene mañana?</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingsBusiness'}" tag="button">Ver tus reservas</router-link>
+          <router-link :to="{name: 'BookingsBusiness', hash: '#up'}" tag="button">Ver tus reservas</router-link>
         </li>
       </ul>
       <ul id="reports">
         <h3>Listados:</h3>
         <li>
-          <router-link :to="{name: 'CheckAvailability'}" tag="button">Consulta tu disponibilidad</router-link>
+          <router-link
+            :to="{name: 'CheckAvailability', hash: '#up'}"
+            tag="button"
+          >Consulta tu disponibilidad</router-link>
+        </li>
+        <li>
+          <router-link :to="{name: 'CheckAvailabilityMonthly', hash: '#up'}" tag="button">
+            <span>NEW!</span> Tu ocupación mensual
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{name: 'MarketShare', hash: '#up'}" tag="button">
+            <span>PREMIUM</span> Cuota de mercado
+          </router-link>
         </li>
       </ul>
 
       <ul id="boardData">
         <h3>Datos de tu negocio</h3>
         <li>
-          <router-link :to="{name: 'EditBusiness'}" tag="button">Editar tu negocio</router-link>
+          <router-link :to="{name: 'EditBusiness', hash: '#up'}" tag="button">Editar tu negocio</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'EditPicturesBusiness'}" tag="button">Editar tus Fotos</router-link>
+          <router-link
+            :to="{name: 'EditPicturesBusiness', hash: '#up'}"
+            tag="button"
+          >Editar tus Fotos</router-link>
         </li>
       </ul>
     </div>
@@ -141,6 +163,9 @@ export default {
   justify-content: center;
   align-items: center;
 }
+span {
+  color: yellow;
+}
 
 ul {
   background-color: rgba(40, 40, 40, 0.9);
@@ -171,6 +196,12 @@ ul > li button {
   color: #ffffff;
   text-align: center;
   margin-bottom: 0.5rem;
+}
+
+button:hover {
+  background-color: black;
+  color: coral;
+  cursor: pointer;
 }
 
 img {

@@ -1,11 +1,66 @@
 <template>
   <div class="ListUserBookings">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>TODAS MIS RESERVAS</h1>
     <fieldset>
       <legend>Busca tu reserva</legend>
+      <input v-model="id" type="text" placeholder="ID de la reserva" />
       <input v-model="name" type="text" placeholder="Nombre del establecimiento" />
-      <input v-model="city" type="text" placeholder="Ciudad" />
+      <label>Provincia</label>
+      <select v-model="province" id="provincia">
+        <option value="Alava">Álava</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alicante">Alicante/Alacant</option>
+        <option value="Almeria">Almería</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Avila">Ávila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Caceres">Cáceres</option>
+        <option value="Cadiz">Cádiz</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castellon">Castellón/Castelló</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Ciudad_real">Ciudad Real</option>
+        <option value="Cordoba">Córdoba</option>
+        <option value="Cuenca">Cuenca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipuzcoa">Guipúzcoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Huesca">Huesca</option>
+        <option value="Islas_Baleares">Islas Balears</option>
+        <option value="Jaen">Jaén</option>
+        <option value="La_coruña">La Coruña</option>
+        <option value="La_rioja">La Rioja</option>
+        <option value="Las_palmas">Las Palmas</option>
+        <option value="Leon">León</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Malaga">Málaga</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Ourense">Ourense</option>
+        <option value="Palencia">Palencia</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Segovia">Segovia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Soria">Soria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Teruel">Teruel</option>
+        <option value="Toledo">Toledo</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Vizcaya">Vizcaya</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Zaragoza">Zaragoza</option>
+      </select>
       <label for>Día de llegada</label>
       <input v-model="checkInDay" type="date" placeholder="día" />
       <label for>Día de creación de reserva</label>
@@ -28,7 +83,7 @@
         <option value="TERRAZA">Terraza</option>
         <option value="BAR">Bar</option>
         <option value="RESTAURANTE">Restaurante</option>
-        <option value="PELUQUERIA">Peluquería</option>
+        <option value="PELUQUERÍA">Peluquería</option>
       </select>
       <br />
       <button @click="query()">Buscar</button>
@@ -41,7 +96,7 @@
         <option value="check_in_time">Hora de llegada</option>
         <option value="status">Estado de reserva</option>
         <option value="units">Plazas</option>
-        <option value="city">Ciudad</option>
+        <option value="province">Provincia</option>
         <option value="category">Categoría establecimiento</option>
       </select>
       <legend>Dirección:</legend>
@@ -73,7 +128,7 @@ export default {
     return {
       booking: [],
       name: "",
-      city: "",
+      province: "",
       checkInDay: "",
       creatingDate: "",
       status: "",
@@ -103,7 +158,7 @@ export default {
             params: {
               name: this.name,
               category: this.category,
-              city: this.city,
+              province: this.province,
               checkInDay: this.checkInDay,
               status: this.status,
               creatingDate: this.creatingDate,
@@ -142,10 +197,10 @@ export default {
 .ListUserBookings {
   min-height: 100vh;
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.8)
     ),
-    url(../../../assets/tempo.jpg);
+    url(../../../assets/brick.jpeg);
 }
 
 input {
@@ -160,7 +215,7 @@ fieldset {
   align-items: center;
   width: 15rem;
   margin: 0 auto;
-  background-color: coral;
+  background-color: rgb(110, 56, 36);
   border-radius: 1rem;
 }
 
@@ -184,15 +239,33 @@ form > label {
 }
 
 button {
-  display: inline-block;
-  padding: 0.3rem 1rem;
-  border: 0.1rem solid #000000;
-  margin: 0.5rem auto;
-  border-radius: 0.12em;
+  padding: 0.5rem;
+  border: 0.1rem solid coral;
+  border-radius: 0;
   box-sizing: border-box;
   font-weight: bolder;
-  background-color: rgb(255, 255, 255);
+  background-color: black;
   color: coral;
   text-align: center;
+  position: relative;
+  margin: 1rem auto;
+}
+
+fieldset > button {
+  margin: 0 auto;
+}
+
+fieldset > button:hover {
+  background-color: black;
+}
+
+select {
+  background-color: white;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

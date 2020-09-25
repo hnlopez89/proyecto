@@ -15,6 +15,8 @@ const routes = [
     component: Home,
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -23,6 +25,8 @@ const routes = [
     component: () => import('../views/About.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -31,22 +35,18 @@ const routes = [
     component: () => import('../views/Contact.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
-  /*  {
-      path: '/help',
-      name: 'Help',
-      component: () => import('../views/Help.vue'),
-      meta: {
-        allowAnon: true,
-      }
-    },*/
   {
     path: '/createbusiness',
     name: 'CreateBusiness',
     component: () => import('../views/Business/CreateBusiness.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -55,6 +55,8 @@ const routes = [
     component: () => import('../views/Business/LogInBusiness.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -63,6 +65,8 @@ const routes = [
     component: () => import('../views/Business/GetRatings.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -71,6 +75,8 @@ const routes = [
     component: () => import('../views/User/CreateUser.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -79,6 +85,8 @@ const routes = [
     component: () => import('../views/User/LoginUser.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -87,6 +95,8 @@ const routes = [
     component: () => import('../views/search/BusinessProfile.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -95,6 +105,8 @@ const routes = [
     component: () => import('../views/User/ResetUserPassword.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -103,6 +115,8 @@ const routes = [
     component: () => import('../views/User/RegisterValidation.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -111,6 +125,8 @@ const routes = [
     component: () => import('../views/Business/RegisterValidationBusiness.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   {
@@ -119,6 +135,8 @@ const routes = [
     component: () => import('../views/Business/ResetBusinessPassword.vue'),
     meta: {
       allowAnon: true,
+      allowBusiness: true,
+      allowCustomer: true,
     }
   },
   ///////////////////////////////RUTAS PRIVADAS - USUARIO ///////////////////////////
@@ -128,7 +146,9 @@ const routes = [
     component: () => import('../views/User/GetUser.vue'),
     meta: {
       allowAnon: false,
-    }
+      allowBusiness: false,
+      allowCustomer: true,
+    },
   },
   {
     path: '/edituser',
@@ -136,6 +156,8 @@ const routes = [
     component: () => import('../views/User/EditUser.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: false,
+      allowCustomer: true,
     }
   },
   {
@@ -144,6 +166,8 @@ const routes = [
     component: () => import('../views/Bookings/User/ListUserHistoricBookings.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: false,
+      allowCustomer: true,
     }
   },
   {
@@ -152,6 +176,8 @@ const routes = [
     component: () => import('../views/Bookings/User/ListUserBookingsConfirmed.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: false,
+      allowCustomer: true,
     }
   },
   {
@@ -160,6 +186,8 @@ const routes = [
     component: () => import('../views/Bookings/User/ListUserBookings.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: false,
+      allowCustomer: true,
     }
   },
   {
@@ -168,6 +196,8 @@ const routes = [
     component: () => import('../views/Bookings/User/UserBooking.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: false,
+      allowCustomer: true,
     }
   },
   ////////////////////////////////////RUTAS PRIVADAS - BUSINESS //////////////////////
@@ -177,6 +207,8 @@ const routes = [
     component: () => import('../views/Business/GetBusiness.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -185,6 +217,8 @@ const routes = [
     component: () => import('../views/Business/EditBusiness.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -193,6 +227,8 @@ const routes = [
     component: () => import('../views/Business/EditPicturesBusiness.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -201,6 +237,8 @@ const routes = [
     component: () => import('../views/Bookings/Business/ListBusinessBookingsToday.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -209,6 +247,8 @@ const routes = [
     component: () => import('../views/Bookings/Business/ListBusinessBookingsTomorrow.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -217,6 +257,8 @@ const routes = [
     component: () => import('../views/Bookings/Business/ListBusinessBookings.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
 
@@ -226,6 +268,8 @@ const routes = [
     component: () => import('../views/Bookings/Business/BusinessBooking.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   {
@@ -234,6 +278,28 @@ const routes = [
     component: () => import('../views/Business/CheckAvailability.vue'),
     meta: {
       allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
+    }
+  },
+  {
+    path: '/business_availability_monthly',
+    name: 'CheckAvailabilityMonthly',
+    component: () => import('../views/Business/CheckAvailabilityMonthly.vue'),
+    meta: {
+      allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
+    }
+  },
+  {
+    path: '/business_market_share',
+    name: 'MarketShare',
+    component: () => import('../views/Business/MarketShare.vue'),
+    meta: {
+      allowAnon: false,
+      allowBusiness: true,
+      allowCustomer: false,
     }
   },
   ////////////////////////////////// ADMIN /////////////////////////////
@@ -243,7 +309,8 @@ const routes = [
     component: () => import('../views/Admin/CheckBusiness.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -262,7 +329,8 @@ const routes = [
     component: () => import('../views/Admin/ListBusiness.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -281,7 +349,8 @@ const routes = [
     component: () => import('../views/Admin/ListBusinessPending.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -300,7 +369,8 @@ const routes = [
     component: () => import('../views/Admin/ListBusinessBadReviews.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -319,7 +389,8 @@ const routes = [
     component: () => import('../views/Admin/ListUsers.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -338,7 +409,8 @@ const routes = [
     component: () => import('../views/Admin/CheckUser.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -357,7 +429,8 @@ const routes = [
     component: () => import('../views/Admin/ListBookings.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -376,7 +449,8 @@ const routes = [
     component: () => import('../views/Admin/ListBookingsPending.vue'),
     meta: {
       allowAnon: false,
-      onlyAdmin: true
+      onlyAdmin: true,
+      allowBusiness: false,
     },
     beforeEnter: (to, from, next) => {
       if (to.meta.onlyAdmin === true && !checkIsAdminUser()) {
@@ -389,22 +463,68 @@ const routes = [
       }
     }
   },
+  {
+    path: '*',
+    name: 'Error',
+    component: () => import('../views/Error.vue'),
+    meta: {
+      allowAnon: true,
+      onlyAdmin: false,
+    },
+
+  }
 
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    else {
+      const position = {};
+      if (to.hash) {
+        position.selector = to.hash;
+        if (document.querySelector(to.hash)) {
+          return position;
+        }
+        return false;
+      }
+    }
+  }
 })
 
 router.beforeEach((to, from, next) => {
-  if (!to.meta.allowAnon && !isLoggedInUser() && !isLoggedInUser() && !isLoggedInBusiness()) {
+  if (to.meta.allowBusiness === false && isLoggedInBusiness()) {
     next({
-      path: "/home",
-      query: { redirect: to.fullPath },
-    });
+      path: '/home',
+      query: { redirect: to.fullPath }
+    })
   } else {
     next();
   }
-})
+}),
+  router.beforeEach((to, from, next) => {
+    if (to.meta.allowCustomer === false && isLoggedInUser()) {
+      next({
+        path: '/home',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next();
+    }
+  }),
+  router.beforeEach((to, from, next) => {
+    if (!to.meta.allowAnon && !isLoggedInUser() && !isLoggedInAdmin() && !isLoggedInBusiness()) {
+      next({
+        path: "/home",
+        query: { redirect: to.fullPath },
+      });
+    } else {
+      next();
+    }
+  })
+
 
 export default router

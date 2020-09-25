@@ -1,41 +1,46 @@
 <template>
   <div class="ListBookingsPending">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>RESERVAS PENDIENTES DE PAGO</h1>
-    <h4>*Hacer seguimiento, las reservas con fecha de entrada anterior a actual, cancelarlas</h4>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID usuario</th>
-          <th>ID reserva</th>
-          <th>Estado Reserva</th>
-          <th>Hora de check in</th>
-          <th>Hora de check out</th>
-          <th>ID negocio</th>
-        </tr>
-      </thead>
+    <h3 v-if="bookings.length === 0">*No tienes reservas pendientes de pago*</h3>
+    <div v-else>
+      <h4>*Hacer seguimiento, las reservas con fecha de entrada anterior a actual, cancelarlas</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID usuario</th>
+            <th>ID reserva</th>
+            <th>Estado Reserva</th>
+            <th>Hora de check in</th>
+            <th>Hora de check out</th>
+            <th>ID negocio</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr v-for="booking in bookings" :key="booking.id">
-          <td data-label="ID usuario">
-            <router-link
-              :to="{name: 'CheckUser', params: { id: booking.id_user}}"
-            >{{booking.id_user}}</router-link>
-          </td>
-          <td data-label="ID reserva">
-            <router-link :to="{name: 'BookingUser', params: { id: booking.id}}">{{booking.id}}</router-link>
-          </td>
-          <td data-label="Estado reserva">{{booking.status}}</td>
-          <td data-label="Hora check in">{{formatDateTime(booking.check_in_time)}}</td>
-          <td data-label="Hora check out">{{formatDateTime(booking.check_out_time)}}</td>
-          <td data-label="ID negocio">
-            <router-link
-              :to="{name: 'CheckBusiness', params: { id: booking.id_business}}"
-            >{{booking.id_business}}</router-link>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <tbody>
+          <tr v-for="booking in bookings" :key="booking.id">
+            <td data-label="ID usuario">
+              <router-link
+                :to="{name: 'CheckUser', params: { id: booking.id_user}, hash: '#up'}"
+              >{{booking.id_user}}</router-link>
+            </td>
+            <td data-label="ID reserva">
+              <router-link
+                :to="{name: 'BookingUser', params: { id: booking.id}, hash: '#up'}"
+              >{{booking.id}}</router-link>
+            </td>
+            <td data-label="Estado reserva">{{booking.status}}</td>
+            <td data-label="Hora check in">{{formatDateTime(booking.check_in_time)}}</td>
+            <td data-label="Hora check out">{{formatDateTime(booking.check_out_time)}}</td>
+            <td data-label="ID negocio">
+              <router-link
+                :to="{name: 'CheckBusiness', params: { id: booking.id_business}, hash: '#up'}"
+              >{{booking.id_business}}</router-link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -104,7 +109,9 @@ export default {
 h1 {
   margin-bottom: 5rem;
 }
-
+h3 {
+  color: red;
+}
 button {
   display: inline-block;
   padding: 0.5rem 1.5rem;
@@ -116,6 +123,12 @@ button {
   color: coral;
   text-align: center;
   margin: 1rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 table {
   width: 100%;

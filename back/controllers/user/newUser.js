@@ -8,10 +8,10 @@ async function newUser(req, res, next) {
   try {
     connection = await getConnection();
     await newUserSchema.validateAsync(req.body);
-    const { name, surname, email, telephone, password, gender, birthday, city } = req.body;
+    const { name, surname, email, telephone, password, gender, birthday, province } = req.body;
 
     // comprobar que se reciben todos los datos necesarios
-    if (!email || !password || !name || !surname || !password || !gender || !birthday || !city) {
+    if (!email || !password || !name || !surname || !password || !gender || !birthday || !province) {
       throw generateError("Faltan datos para poder registrarte", 400);
     }
 
@@ -64,10 +64,10 @@ async function newUser(req, res, next) {
 
     // meter el nuevo usuario en la base de datos sin activar
     await connection.query(
-      `INSERT INTO users(name, surname, email, password, telephone, gender, birthday, age, city, creating_date, update_date, last_auth_update, registration_code )
+      `INSERT INTO users(name, surname, email, password, telephone, gender, birthday, age, province, creating_date, update_date, last_auth_update, registration_code )
       VALUES(?, ?, ?, SHA2(?,512), ?, ?, ?, ?, ?, UTC_TIMESTAMP(), UTC_TIMESTAMP(), UTC_TIMESTAMP(), ? )
             `,
-      [name, surname, email, password, telephone, gender, birthdayDateDB, age, city, registrationCode]
+      [name, surname, email, password, telephone, gender, birthdayDateDB, age, province, registrationCode]
     );
     res.send({
       status: "ok",

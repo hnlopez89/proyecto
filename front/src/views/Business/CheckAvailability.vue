@@ -1,11 +1,31 @@
 <template>
   <div id="checkAvailability">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
 
     <h1>Comprueba tu disponibilidad</h1>
     <input v-model="checkInDay" type="date" />
     <button @click="getAvailability()">Ver tú disponibilidad</button>
-    <table class="table">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Día</th>
+          <th>Reservas</th>
+          <th>Capacidad</th>
+          <th>% Ocupación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{formatDate(summary.day)}}</td>
+          <td>{{summary.totalBookings}}</td>
+          <td>{{summary.totalAvailable}}</td>
+          <td>{{summary.occ | rounding }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table>
       <thead>
         <tr>
           <th>Día</th>
@@ -18,42 +38,19 @@
 
       <tbody>
         <tr v-for="slot in availability" :key="slot.id">
-          <td>{{slot.check_in_day}}</td>
-          <td>{{slot.check_in_time}}</td>
+          <td>{{formatDate(slot.check_in_day)}}</td>
+          <td>{{slot.check_in_time}}:{{slot.minutes | addzero}}</td>
           <td>{{slot.bookings}}</td>
           <td>{{slot.allotment}}</td>
-          <td>{{slot.occ}}</td>
+          <td>{{slot.occ | rounding }}</td>
         </tr>
       </tbody>
     </table>
-    <!--<ul>
-      <li v-for="slot in availability" :key="slot.id">
-        <p>
-          <b>Día:</b>
-          {{slot.check_in_day}}
-        </p>
-        <p>
-          <b>Hora:</b>
-          {{slot.check_in_time}}
-        </p>
-        <p>
-          <b>Reservas:</b>
-          {{slot.bookings}}
-        </p>
-        <p>
-          <b>Capacidad:</b>
-          {{slot.allotment}}
-        </p>
-        <p>
-          <b>% Ocupación:</b>
-          {{slot.occ}}
-        </p>
-      </li>
-    </ul>-->
   </div>
 </template>
 
 <script>
+import { format } from "date-fns";
 import axios from "axios";
 import { getIdToken } from "../../utils";
 
@@ -63,11 +60,15 @@ export default {
   data() {
     return {
       availability: [],
+      summary: [],
       checkInDay: "",
     };
   },
 
   methods: {
+    formatDate(date) {
+      return format(new Date(date), "dd/MM/yyyy");
+    },
     goBack() {
       window.history.back();
     },
@@ -87,7 +88,7 @@ export default {
           }
         );
         this.availability = response.data.data;
-        console.log(response);
+        this.summary = response.data.summary;
       } catch (error) {
         console.log(error);
       }
@@ -102,14 +103,48 @@ export default {
 <style scoped>
 #checkAvailability {
   height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+      rgba(141, 153, 174, 0.8),
+      rgba(141, 153, 174, 0.5)
+    ),
+    url(../../assets/tempo.jpg);
 }
+
+input {
+  width: 12rem;
+  margin: auto;
+  border-radius: 5px;
+  border: 0;
+  display: block;
+}
+
+button {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  border: 0.1rem solid white;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  font-weight: bold;
+  background-color: black;
+  color: coral;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 table {
   border: 1px solid coral;
   background-color: #eeeeee;
-  width: 90%;
+  width: 70%;
   text-align: left;
   border-collapse: collapse;
-  margin: 3rem 0 0 3rem;
+  margin: 2rem auto;
 }
 
 table td,

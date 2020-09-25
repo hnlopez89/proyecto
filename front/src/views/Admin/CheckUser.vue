@@ -1,6 +1,6 @@
 <template>
   <div class="EditUser">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
 
     <h1>EDITAR MI USUARIO</h1>
     <div class="main">
@@ -27,9 +27,61 @@
         <label>Fecha de nacimiento</label>
 
         <input type="date" v-model="birthday" placeholder="Tu fecha de nacimiento" />
-        <label>Ciudad</label>
-
-        <input type="text" v-model="city" placeholder="Tu ciudad" />
+        <label>Provincia</label>
+        <select v-model="province" id="provincia">
+          <option value="Alava">Álava</option>
+          <option value="Albacete">Albacete</option>
+          <option value="Alicante">Alicante/Alacant</option>
+          <option value="Almeria">Almería</option>
+          <option value="Asturias">Asturias</option>
+          <option value="Avila">Ávila</option>
+          <option value="Badajoz">Badajoz</option>
+          <option value="Barcelona">Barcelona</option>
+          <option value="Burgos">Burgos</option>
+          <option value="Caceres">Cáceres</option>
+          <option value="Cadiz">Cádiz</option>
+          <option value="Cantabria">Cantabria</option>
+          <option value="Castellon">Castellón/Castelló</option>
+          <option value="Ceuta">Ceuta</option>
+          <option value="Ciudad_real">Ciudad Real</option>
+          <option value="Cordoba">Córdoba</option>
+          <option value="Cuenca">Cuenca</option>
+          <option value="Girona">Girona</option>
+          <option value="Granada">Granada</option>
+          <option value="Guadalajara">Guadalajara</option>
+          <option value="Guipuzcoa">Guipúzcoa</option>
+          <option value="Huelva">Huelva</option>
+          <option value="Huesca">Huesca</option>
+          <option value="Islas_Baleares">Islas Balears</option>
+          <option value="Jaen">Jaén</option>
+          <option value="La_coruña">La Coruña</option>
+          <option value="La_rioja">La Rioja</option>
+          <option value="Las_palmas">Las Palmas</option>
+          <option value="Leon">León</option>
+          <option value="Lleida">Lleida</option>
+          <option value="Lugo">Lugo</option>
+          <option value="Madrid">Madrid</option>
+          <option value="Malaga">Málaga</option>
+          <option value="Melilla">Melilla</option>
+          <option value="Murcia">Murcia</option>
+          <option value="Navarra">Navarra</option>
+          <option value="Ourense">Ourense</option>
+          <option value="Palencia">Palencia</option>
+          <option value="Pontevedra">Pontevedra</option>
+          <option value="Salamanca">Salamanca</option>
+          <option value="Segovia">Segovia</option>
+          <option value="Sevilla">Sevilla</option>
+          <option value="Soria">Soria</option>
+          <option value="Tarragona">Tarragona</option>
+          <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+          <option value="Teruel">Teruel</option>
+          <option value="Toledo">Toledo</option>
+          <option value="Valencia">Valencia</option>
+          <option value="Valladolid">Valladolid</option>
+          <option value="Vizcaya">Vizcaya</option>
+          <option value="Zamora">Zamora</option>
+          <option value="Zaragoza">Zaragoza</option>
+        </select>
         <label>Telefono</label>
 
         <input type="text" v-model="telephone" placeholder="Tu número de telefóno" />
@@ -89,7 +141,7 @@ export default {
       email: "",
       gender: "",
       birthday: "",
-      city: "",
+      province: "",
       telephone: "",
       picture: "",
       resignReason: "",
@@ -142,7 +194,7 @@ export default {
         this.email = response.data.data[0].email;
         this.gender = response.data.data[0].gender;
         this.telephone = response.data.data[0].telephone;
-        this.city = response.data.data[0].city;
+        this.province = response.data.data[0].province;
         this.picture = response.data.data[0].picture;
         this.birthday = this.formatDate(response.data.data[0].birthday);
         this.resignReason = response.data.data[0].resign_reason;
@@ -159,7 +211,7 @@ export default {
       this.email = dataUser.email;
       this.gender = dataUser.gender;
       this.birthday = dataUser.birthday;
-      this.city = dataUser.city;
+      this.province = dataUser.province;
       this.picture = dataUser.picture;
       this.telephone = dataUser.telephone;
       this.role = dataUser.role;
@@ -174,7 +226,7 @@ export default {
         userNewData.append("email", this.email);
         userNewData.append("gender", this.gender);
         userNewData.append("birthday", this.birthday);
-        userNewData.append("city", this.city);
+        userNewData.append("province", this.province);
         userNewData.append("telephone", this.telephone);
         userNewData.append("picture", this.picture);
         const response = await axios.put(
@@ -349,14 +401,15 @@ export default {
 
 img {
   display: block;
-  margin-bottom: 10px;
   border-radius: 10rem;
   border: solid 0.3rem grey;
-  width: 18rem;
+  width: 20rem;
+  height: 20rem;
   margin: auto;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  margin-bottom: 2rem;
 }
 
 #profile {
@@ -370,12 +423,6 @@ img {
   margin-bottom: 0.5rem;
 }
 
-/*div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 1rem;
-} */
 input {
   width: 14rem;
   text-align: center;
@@ -403,6 +450,13 @@ button {
   margin: 1rem;
   padding: 0.65rem;
   width: 12rem;
+}
+
+button:hover,
+#profile:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 .deploy {

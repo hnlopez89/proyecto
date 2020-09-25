@@ -1,6 +1,6 @@
 <template>
   <div class="ListUserBookingsConfirmed">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>MIS RESERVAS CONFIRMADAS</h1>
     <div v-if="booking.length === 0">
       <h3>Aún no tienes reservas</h3>
@@ -57,23 +57,27 @@ export default {
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.5)
     ),
-    url(../../../assets/tempo.jpg);
+    url(../../../assets/brick.jpeg);
 }
 button {
   display: inline-block;
-  padding: 0.3rem 1rem;
-  border: 0.1rem solid white;
+  padding: 0.5rem 1rem;
+  border: 0.1rem solid coral;
   border-radius: 0.12em;
   box-sizing: border-box;
   font-weight: bold;
   background-color: black;
   color: coral;
   text-align: center;
-  margin: 1rem;
-  padding: 0.65rem;
-  width: 12rem;
+  margin: 1rem 0 2rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

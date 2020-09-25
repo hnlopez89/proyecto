@@ -3,6 +3,7 @@ const {
   generateError,
   formatDateToDB,
   formatDateTimeToDB,
+  sendMail
 } = require("../../helpers");
 const { format, addMinutes } = require("date-fns");
 const { editUserBookingSchema } = require("../../validators/bookingsValidators");
@@ -41,7 +42,6 @@ async function editUserBooking(req, res, next) {
     if (!idBusinessBooking || !date || !hours || !minutes || !units || !idUser) {
       throw generateError("Faltan datos para modificar la reserva", 400);
     }
-
     //escoger la duración impuesta por el negocio y convertirla a dato manejable
     const [lengthBookingData] = await connection.query(
       `SELECT length_booking
@@ -130,15 +130,14 @@ async function editUserBooking(req, res, next) {
 
     //obtener disponibilidad del negocio (es lineal)
     const [allotmentAvailableData] = await connection.query(
-      `SELECT allotment_available
+      `SELECT allotment_available, email, name
         FROM business
         WHERE id=?`,
       [idBusinessBooking]
     );
     const allotmentAvailable = allotmentAvailableData[0].allotment_available;
-
-
     const status = idBookingData[0].status;
+
     //introducir reservar salvo si no hay disponibilidad
     if (ocupation < allotmentAvailable || ocupation === null) {
       if (status === 'PENDIENTE_DE_PAGO') {
@@ -191,6 +190,49 @@ async function editUserBooking(req, res, next) {
     } else {
       throw generateError("No quedan plazas", 400);
     }
+
+
+    const [userData] = await connection.query(
+      `SELECT email, name
+        FROM users
+        WHERE id=?`,
+      [idUser]
+    );
+
+    const userEmail = userData[0].email;
+    const businessEmail = allotmentAvailableData[0].email;
+    const businessName = allotmentAvailableData[0].name;
+    const bookingURL = `${process.env.FRONTEND_URL}/user/booking/${idBooking}`;
+    const bookingBusinessURL = `${process.env.FRONTEND_URL}/business/booking/${idBooking}`;
+
+    try {
+      await sendMail({
+        email: userEmail,
+        title: `Has modificado la reserva ${idBooking} en ${businessName} exitosamente`,
+        content: `Te informamos de que has modificado satisfactoriamente tu reserva con el 
+        id #${idBooking} en el establecimiento ${businessName}, siendo la llegada el día
+        ${date} a las ${hours}:${minutes} para un total de ${units}plazas.  Puedes acceder a la reserva 
+        mediante el siguiente enlace: ${bookingURL}.
+        Un saludo del equipo de Tempo`,
+      });
+    } catch (error) {
+      throw generateError("Error en el envío del email", 405);
+    }
+
+    try {
+      await sendMail({
+        email: businessEmail,
+        title: `Modificación de la reserva #${idBooking} con nueva llegada ${date} a las ${hours}:${minutes}`,
+        content: `Te informamos de que la reserva #${idBooking} se ha modificado, siendo la nueva llegada el día
+        ${date} a las ${hours}:${minutes} para un total de ${units}plazas. Puedes acceder a la reserva 
+        mediante el siguiente enlace: ${bookingBusinessURL}.
+        Un saludo del equipo de Tempo`,
+      });
+    } catch (error) {
+      throw generateError("Error en el envío del email", 405);
+    }
+
+
     res.send({
       status: "ok",
       message: "Reserva modificada satisfactoriamente!.",

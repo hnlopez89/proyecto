@@ -14,7 +14,7 @@ const newUserSchema = Joi.object().keys({
     birthday: Joi.date().max(validAge).required(),
     telephone: Joi.string().min(5).required().error(generateError("El número de telefóno no es válido", 400)),
     gender: Joi.string().valid('VARON', 'MUJER').required(),
-    city: Joi.string().min(3).max(30).required().error(generateError("Esta ciudad es incorrecta", 400)),
+    province: Joi.string().min(3).max(30).required().error(generateError("Esta provincia es incorrecta", 400)),
     active: Joi.string().invalid(true),
 
 });
@@ -33,7 +33,7 @@ const editUserSchema = Joi.object().keys({
     picture: Joi.any(),
     telephone: Joi.string().min(5).required().error(generateError("El número de telefóno no es válido", 400)),
     gender: Joi.string().valid('VARON', 'MUJER').required(),
-    city: Joi.string().min(3).max(30).required().error(generateError("Esta ciudad es incorrecta", 400)),
+    province: Joi.string().min(3).max(30).required().error(generateError("Esta provincia es incorrecta", 400)),
 });
 
 const editUserPasswordSchema = Joi.object().keys({

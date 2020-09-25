@@ -6,7 +6,7 @@ async function listBusinessBookings(req, res, next) {
         connection = await getConnection();
         const { id } = req.params;
 
-        const { idBusiness, name, category, city, status, order, direction } = req.query;
+        const { idBusiness, name, category, city, province, status, order, direction } = req.query;
         if (req.auth.id !== Number(id) && req.auth.role !== "admin") {
             const error = new Error(
                 "No tienes permisos para acceder a las reservas de otro negocio"
@@ -14,7 +14,6 @@ async function listBusinessBookings(req, res, next) {
             error.httpStatus = 403;
             throw error;
         }
-
         const orderDirection = (direction && direction.toLowerCase()) === "desc" ? "DESC" : "ASC";
         let orderBy;
         switch (order) {
@@ -26,6 +25,9 @@ async function listBusinessBookings(req, res, next) {
                 break;
             case "city":
                 orderBy = "city";
+                break;
+            case "province":
+                orderBy = "province";
                 break;
             case "category":
                 orderBy = "category";
@@ -41,7 +43,7 @@ async function listBusinessBookings(req, res, next) {
             `;
         const params = [];
         //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-        if (idBusiness || name || category || city || status) {
+        if (idBusiness || name || province || category || city || status) {
             const conditions = [];
             if (idBusiness) {
                 conditions.push(` id LIKE '${idBusiness}'`);
@@ -58,6 +60,10 @@ async function listBusinessBookings(req, res, next) {
             if (city) {
                 conditions.push(` city LIKE '${city}'`);
                 params.push(`'%${city}%'`);
+            }
+            if (province) {
+                conditions.push(` province LIKE '${province}'`);
+                params.push(`'%${province}%'`);
             }
             if (status) {
                 conditions.push(` status LIKE '${status}'`);

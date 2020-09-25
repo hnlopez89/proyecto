@@ -1,17 +1,71 @@
 <template>
   <div class="ListBusiness">
+    <button id="up" @click="goBack()">Volver</button>
     <h1>REGISTRO DE NEGOCIOS</h1>
-    <button @click="goBack()">Go Back</button>
     <fieldset action id="query">
       <input type="text" v-model="idBusiness" placeholder="Id del negocio" />
       <input v-model="name" type="text" placeholder="Nombre del Establecimiento" />
-      <input v-model="city" type="text" placeholder="Ciudad Escogida" />
+      <label>Provincia</label>
+      <select v-model="province" id="provincia">
+        <option value="Alava">Álava</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alicante">Alicante/Alacant</option>
+        <option value="Almeria">Almería</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Avila">Ávila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Caceres">Cáceres</option>
+        <option value="Cadiz">Cádiz</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castellon">Castellón/Castelló</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Ciudad_real">Ciudad Real</option>
+        <option value="Cordoba">Córdoba</option>
+        <option value="Cuenca">Cuenca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipuzcoa">Guipúzcoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Huesca">Huesca</option>
+        <option value="Islas_Baleares">Islas Balears</option>
+        <option value="Jaen">Jaén</option>
+        <option value="La_coruña">La Coruña</option>
+        <option value="La_rioja">La Rioja</option>
+        <option value="Las_palmas">Las Palmas</option>
+        <option value="Leon">León</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Malaga">Málaga</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Ourense">Ourense</option>
+        <option value="Palencia">Palencia</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Segovia">Segovia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Soria">Soria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Teruel">Teruel</option>
+        <option value="Toledo">Toledo</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Vizcaya">Vizcaya</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Zaragoza">Zaragoza</option>
+      </select>
       <label>Categoría:</label>
       <select v-model="category">
         <option value="TERRAZA">Terraza</option>
         <option value="BAR">Bar</option>
         <option value="RESTAURANTE">Restaurante</option>
-        <option value="PELUQUERIA">Peluquería</option>
+        <option value="PELUQUERÍA">Peluquería</option>
       </select>
       <label>Estado:</label>
       <select v-model="status">
@@ -27,7 +81,7 @@
       <label>Ordenar por:</label>
       <select @click="query()" id="orderBy">
         <option value="idBusiness">ID</option>
-        <option value="city">Ciudad</option>
+        <option value="province">Provincia</option>
         <option value="name">Nombre</option>
         <option value="category">Categoria</option>
       </select>
@@ -42,7 +96,7 @@
         <tr>
           <th>ID del negocio</th>
           <th>Nombre</th>
-          <th>Ciudad</th>
+          <th>Provincia</th>
           <th>Categoría</th>
           <th>Estado del negocio</th>
         </tr>
@@ -51,32 +105,35 @@
       <tbody>
         <tr v-for="unit in showedBusiness" :key="unit.id">
           <td data-label="ID del negocio">
-            <router-link :to="{name: 'CheckBusiness', params: { id: unit.id}}">{{unit.id}}</router-link>
+            <router-link
+              :to="{name: 'CheckBusiness', params: { id: unit.id}, hash: '#up'}"
+            >{{unit.id}}</router-link>
           </td>
           <td data-label="Nombre">{{unit.name}}</td>
-          <td data-label="Ciudad">{{unit.city}}</td>
-          <td data-label="Categoría">{{unit.category}}</td>
-          <td data-label="Estado del negocio">{{unit.status}}</td>
+          <td data-label="Provincia">{{unit.province | underscore | underscore | underscore}}</td>
+          <td data-label="Categoría">{{unit.category | lowcase}}</td>
+          <td data-label="Estado del negocio">{{unit.status | lowcase }}</td>
         </tr>
       </tbody>
     </table>
     <nav>
       <ul class="pagination">
+        <li class="page-item" :class="{'disabled': currentPage -5 <= 0}">
+          <button class="page-link" @click="firstPage"><<</button>
+        </li>
         <li class="page-item" :class="{'disabled': currentPage === 0}">
-          <button class="page-link" @click="previousPage">Anterior</button>
+          <button class="page-link" @click="previousPage"><</button>
         </li>
 
-        <li
-          v-for="page in pages"
-          :key="page"
-          class="page-item"
-          :class="{'active': currentPage === page}"
-        >
+        <li v-for="page in pages" :key="page" class="page-item">
           <button class="page-link" @click="goToPage(page)">{{ page + 1 }}</button>
         </li>
 
-        <li class="page-item" :class="{'disabled': currentPage === pages.length - 1}">
-          <button class="page-link" @click="nextPage">Siguiente</button>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages}">
+          <button class="page-link" @click="nextPage">></button>
+        </li>
+        <li class="page-item" :class="{'disabled': currentPage >= numberOfPages - 4 }">
+          <button class="page-link" @click="lastPage">>></button>
         </li>
       </ul>
     </nav>
@@ -92,7 +149,7 @@ export default {
     return {
       business: [],
       name: "",
-      city: "",
+      province: "",
       category: "",
       idBusiness: "",
       status: "",
@@ -119,14 +176,14 @@ export default {
           secondSelect.options[secondSelect.selectedIndex].value;
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
         axios.defaults.headers.common["Authorization"] = `${token}`;
-        console.log(orderBy, direction);
+        console.log(this.category);
         const response = await axios.get(
           "http://localhost:3000/admin/" + getIdToken(token) + "/business",
           {
             params: {
               idBusiness: this.idBusiness,
               name: this.name,
-              city: this.city,
+              province: this.province,
               category: this.category,
               status: this.status,
               order: orderBy,
@@ -169,6 +226,15 @@ export default {
       this.currentPage = page;
       this.currentIndex = page * this.elementsPerPage;
     },
+    firstPage() {
+      this.currentPage = 0;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
+    },
+    lastPage() {
+      let numberOfPages = Math.ceil(this.booking.length / this.elementsPerPage);
+      this.currentPage = numberOfPages - 1;
+      this.currentIndex = this.currentPage * this.elementsPerPage;
+    },
   },
   computed: {
     showedBusiness() {
@@ -182,8 +248,12 @@ export default {
         this.business.length / this.elementsPerPage
       );
       let pageArray = [];
-      for (let i = 0; i < numberOfPages; i++) {
-        pageArray.push(i);
+      this.numberOfPages = numberOfPages - 1;
+
+      for (let i = this.currentPage - 5; i < this.currentPage + 5; i++) {
+        if (i >= 0 && i < numberOfPages) {
+          pageArray.push(i);
+        }
       }
       return pageArray;
     },
@@ -194,20 +264,23 @@ export default {
 };
 </script>
 <style scoped>
+.disabled {
+  display: none;
+}
 .ListBusiness {
   min-height: 100vh;
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.8)
     ),
-    url(../../assets/tempo.jpg);
+    url(../../assets/brick.jpeg);
 }
 
 #ordered {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 30rem;
+  width: 33rem;
   margin: auto;
   justify-content: space-evenly;
 }
@@ -215,6 +288,10 @@ export default {
   color: coral;
   margin: auto;
   margin-right: 0.1rem;
+  font-weight: bold;
+}
+#ordered > select {
+  background-color: white;
 }
 
 .pagination {
@@ -226,22 +303,17 @@ export default {
   padding-bottom: 1rem;
 }
 
-li > button {
-  margin: 0.5rem;
-}
-
 li {
   list-style: none;
 }
-
-h1 {
-  margin-top: 0;
-  padding-top: 1rem;
+a {
+  text-decoration: none;
+  color: black;
 }
 
 button {
   display: inline-block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem;
   border: 0.1rem solid white;
   border-radius: 0.12em;
   box-sizing: border-box;
@@ -249,7 +321,13 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
-  margin-top: 1rem;
+  margin: 1rem 0;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 fieldset {
@@ -259,7 +337,7 @@ fieldset {
   border-radius: 1rem;
   width: 12rem;
   background-color: rgba(24, 9, 4, 0.8);
-  height: 13.5rem;
+  height: 15.5rem;
   justify-items: center;
 }
 
@@ -285,12 +363,10 @@ label {
 }
 
 table {
-  width: 100%;
-}
-table {
   border: 1px solid coral;
   background-color: #eeeeee;
-  width: 100%;
+  width: 60%;
+  margin: auto;
   text-align: left;
   border-collapse: collapse;
 }

@@ -19,6 +19,7 @@ async function getBusinessBooking(req, res, next) {
             B.status,
             B.rating,
             B.rating_description,
+            B.rating_answer,
             units,
             request,
             U.name,
@@ -27,7 +28,7 @@ async function getBusinessBooking(req, res, next) {
             U.gender,
             U.birthday,
             U.age,
-            U.city,
+            U.province,
             B.creating_date,
             B.update_date
             FROM booking B INNER JOIN users U ON B.id_user = U.id

@@ -1,6 +1,6 @@
 <template>
   <div class="ListBusinessBadReviews">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
 
     <h1>LISTADO DE NEGOCIOS CON MALA PUNTUACIÓN</h1>
 
@@ -18,7 +18,7 @@
         <tr v-for="unit in business" :key="unit.id">
           <td data-label="ID del negocio">
             <router-link
-              :to="{name: 'CheckBusiness', params: { id: unit.id_business}}"
+              :to="{name: 'CheckBusiness', params: { id: unit.id_business}, hash: '#up'}"
             >{{unit.id_business}}</router-link>
           </td>
           <td data-label="Nombre">{{unit.name}}</td>
@@ -43,33 +43,6 @@ export default {
     goBack() {
       window.history.back();
     },
-    /*async query() {
-      try {
-        const firstSelect = document.getElementById("orderBy");
-        const orderBy = firstSelect.options[firstSelect.selectedIndex].value;
-        const secondSelect = document.getElementById("direction");
-        const direction =
-          secondSelect.options[secondSelect.selectedIndex].value;
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        console.log(orderBy, direction);
-        const response = await axios.get(
-          "http://localhost:3000/admin/" +
-            getIdToken(token) +
-            "/business-to-activate/",
-          {
-            params: {
-              order: orderBy,
-              direction: direction,
-            },
-          }
-        );
-        this.business = response.data.data;
-        console.log(this.business);
-      } catch (error) {
-        console.log(error);
-      }
-    },*/
     async getBusiness() {
       try {
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
@@ -114,15 +87,25 @@ button {
   margin-top: 0.5rem;
 }
 
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 h1 {
   margin-bottom: 3rem;
+}
+a {
+  text-decoration: none;
+  color: black;
 }
 
 table {
   border: 1px solid coral;
   background-color: #eeeeee;
-  width: 90%;
-  text-align: left;
+  width: 70%;
+  text-align: center;
   border-collapse: collapse;
   margin: 2rem auto;
 }

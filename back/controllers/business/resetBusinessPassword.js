@@ -11,10 +11,11 @@ async function resetBusinessPassword(req, res, next) {
 
     const { recoverCode, newPassword } = req.body;
 
+    console.log(newPassword, recoverCode);
     const [current] = await connection.query(
       `SELECT id
             FROM business
-            WHERE registration_code=? AND status='OPERATIVO' 
+            WHERE registration_code=? AND (status='OPERATIVO' OR status='PENDIENTE') 
             `,
       [recoverCode]
     );
@@ -25,7 +26,6 @@ async function resetBusinessPassword(req, res, next) {
         404
       );
     }
-    console.log(newPassword, recoverCode);
 
     await connection.query(
       `UPDATE business

@@ -18,6 +18,7 @@ async function activateBusiness(req, res, next) {
             allotment,
             profile_picture,
             zip_code,
+            city,
             province,
             line1,
             line2,
@@ -41,6 +42,7 @@ async function activateBusiness(req, res, next) {
     const allotment = result[0].allotment;
     const profilePicture = result[0].profile_picture;
     const zipCode = result[0].zip_code;
+    const city = result[0].city;
     const province = result[0].province;
     const line1 = result[0].line1;
     const line2 = result[0].line2;
@@ -55,6 +57,7 @@ async function activateBusiness(req, res, next) {
       !allotment ||
       !profilePicture ||
       !zipCode ||
+      !city ||
       !province ||
       !line1 ||
       !line2 ||

@@ -11,12 +11,14 @@ async function listUserBookings(req, res, next) {
       throw error;
     }
     const [result] = await connection.query(
-      `SELECT booking.id, booking.check_in_day,booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city, booking.id_business
+      `SELECT booking.id, booking.check_in_day,booking.check_in_time, booking.units, business.province, booking.check_out_time, booking.status, business.name, business.category, business.city, booking.id_business
             FROM booking 
             INNER JOIN business ON booking.id_business = business.id
             INNER JOIN users ON booking.id_user = users.id
             WHERE users.id = ? AND (booking.status = 'CONFIRMADO'
             OR booking.status = 'MODIFICADO' OR booking.status = 'PENDIENTE_DE_PAGO')
+            ORDER BY booking.check_in_time ASC
+
             `,
       [id]
     );

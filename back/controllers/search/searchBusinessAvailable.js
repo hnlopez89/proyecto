@@ -7,10 +7,10 @@ async function searchBusinessAvailable(req, res, next) {
     connection = await getConnection();
 
     //OBTENER CRITERIOS DE BÚSQUEDA DE USUARIO
-    const { id, city, category, date, hours, minutes, name, units, order, direction } = req.query;
+    const { id, province, category, date, hours, minutes, name, units, order, direction } = req.query;
     //CONSTRUCCIÓN DE BÚSQUEDA
     let query = `
-      SELECT BD.id, BD.name, BD.profile_picture, BD.category, BD.city, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
+      SELECT BD.id, BD.name, BD.profile_picture, BD.category, BD.province, BD.opening_time, BD.closing_time, BD.vote_average, BD.total_votes
       FROM business_details BD LEFT OUTER JOIN opening_days OD ON BD.id = OD.id_business
       WHERE BD.status = 'ACTIVO' AND `;
 
@@ -33,12 +33,11 @@ async function searchBusinessAvailable(req, res, next) {
 
     //COMPLETAR BÚSQUEDA CON CRITERIOS DE USUARIO
     const params = [];
-    if (city || category || date && hours && minutes && units && !name && !id) {
+    if (province || category || date && hours && minutes && units && !name && !id) {
       const conditions = [];
-      console.log("MAMALON MAMALON");
-      if (city) {
-        conditions.push(`city LIKE '${city}'`);
-        params.push(`%${city}%`);
+      if (province) {
+        conditions.push(`province LIKE '${province}'`);
+        params.push(`%${province}%`);
       }
       if (category) {
         conditions.push(`category LIKE '${category}'`);
@@ -54,10 +53,15 @@ async function searchBusinessAvailable(req, res, next) {
         dateString.setHours(hours);
         console.log(dateString);
         dateString.setMinutes(minutes);
-        dateString.setHours(dateString.getHours() + 2);
+        dateString.setHours(dateString.getHours());
         const queryUnixTime = dateString.getTime();
         const stringWeekDay = dateString.getDay();
-        const weekDay = Number(stringWeekDay);
+        console.log(stringWeekDay);
+        let weekDay = Number(stringWeekDay);
+        if (weekDay === 0) {
+          weekDay = 7
+        }
+        console.log(weekDay);
         const checkInHour = dateString.getHours();
         const dateTimeDB = formatDateTimeToDB(dateString);
         const now = new Date().getTime();
@@ -68,8 +72,8 @@ async function searchBusinessAvailable(req, res, next) {
             400
           );
         }
-        conditions.push(`(${weekDay} + 1) IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
-          AND ${checkInHour} BETWEEN BD.opening_time AND BD.closing_time 
+        conditions.push(`${weekDay} IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
+          AND ${checkInHour} BETWEEN BD.opening_time AND (BD.closing_time - 1) 
           AND (( BD.check_in_time = '${dateTimeDB}' AND BD.allotment_available >= BD.count + ${units}) OR BD.check_in_time IS NULL OR
           '${dateTimeDB}' NOT IN (SELECT check_in_time FROM business_details WHERE id = BD.id))`);
         params.push(`'%${date}%'`, `'%${hours}%'`, `'%${minutes}%'`);
@@ -78,6 +82,7 @@ async function searchBusinessAvailable(req, res, next) {
       query = `${query} ${conditions.join(
         ` AND `
       )} GROUP BY BD.id, BD.name ORDER BY ${orderBy} ${orderDirection}`;
+      console.log(query);
       const [result] = await connection.query(query);
 
       //ENVÍAR BÚSQUEDA DE USUARIO
@@ -88,7 +93,7 @@ async function searchBusinessAvailable(req, res, next) {
     }
     //BÚSQUEDA ÚNICAMENTE DE NEGOCIOS CON EL MISMO NOMBRE
     //SE PRIORIZA ENCONTRAR EL NEGOCIO A SU DISPONIBILIDAD
-    if (name && !date && !city && !category) {
+    if (name && !date && !province && !category) {
 
       if (name) {
         query = `${query} BD.name LIKE '${name}' GROUP BY BD.id, BD.name`;
@@ -105,6 +110,7 @@ async function searchBusinessAvailable(req, res, next) {
 
     //BÚSQUEDA DE DISPONIBILIDAD DENTRO DE LA PÁGINA DEL NEGOCIO
     if (id && date && hours && minutes && units) {
+
       const conditions = [];
       conditions.push(`BD.id LIKE '${id}'`);
       params.push(`'%${id}%'`);
@@ -112,11 +118,13 @@ async function searchBusinessAvailable(req, res, next) {
 
       const dateString = new Date(date);
       dateString.setHours(hours);
-      console.log(dateString);
       dateString.setMinutes(minutes);
       const queryUnixTime = dateString.getTime();
       const stringWeekDay = dateString.getDay();
-      const weekDay = Number(stringWeekDay);
+      let weekDay = Number(stringWeekDay);
+      if (weekDay === 0) {
+        weekDay = 7
+      }
       const checkInHour = dateString.getHours();
       const dateTimeDB = formatDateTimeToDB(dateString);
       const now = new Date().getTime();
@@ -127,8 +135,16 @@ async function searchBusinessAvailable(req, res, next) {
           400
         );
       }
-      conditions.push(` (${weekDay} + 1) IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
-      AND ${checkInHour} BETWEEN BD.opening_time AND BD.closing_time 
+      const [businessData] = await connection.query(`SELECT * FROM business where id=?`, [id]);
+      const lengthBooking = businessData[0].length_booking;
+      const closingTime = businessData[0].closing_time;
+
+      if (lengthBooking === 60 && (Number(hours) === (closingTime - 1)) && Number(minutes) === 30) {
+        throw generateError("La duración de la reserva rebasaría la hora de cierre", 400)
+      }
+
+      conditions.push(`${weekDay} IN (SELECT day FROM opening_days WHERE id_business= BD.id) 
+      AND ${checkInHour} BETWEEN BD.opening_time AND (BD.closing_time - 1) 
       AND (( BD.check_in_time = '${dateTimeDB}' AND BD.allotment_available >= BD.count + ${units}) OR BD.check_in_time IS NULL OR
       '${dateTimeDB}' NOT IN (SELECT check_in_time FROM business_details WHERE id = BD.id))`);
       params.push(`'%${date}%'`, `'%${hours}%'`, `'%${minutes}%'`);
@@ -136,9 +152,11 @@ async function searchBusinessAvailable(req, res, next) {
       query = `${query} ${conditions.join(
         ` AND `
       )} GROUP BY BD.id, BD.name ORDER BY ${orderBy} ${orderDirection}`;
+
       console.log(query);
       const [result] = await connection.query(query);
 
+      console.log(result);
       //ENVÍAR BÚSQUEDA DE USUARIO
       res.send({
         status: "ok",

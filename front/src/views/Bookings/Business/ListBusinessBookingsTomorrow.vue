@@ -1,6 +1,6 @@
 <template>
   <div id="ListBusinessBookingsTomorrow">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>MIS RESERVAS DE MAÑANA</h1>
     <div v-if="bookings.length === 0">
       <h3>No tienes reservas para mañana</h3>
@@ -24,7 +24,9 @@
       <tbody>
         <tr v-for="booking in bookings" :key="booking.id">
           <td data-label="ID reserva">
-            <router-link :to="{name: 'BookingUser', params: { id: booking.id}}">{{booking.id}}</router-link>
+            <router-link
+              :to="{name: 'BookingUser', params: { id: booking.id}, hash: '#up'}"
+            >{{booking.id}}</router-link>
           </td>
           <td data-label="Estado reserva">{{booking.status}}</td>
           <td data-label="Nombre Cliente">{{booking.name}}</td>
@@ -119,6 +121,13 @@ button {
   text-align: center;
   margin: 1rem 0 2rem;
 }
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 table {
   border: 1px solid coral;
   background-color: #eeeeee;
@@ -126,6 +135,7 @@ table {
   text-align: left;
   border-collapse: collapse;
   margin: auto;
+  padding-bottom: 1rem;
 }
 
 table td,

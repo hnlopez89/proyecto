@@ -1,6 +1,6 @@
 <template>
   <div id="About">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
 
     <h1>Acerca de mí: Hugo Nogueira López</h1>
 
@@ -12,8 +12,8 @@
       <img id="node" src="../assets/nodejs.png" />
       <img src="../assets/sql.png" />
     </div>
+
     <div id="main">
-      <img src="../assets/me.jpg" />
       <div id="competences">
         <h2>Competencias en:</h2>
         <ul>
@@ -36,8 +36,9 @@
             </a>
           </li>
           <li>
-            <a target="_blank" href="https://twitter.com/hugonoglopez?lang=es"></a>
-            <img src="../assets/twitter.png" />
+            <a target="_blank" href="https://twitter.com/hugonoglopez?lang=es">
+              <img src="../assets/twitter.png" />
+            </a>
           </li>
           <li>
             <a target="_blank" href="https://www.instagram.com/nogueira.hugo/">
@@ -46,6 +47,7 @@
           </li>
         </ul>
       </div>
+      <img src="../assets/me.jpg" />
     </div>
   </div>
 </template>
@@ -76,7 +78,11 @@ button {
 }
 #About {
   min-height: 100vh;
-  background-color: grey;
+  background: linear-gradient(
+      rgba(141, 153, 174, 0.8),
+      rgba(141, 153, 174, 0.5)
+    ),
+    url(../assets/tempo.jpg);
 }
 
 #pictures {
@@ -133,6 +139,12 @@ li {
   width: auto;
   border: solid 0.1rem coral;
   border-radius: 1rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 #contact {

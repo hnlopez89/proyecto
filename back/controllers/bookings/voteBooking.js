@@ -21,7 +21,7 @@ async function voteBooking(req, res, next) {
     // comprobar que la booking que se quiere votar
     // tiene el mismo id de usuario que el que firma la petición
     const idUserBooking = Number(bookingData[0].id_user);
-    if (idUserBooking !== Number(idUser)) {
+    if (idUserBooking !== Number(idUser) && req.auth.role !== "admin") {
       throw generateError(
         "No estas autorizado para modificar esta reserva",
         404

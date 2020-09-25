@@ -21,6 +21,7 @@ async function listBusinessBookings(req, res, next) {
             INNER JOIN business ON B.id_business = business.id
             WHERE B.id_business = ?
             AND B.status = 'CONFIRMADO' OR B.status = 'MODIFICADO' OR B.status = 'PENDIENTE_DE_PAGO' ;
+            ORDER BY B.check_in_time DESC
             `,
       [id]
     );

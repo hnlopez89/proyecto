@@ -1,9 +1,8 @@
 <template>
   <div id="ListBusinessBookings">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>Registro de reservas</h1>
-    <fieldset>
-      <legend>Busca tu reserva</legend>
+    <div id="buscador">
       <input v-model="id" type="text" placeholder="Id de la reserva" />
       <input v-model="name" type="text" placeholder="Nombre del cliente" />
       <input v-model="surname" type="text" placeholder="Apellido del cliente" />
@@ -28,12 +27,12 @@
 
       <input v-model="units" type="text" placeholder="Unidades" />
       <button @click="query()">Buscar</button>
-    </fieldset>
+    </div>
     <div v-if="bookings.length === 0">
       <h3>No hay reservas que mostrar</h3>
     </div>
     <div v-else>
-      <form id="ordered" v-show="isQuery">
+      <form id="ordered" v-if="isQuery">
         <label for>Ordenar por</label>
         <select @click="query()" id="orderBy">
           <option value="id">ID Reserva</option>
@@ -73,7 +72,9 @@
         <tbody>
           <tr v-for="booking in showedBookings" :key="booking.id">
             <td data-label="ID reserva">
-              <router-link :to="{name: 'BookingBusiness', params: { id: booking.id}}">{{booking.id}}</router-link>
+              <router-link
+                :to="{name: 'BookingBusiness', params: { id: booking.id}, hash: '#up'}"
+              >{{booking.id}}</router-link>
             </td>
             <td data-label="Estado reserva">{{booking.status}}</td>
             <td data-label="Nombre Cliente">{{booking.name}}</td>
@@ -157,7 +158,6 @@ export default {
       try {
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
         axios.defaults.headers.common["Authorization"] = `${token}`;
-        console.log(getIdToken(token));
         const response = await axios.get(
           "http://localhost:3000/business/" +
             getIdToken(token) +
@@ -171,34 +171,60 @@ export default {
     },
     async query() {
       try {
-        const firstSelect = document.getElementById("orderBy");
-        const orderBy = firstSelect.options[firstSelect.selectedIndex].value;
-        const secondSelect = document.getElementById("direction");
-        const direction =
-          secondSelect.options[secondSelect.selectedIndex].value;
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
         axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.get(
-          "http://localhost:3000/business/" +
-            getIdToken(token) +
-            "/booking_advanced",
-          {
-            params: {
-              idBooking: this.id,
-              name: this.name,
-              surname: this.surname,
-              status: this.status,
-              checkInDay: this.checkInDay,
-              checkInTime: this.checkInTime,
-              units: this.units,
-              creatingDate: this.creatingDate,
-              order: orderBy,
-              direction: direction,
-            },
-          }
-        );
-        this.bookings = response.data.data;
-        this.isQuery = true;
+        if (
+          document.getElementById("orderBy") &&
+          document.getElementById("direction")
+        ) {
+          const firstSelect = document.getElementById("orderBy");
+          const orderBy = firstSelect.options[firstSelect.selectedIndex].value;
+          const secondSelect = document.getElementById("direction");
+          const direction =
+            secondSelect.options[secondSelect.selectedIndex].value;
+          const response = await axios.get(
+            "http://localhost:3000/business/" +
+              getIdToken(token) +
+              "/booking_advanced",
+            {
+              params: {
+                idBooking: this.id,
+                name: this.name,
+                surname: this.surname,
+                status: this.status,
+                checkInDay: this.checkInDay,
+                checkInTime: this.checkInTime,
+                units: this.units,
+                creatingDate: this.creatingDate,
+                order: orderBy,
+                direction: direction,
+              },
+            }
+          );
+          console.log(getIdToken);
+          this.bookings = response.data.data;
+          this.isQuery = true;
+        } else {
+          const response = await axios.get(
+            "http://localhost:3000/business/" +
+              getIdToken(token) +
+              "/booking_advanced",
+            {
+              params: {
+                idBooking: this.id,
+                name: this.name,
+                surname: this.surname,
+                status: this.status,
+                checkInDay: this.checkInDay,
+                checkInTime: this.checkInTime,
+                units: this.units,
+                creatingDate: this.creatingDate,
+              },
+            }
+          );
+          this.bookings = response.data.data;
+          this.isQuery = true;
+        }
       } catch (error) {
         console.log(error);
       }
@@ -241,6 +267,16 @@ export default {
 </script>
 
 <style scoped>
+.disabled {
+  display: none;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 #ListBusinessBookings {
   background: linear-gradient(
       rgba(141, 153, 174, 0.8),
@@ -263,22 +299,46 @@ li {
   list-style: none;
 }
 
-fieldset {
+#buscador {
+  padding: 1rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   width: 15rem;
   margin: 0 auto;
-  background-color: coral;
+  background-color: rgba(20, 20, 20, 0.8);
   border-radius: 1rem;
+  border: 0.1rem coral solid;
+}
+
+input {
+  width: 12rem;
+  margin-bottom: 0.3rem;
+  border-radius: 5px;
+  border: 0;
+  margin: 0.2rem auto;
+}
+
+select {
+  position: center;
+  border-radius: 1rem;
+  border: 1rem;
+  margin: 0.2rem auto;
+  width: 10rem;
+}
+
+label {
+  color: white;
+  margin: auto;
+  margin-top: 0.5rem;
 }
 
 button {
   display: inline-block;
   padding: 0.3rem 1rem;
-  border: 0.1rem solid #000000;
-  margin: 0 0 1.5rem 1rem;
+  border: 0.1rem solid coral;
+  margin: 0.5rem auto;
   border-radius: 0.12em;
   box-sizing: border-box;
   font-weight: bolder;
@@ -310,13 +370,18 @@ table {
   background-color: #eeeeee;
   text-align: left;
   border-collapse: collapse;
-  margin: 1rem;
+  margin: auto;
+  margin-top: 1rem;
 }
 
 table td,
 table th {
   border: 1px solid #aaaaaa;
   padding: 3px 2px;
+}
+a {
+  text-decoration: none;
+  color: black;
 }
 table td,
 table th {

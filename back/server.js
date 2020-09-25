@@ -33,6 +33,7 @@ const recoverBusinessPassword = require("./controllers/business/recoverBusinessP
 const resetBusinessPassword = require("./controllers/business/resetBusinessPassword");
 const editBusinessPassword = require("./controllers/business/editBusinessPassword");
 const deactiveBusiness = require("./controllers/business/deactiveBusiness");
+const businessMarketShare = require("./controllers/business/businessMarketShare");
 
 //SEARCH BUSINESS
 //const listBusiness = require("./controllers/business/listBusiness");
@@ -62,7 +63,9 @@ const getBusinessBooking = require("./controllers/bookings/getBusinessBooking");
 const checkInBooking = require("./controllers/bookings/checkInBooking");
 const checkOutBooking = require("./controllers/bookings/checkOutBooking");
 const noShowBooking = require("./controllers/bookings/noShowBooking");
+const answerBusinessRating = require("./controllers/bookings/answerBusinessRating");
 const checkBusinessAvailability = require("./controllers/bookings/checkBusinessAvailability");
+const checkBusinessAvailabilityMonthly = require("./controllers/bookings/checkBusinessAvailabilityMonthly");
 // ADMIN
 const isAdmin = require("./middleware/isAdmin");
 const activateBusiness = require("./controllers/admin/activateBusiness");
@@ -190,10 +193,16 @@ app.post("/business/recover-password", recoverBusinessPassword);
 //SOLO PARA NEGOCIOS REGISTRACIOS
 app.post("/business/reset-password", resetBusinessPassword);
 
-//DESACTIVAR CUENTA DE USUARIO
-//PUT - /users/id/deactive
+//DESACTIVAR CUENTA DE NEGOCIO
+//PUT - /business/id/deactive
 //PRIVADO
-app.put("/business/:id/deactive", isUser, deactiveBusiness);
+app.put("/business/:id/deactive", isBusiness, deactiveBusiness);
+
+//VER TU CUOTA DE MERCADO
+//GET - /business/id/market_share
+//PRIVADO
+app.get("/business/:id/market_share", isBusiness, businessMarketShare);
+
 
 /* ********************************************* */
 
@@ -284,6 +293,14 @@ app.get(
   checkBusinessAvailability
 );
 
+//BUSCAR DISPONIBILIDAD MENSUAL
+//GET -/BUSINESS/:id/AVAILABILITY_MONTHLY
+app.get(
+  "/business/:idBusiness/availability_monthly",
+  isBusiness,
+  checkBusinessAvailabilityMonthly
+);
+
 
 //LISTAR BOOKINGS DE NEGOCIO
 //GET - /BUSINESS/:ID/BOOKING
@@ -346,6 +363,17 @@ app.put(
   bookingExists,
   noShowBooking
 );
+
+//NO SHOW BOOKING
+//PUT - /BUSINESS/:ID/BOOKING/NOSHOW
+app.put(
+  "/business/:idBusiness/booking/:idBooking/answer",
+  isBusiness,
+  bookingExists,
+  answerBusinessRating
+);
+
+
 
 /* ********************************************* */
 

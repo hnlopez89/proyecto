@@ -10,12 +10,15 @@ async function recoverBusinessPassword(req, res, next) {
 
     const { email } = req.body;
     const [current] = await connection.query(
-      `SELECT id
+      `SELECT *
             FROM business
             WHERE email=?
             `,
       [email]
     );
+    console.log(current);
+    console.log(email);
+    console.log("holi");
     if (current.length === 0) {
       throw generateError(
         `No hay ningún usuario con email ${email} en la base de datos`,
@@ -37,7 +40,7 @@ async function recoverBusinessPassword(req, res, next) {
         email: email,
         title: "Reset de tu password",
         content: `Alguien solicitó una recuperación de tu contraseño, este es el código que tienes que usar: ${recoverCode}
-                
+                Para resetear tu contraseña dirigete a este enlace e inserta el código que te acabamos de proporcionar: ${process.env.FRONTEND_URL}/reset-password/business .
                 Si no fuiste tu quien solicitó esta recuperación, ignora este email.`,
       });
     } catch (error) {

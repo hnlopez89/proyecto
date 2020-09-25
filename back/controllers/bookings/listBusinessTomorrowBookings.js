@@ -26,6 +26,7 @@ async function listBusinessTomorrowBookings(req, res, next) {
             INNER JOIN users on B.id_user = users.id
             INNER JOIN business ON B.id_business = business.id
             WHERE B.id_business = ? AND B.check_in_day = ?
+                        ORDER BY B.check_in_time DESC
             `,
       [id, tomorrow]
     );

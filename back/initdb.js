@@ -41,7 +41,7 @@ async function main() {
       gender ENUM ('VARON', 'MUJER'),
       birthday DATE,
       age INT,
-      city VARCHAR(50),
+      province VARCHAR(50),
       picture VARCHAR(80),
       resign_reason VARCHAR(100),
       creating_date TIMESTAMP NOT NULL,
@@ -61,29 +61,88 @@ async function main() {
         email,
         password,
         telephone,
+        gender,
+        birthday,
+        age,
         creating_date,
         update_date,
-        last_auth_update
+        last_auth_update,
+        active
         )
         VALUES (
           'admin',
         "Hugo",
         "Nogueira",
         "esehugo@hotmail.com",
-        SHA2("0123456789", 512),
+        SHA2("loremipsum", 512),
         652200931,
+        "VARON",
+        "1989/06/29",
+        "31",
         UTC_TIMESTAMP,
         UTC_TIMESTAMP,
-        UTC_TIMESTAMP
+        UTC_TIMESTAMP,
+        1
         )
       `
     );
     console.log("Poblando users");
 
-    const users = 40;
+    const users = 100;
     const genders = ["VARON", "MUJER"];
     const telephone = faker.phone.phoneNumber();
-    const cities = ["Madrid", "Barcelona", "A Coruña", "Santiago"];
+    const provinces = ["Alava",
+      "Albacete",
+      "Alicante",
+      "Almeria",
+      "Asturias",
+      "Avila",
+      "Badajoz",
+      "Barcelona",
+      "Burgos",
+      "Caceres",
+      "Cadiz",
+      "Cantabria",
+      "Castellon",
+      "Ceuta",
+      "Ciudad_real",
+      "Cordoba",
+      "Cuenca",
+      "Girona",
+      "Granada",
+      "Guadalajara",
+      "Guipuzcoa",
+      "Huelva",
+      "Huesca",
+      "Islas_Baleares",
+      "Jaen",
+      "La_coruña",
+      "La_rioja",
+      "Las_palmas",
+      "Leon",
+      "Lleida",
+      "Lugo",
+      "Madrid",
+      "Malaga",
+      "Melilla",
+      "Murcia",
+      "Navarra",
+      "Ourense",
+      "Palencia",
+      "Pontevedra",
+      "Salamanca",
+      "Segovia",
+      "Sevilla",
+      "Soria",
+      "Tarragona",
+      "Santa_cruz_de_Tenerife",
+      "Teruel",
+      "Toledo",
+      "Valencia",
+      "Valladolid",
+      "Vizcaya",
+      "Zamora",
+      "Zaragoza"];
     for (let index = 0; index < users; index++) {
       const name = faker.name.firstName();
       const surname = faker.name.lastName();
@@ -93,8 +152,8 @@ async function main() {
       const birthdayDB = formatDateToDB(birthday)
       const age = random(18, 75);
       const emailAddress = faker.internet.email();
-      const cityIndex = Math.floor(Math.random() * cities.length);
-      const city = cities[cityIndex];
+      const provinceIndex = Math.floor(Math.random() * provinces.length);
+      const province = provinces[provinceIndex];
 
       await connection.query(
         `INSERT INTO users(
@@ -106,10 +165,11 @@ async function main() {
             gender,
             birthday,
             age,
-            city,
+            province,
             creating_date,
             update_date,
-            last_auth_update
+            last_auth_update,
+            active
             )
             VALUES(
             "${name}",
@@ -120,10 +180,11 @@ async function main() {
              "${gender}",
              "${birthdayDB}",
              "${age}",
-             "${city}",
+             "${province}",
              UTC_TIMESTAMP,
              UTC_TIMESTAMP,
-             UTC_TIMESTAMP
+             UTC_TIMESTAMP,
+             1
              )
             `
       );
@@ -149,9 +210,9 @@ async function main() {
         allotment_available INT DEFAULT '0',
         allotment INT DEFAULT '0',
         profile_picture VARCHAR(150),
-        city VARCHAR(50) NOT NULL,
+        city VARCHAR(50),
         zip_code VARCHAR(50),
-        province VARCHAR(50),
+        province VARCHAR(50) NOT NULL,
         line1 VARCHAR(100),
         line2 VARCHAR(100),
         registration_code TINYTEXT,
@@ -166,7 +227,7 @@ async function main() {
     console.log("Poblando tabla business");
 
     // poblamos tabla de negocios
-    const business = 50;
+    const business = 1000;
     const categories = ["BAR", "PELUQUERÍA", "TERRAZA", "RESTAURANTE"];
     for (let index = 0; index < business; index++) {
       const name = faker.company.companyName();
@@ -178,10 +239,9 @@ async function main() {
       const closingTime = openingTime + 8;
       const description = faker.company.catchPhraseDescriptor();
       const banckAccount = faker.finance.iban();
-      const cityIndex = Math.floor(Math.random() * cities.length);
-      const city = cities[cityIndex];
+      const provinceIndex = Math.floor(Math.random() * provinces.length);
+      const province = provinces[provinceIndex];
       const zipCode = faker.address.zipCode();
-      const province = faker.address.state();
       const line1 = faker.address.streetAddress();
       const line2 = faker.address.secondaryAddress();
       await connection.query(
@@ -221,7 +281,7 @@ async function main() {
             "${banckAccount}",
             5,
             5,
-            "${city}",
+            "${province}",
             "${zipCode}",
             "${province}",
             "${line1}",
@@ -249,11 +309,30 @@ async function main() {
     console.log("Poblando tabla Dias de apertura");
 
     //poblamos tabla de dias de apertura de los negocios
+    /* for (let index = 1; index <= business; index++) {
+       let openingDays = 7;
+       let openingWeek = random(0, 2);
+       for (let i = 1; i <= openingDays; i++) {
+         let day = openingWeek + i;
+         await connection.query(`
+           INSERT INTO opening_days(id_business, day)
+           VALUES("${index}", "${day}")`);
+       }
+     }*/
+
+    //poblamos tabla de dias de apertura de los negocios
     for (let index = 1; index <= business; index++) {
-      let openingDays = 5;
-      let openingWeek = random(0, 2);
+      let openingDays = 7;
+      const dayOff = random(1, 7);
+      let dayOff2 = dayOff + 1;
+      if (dayOff2 === 8) {
+        dayOff2 = 1
+      }
       for (let i = 1; i <= openingDays; i++) {
-        let day = openingWeek + i;
+        let day = i;
+        if (dayOff === day || dayOff2 === day) {
+          day = 0
+        }
         await connection.query(`
           INSERT INTO opening_days(id_business, day)
           VALUES("${index}", "${day}")`);
@@ -289,6 +368,7 @@ async function main() {
         request VARCHAR(100),
         rating INT,
         rating_description VARCHAR(200),
+        rating_answer VARCHAR(200),
         creating_date TIMESTAMP NOT NULL,
         update_date DATETIME NOT NULL,
         credit_card_number VARCHAR(150) NOT NULL,
@@ -306,14 +386,16 @@ async function main() {
     
         `);
 
-    console.log("Poblando tabla Dias de apertura");
+    console.log("Poblando tabla de reservas pasadas");
 
 
     // poblamos tabla de bookings
-
-    const booking = 600;
+    const booking = 4000;
     for (let index = 0; index < booking; index++) {
-      const checkInTime = faker.date.future()
+      const checkInTime = faker.date.past();
+      checkInTime.setMinutes(0, 0, 0);
+      checkInTime.setFullYear(2020);
+      checkInTime.setMonth(random(1, 8))
       const checkInTimeDB = formatDateTimeToDB(checkInTime);
       const checkInDayDB = formatDateToDB(checkInTime);
       const checkOutTime = addMinutes(checkInTime, 30);
@@ -347,7 +429,8 @@ async function main() {
               creating_date,
               update_date,
               id_business,
-              id_user
+              id_user,
+              status
               )
               VALUES("${checkInTimeDB}",
               "${checkInDayDB}",
@@ -365,7 +448,66 @@ async function main() {
               UTC_TIMESTAMP,
               UTC_TIMESTAMP,
               "${idBusiness}",
-              "${idUser}"
+              "${idUser}",
+              "CHECK_OUT"
+              )`
+      );
+    }
+
+    console.log("Poblando tabla de reservas confirmadas");
+
+    for (let index = 0; index < booking / 2; index++) {
+      const checkInTime = faker.date.future();
+      checkInTime.setMinutes(0, 0, 0);
+      checkInTime.setFullYear(2020);
+      checkInTime.setMonth(random(9, 12))
+      const checkInTimeDB = formatDateTimeToDB(checkInTime);
+      const checkInDayDB = formatDateToDB(checkInTime);
+      const checkOutTime = addMinutes(checkInTime, 30);
+      const checkOutTimeDB = formatDateTimeToDB(checkOutTime);
+      const checkOutDayDB = formatDateToDB(checkOutTime);
+      const frequenzy = minutesToDB(30);
+      const creditCardNumber = random(4000000000000000, 5999999999999999);
+      const holderName = faker.name.findName();
+      const expiryMonth = random(1, 12);
+      const expiryYear = random(2020, 2040);
+      const cvcCode = random(100, 9999);
+      const idBusiness = random(1, business);
+      const idUser = random(1, users);
+      await connection.query(
+        `INSERT INTO booking (check_in_time,
+          check_in_day,
+              check_out_time,
+              check_out_day,
+              frequenzy_time,
+              credit_card_number,
+              holder_name,
+              expiry_month,
+              expiry_year,
+              cvc_code,
+              payment_date,
+              creating_date,
+              update_date,
+              id_business,
+              id_user,
+              status
+              )
+              VALUES("${checkInTimeDB}",
+              "${checkInDayDB}",
+              "${checkOutTimeDB}",
+              "${checkOutDayDB}",
+              "${frequenzy}",
+              SHA2("${creditCardNumber}", 512),
+              SHA2("${holderName}", 512),
+              SHA2("${expiryMonth}", 512),
+              SHA2("${expiryYear}", 512),
+              SHA2("${cvcCode}", 512),
+              UTC_TIMESTAMP,
+              UTC_TIMESTAMP,
+              UTC_TIMESTAMP,
+              "${idBusiness}",
+              "${idUser}",
+              "CONFIRMADO"
               )`
       );
     }
@@ -375,13 +517,13 @@ async function main() {
 
     //creamos la view en sql para filtrar facilmente los datos
     await connection.query(`
-     CREATE VIEW business_details AS
-  SELECT bu.id, bu.profile_picture, allotment, allotment_available, name, bu.category, bu.city, opening_time, closing_time, check_in_time, check_out_time, bu.status,
+       CREATE VIEW business_details AS
+  SELECT bu.id, bu.profile_picture, allotment, allotment_available, name, bu.category, bu.province, opening_time, closing_time, check_in_time, check_out_time, bu.status,
 	COUNT(b.id) AS count, (SELECT AVG(rating) FROM booking WHERE id_business = bu.id) AS vote_average,
 	(SELECT COUNT(rating) FROM booking WHERE id_business = bu.id) AS total_votes
   FROM business bu LEFT OUTER JOIN booking b ON b.id_business = bu.id
- WHERE NOT b.status = 'CANCELADO'  
-  GROUP BY bu.id, bu.profile_picture, allotment, allotment_available, name, bu.category, bu.city, opening_time, closing_time, check_in_time, check_out_time, bu.status, vote_average, total_votes;
+ WHERE NOT b.status = 'CANCELADO' OR bu.id NOT IN (SELECT id_business from booking)
+  GROUP BY bu.id, bu.profile_picture, allotment, allotment_available, name, bu.category, bu.province, opening_time, closing_time, check_in_time, check_out_time, bu.status, vote_average, total_votes;
 
 `);
   } catch (error) {

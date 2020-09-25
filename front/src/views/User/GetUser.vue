@@ -1,7 +1,7 @@
 <template>
   <div class="GetUser">
     <h1>PANEL DE CONTROL</h1>
-    <div id="boardUserData">
+    <div v-if="isLoad" id="boardUserData">
       <img :src="picture" :class="{hide: user.picture === null }" />
       <img src="../../assets/default-user-avatar.jpg" :class="{hide: user.picture !== null }" />
       <ul>
@@ -10,7 +10,7 @@
           <p>{{user.name}} {{user.surname}}</p>
         </li>
         <li>
-          <router-link :to="{ name: 'EditUser'}" tag="button">Editar tu Perfil</router-link>
+          <router-link :to="{ name: 'EditUser', hash: '#up'}" tag="button">Editar tu Perfil</router-link>
         </li>
         <li>
           <b>Tu última visita fue:</b>
@@ -24,60 +24,63 @@
 
         <li>
           <router-link
-            :to="{ name: 'ListBookingsPending'}"
+            :to="{ name: 'ListBookingsPending', hash: '#up'}"
             tag="button"
           >Ver las reservas pendientes de pago</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'ListBookings'}" tag="button">Ver todas las reservas</router-link>
+          <router-link
+            :to="{ name: 'ListBookings', hash: '#up'}"
+            tag="button"
+          >Ver todas las reservas</router-link>
         </li>
       </ul>
       <ul>
         <h3>Gestionar negocios:</h3>
         <li>
           <router-link
-            :to="{ name: 'ListBusinessPending'}"
+            :to="{ name: 'ListBusinessPending', hash: '#up'}"
             tag="button"
           >Ver negocios pendientes de activar</router-link>
         </li>
         <li>
           <router-link
-            :to="{ name: 'ListBusinessBadReviews'}"
+            :to="{ name: 'ListBusinessBadReviews', hash: '#up'}"
             tag="button"
           >Ver negocios con malas puntuaciones</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'ListBusiness'}" tag="button">Ver todos los negocios</router-link>
+          <router-link
+            :to="{ name: 'ListBusiness', hash: '#up'}"
+            tag="button"
+          >Ver todos los negocios</router-link>
         </li>
       </ul>
       <ul>
         <h3>Gestionar usuarios:</h3>
         <li>
-          <router-link :to="{ name: 'ListUsers'}" tag="button">Ver todos los usuarios</router-link>
+          <router-link :to="{ name: 'ListUsers', hash: '#up'}" tag="button">Ver todos los usuarios</router-link>
         </li>
       </ul>
     </div>
     <ul v-show="!adminWay" id="boardUserBookings">
       <h3>Tu sección de reservas</h3>
       <li>
-        <router-link :to="{ name: 'BookingUserHistoric'}" tag="button">Ver tus reservas pasadas</router-link>
+        <router-link
+          :to="{ name: 'BookingUserHistoric', hash: '#up'}"
+          tag="button"
+        >Ver tus reservas pasadas</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'BookingsUser'}" tag="button">Ver todas tus reservas</router-link>
+        <router-link :to="{ name: 'BookingsUser', hash: '#up'}" tag="button">Ver todas tus reservas</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'BookingUserConfirmed'}" tag="button">Ver tus reservas futuras</router-link>
+        <router-link
+          :to="{ name: 'BookingUserConfirmed', hash: '#up'}"
+          tag="button"
+        >Ver tus reservas futuras</router-link>
       </li>
     </ul>
-    <!--  <div v-show="!adminWay">
-      <p>¿Te quieres dar de baja con nosotros?</p>
-      <p>¿De verdad?</p>
-      <button v-show="!adminWay" @click="toggleResign()">Darte de baja</button>
-      <form v-show="explanation">
-        <input v-model="reason" type="text" placeholder="¿Porqué quieres darte de baja?" />
-        <button @click="resign()">Confirmar darte de baja</button>
-      </form>
-    </div>-->
   </div>
 </template>
 
@@ -90,7 +93,7 @@ export default {
   components: {},
   data() {
     return {
-      user: [],
+      user: null,
       idCliente: "",
       explanation: false,
       reason: "",
@@ -98,7 +101,11 @@ export default {
       picture: "",
     };
   },
-
+  computed: {
+    isLoad() {
+      return this.user !== null;
+    },
+  },
   methods: {
     goBack() {
       window.history.back();
@@ -133,26 +140,6 @@ export default {
     toggleResign() {
       this.explanation = true;
     },
-    /* async resign() {
-      try {
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.put(
-          "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
-          {
-            resignReason: this.reason,
-          }
-        );
-        axios.defaults.headers.common["Authorization"] = "";
-        localStorage.removeItem("AUTH_TOKEN_KEY");
-        localStorage.removeItem("ROLE");
-        localStorage.removeItem("NAME");
-        this.$router.push("/home");
-        location.reload();
-      } catch (error) {
-        console.log(error.response.data);
-      }
-    },*/
   },
   created() {
     this.getUser();
@@ -167,13 +154,14 @@ export default {
       rgba(141, 153, 174, 0.8),
       rgba(141, 153, 174, 0.5)
     ),
-    url(../../assets/tempo.jpg);
+    url(../../assets/brick.jpeg);
   padding: 1rem;
   min-height: 100vh;
 }
 
 img {
-  height: 15rem;
+  height: 16rem;
+  width: 15rem;
   border-radius: 20rem;
   border: solid white;
 }
@@ -217,6 +205,12 @@ img {
   margin: 1rem 0 2rem;
 }
 
+#boardUserData > ul li button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 #boardUserData > ul li p {
   margin-top: 0;
 }
@@ -254,6 +248,12 @@ li {
   margin: 1rem;
 }
 
+#boardUserBookings > li button:hover {
+  background-color: white;
+  color: coral;
+  cursor: pointer;
+}
+
 h3 {
   margin-top: 0rem;
 }
@@ -269,6 +269,12 @@ h3 {
   margin: 0.5rem;
 }
 
+#admin > ul li button:hover {
+  background-color: white;
+  color: coral;
+  cursor: pointer;
+}
+
 .hide {
   display: none;
 }
@@ -280,8 +286,17 @@ h3 {
     align-items: center;
     margin-bottom: 8rem;
   }
+  img {
+    height: 18rem;
+    width: 17rem;
+  }
+
   .GetUser {
-    background-image: url(../../assets/dashboard.jpeg);
+    background: linear-gradient(
+        rgba(241, 253, 254, 0.2),
+        rgba(241, 253, 254, 0.2)
+      ),
+      url(../../assets/dashboard.jpeg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -291,6 +306,7 @@ h3 {
     margin-top: 0;
     padding-top: 1rem;
     margin-bottom: 5rem;
+    font-family: var(--title);
   }
 
   #admin {

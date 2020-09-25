@@ -1,6 +1,6 @@
 <template>
   <div id="page">
-    <button id="back" @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <!--<vue-headful title=" Añade un cliente | Formulario " /> -->
     <h1>Crea tu cuenta</h1>
 
@@ -12,7 +12,64 @@
       <input type="password" v-model="password" placeholder="Contraseña" />
       <input type="date" v-model="birthday" placeholder="Fecha de nacimiento" />
       <input type="text" v-model="telephone" placeholder="Número de telefóno" />
-      <input type="text" v-model="city" placeholder="ciudad" />
+      <p>
+        <label for>Provincia</label>
+
+        <select v-model="province" id="provincia">
+          <option value="Alava">Álava</option>
+          <option value="Albacete">Albacete</option>
+          <option value="Alicante">Alicante/Alacant</option>
+          <option value="Almeria">Almería</option>
+          <option value="Asturias">Asturias</option>
+          <option value="Avila">Ávila</option>
+          <option value="Badajoz">Badajoz</option>
+          <option value="Barcelona">Barcelona</option>
+          <option value="Burgos">Burgos</option>
+          <option value="Caceres">Cáceres</option>
+          <option value="Cadiz">Cádiz</option>
+          <option value="Cantabria">Cantabria</option>
+          <option value="Castellon">Castellón/Castelló</option>
+          <option value="Ceuta">Ceuta</option>
+          <option value="Ciudad_real">Ciudad Real</option>
+          <option value="Cordoba">Córdoba</option>
+          <option value="Cuenca">Cuenca</option>
+          <option value="Girona">Girona</option>
+          <option value="Granada">Granada</option>
+          <option value="Guadalajara">Guadalajara</option>
+          <option value="Guipuzcoa">Guipúzcoa</option>
+          <option value="Huelva">Huelva</option>
+          <option value="Huesca">Huesca</option>
+          <option value="Islas_Baleares">Islas Balears</option>
+          <option value="Jaen">Jaén</option>
+          <option value="La_coruña">La Coruña</option>
+          <option value="La_rioja">La Rioja</option>
+          <option value="Las_palmas">Las Palmas</option>
+          <option value="Leon">León</option>
+          <option value="Lleida">Lleida</option>
+          <option value="Lugo">Lugo</option>
+          <option value="Madrid">Madrid</option>
+          <option value="Malaga">Málaga</option>
+          <option value="Melilla">Melilla</option>
+          <option value="Murcia">Murcia</option>
+          <option value="Navarra">Navarra</option>
+          <option value="Ourense">Ourense</option>
+          <option value="Palencia">Palencia</option>
+          <option value="Pontevedra">Pontevedra</option>
+          <option value="Salamanca">Salamanca</option>
+          <option value="Segovia">Segovia</option>
+          <option value="Sevilla">Sevilla</option>
+          <option value="Soria">Soria</option>
+          <option value="Tarragona">Tarragona</option>
+          <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+          <option value="Teruel">Teruel</option>
+          <option value="Toledo">Toledo</option>
+          <option value="Valencia">Valencia</option>
+          <option value="Valladolid">Valladolid</option>
+          <option value="Vizcaya">Vizcaya</option>
+          <option value="Zamora">Zamora</option>
+          <option value="Zaragoza">Zaragoza</option>
+        </select>
+      </p>
       <p>
         <label for>Sexo</label>
         <select type="text" v-model="gender">
@@ -38,7 +95,7 @@ export default {
       surname: "",
       gender: "",
       birthday: "",
-      city: "",
+      province: "",
       telephone: "",
       email: "",
       password: "",
@@ -57,7 +114,7 @@ export default {
         this.surname === "" ||
         this.gender === "" ||
         this.birthday === "" ||
-        this.city === "" ||
+        this.province === "" ||
         this.telephone === "" ||
         this.email === "" ||
         this.password === ""
@@ -78,11 +135,12 @@ export default {
             surname: this.surname,
             gender: this.gender,
             birthday: this.birthday,
-            city: this.city,
+            province: this.province,
             telephone: this.telephone,
             email: this.email,
             password: this.password,
           });
+          this.$router.push("/loginuser");
           Swal.fire({
             icon: "success",
             title:
@@ -101,7 +159,7 @@ export default {
         this.gender === "";
         this.birthday === "";
         this.telephone === "";
-        this.city === "";
+        this.province === "";
         this.email === "";
         this.password === "";
       } else {
@@ -122,13 +180,6 @@ export default {
   min-height: 100vh;
 }
 
-#back {
-  margin-top: 1rem;
-  border: 0.1rem solid black;
-  background-color: #ffffff;
-  margin-bottom: 3.5rem;
-}
-
 form {
   display: flex;
   flex-direction: column;
@@ -143,9 +194,16 @@ button {
   border-radius: 0.12em;
   box-sizing: border-box;
   font-weight: bold;
+  margin-top: 2rem;
   background-color: black;
   color: coral;
   text-align: center;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 input {
@@ -153,12 +211,13 @@ input {
   border: 0;
   padding: 0.2rem;
   margin: 0.2rem;
-  width: 12rem;
-  background-color: rgba(255, 127, 80, 0.8);
+  width: 13.2rem;
+  background-color: rgba(255, 127, 80, 0.9);
+  color: white;
 }
 
 ::placeholder {
-  color: rgba(220, 220, 220, 0.8);
+  color: white;
 }
 
 h1 {
@@ -167,22 +226,24 @@ h1 {
 }
 
 p {
-  padding: 0.2rem 0.5rem;
-  background-color: rgba(255, 127, 80, 0.8);
-  border-radius: 0.25rem;
+  padding: 0.2rem 0rem;
+  background-color: rgba(255, 127, 80, 0.9);
+  border-radius: 0.35rem;
   margin: 0.2rem;
+  width: 13.5rem;
 }
 
 select {
   border-radius: 1rem;
   border: 0;
   margin: 0;
-  padding: 0 2.5rem;
+  padding: 0;
+  width: 9rem;
 }
 
 label {
-  color: rgb(220, 220, 220);
-  margin-right: 1rem;
+  color: white;
+  margin-right: 0.2rem;
   font-size: 0.9rem;
 }
 

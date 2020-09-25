@@ -9,9 +9,9 @@ async function newBusiness(req, res, next) {
 
     //comprobar que se reciben todos los datos necesarios
     await newBusinessSchema.validateAsync(req.body);
-    const { name, manager, category, telephone, city, email, password } = req.body;
+    const { name, manager, category, telephone, province, email, password } = req.body;
 
-    if (!name || !manager || !category || !telephone || !city || !email || !password) {
+    if (!name || !manager || !category || !telephone || !province || !email || !password) {
       const error = new Error(
         "Faltan datos, es necesario indicar un email y una password"
       );
@@ -55,10 +55,10 @@ async function newBusiness(req, res, next) {
     }
     //meter el nuevo usuario en la base de datos
     await connection.query(
-      `INSERT INTO business(name, manager, category, telephone, city, email, password, creating_date, update_date, last_auth_update, registration_code)
+      `INSERT INTO business(name, manager, category, telephone, province, email, password, creating_date, update_date, last_auth_update, registration_code)
           VALUES(?, ?, ?, ?, ?, ?, SHA2(?,512), UTC_TIMESTAMP, UTC_TIMESTAMP, UTC_TIMESTAMP, ?)
           `,
-      [name, manager, category, telephone, city, email, password, registrationCode]
+      [name, manager, category, telephone, province, email, password, registrationCode]
     );
     res.send({
       status: "ok",

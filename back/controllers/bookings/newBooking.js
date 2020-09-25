@@ -26,6 +26,7 @@ async function newBooking(req, res, next) {
       expiryMonth,
       expiryYear,
       cvcCode,
+      request,
     } = req.body;
     //prohibir nueva reserva sin los datos necesarios
     /*  if (
@@ -55,12 +56,13 @@ async function newBooking(req, res, next) {
 
     //escoger la duración impuesta por el negocio y convertirla a dato manejable
     const [lengthBookingData] = await connection.query(
-      `SELECT length_booking, name
+      `SELECT length_booking, name, email
         FROM business
         WHERE id=?`,
       [idBusiness]
     );
     const lengthBooking = lengthBookingData[0].length_booking;
+    const emailBusiness = lengthBookingData[0].email;
     const frequenzy = minutesToDB(lengthBooking)
 
     //Si la reserva no empieza a la hora en punto o y media, la reserva no es válida
@@ -69,7 +71,6 @@ async function newBooking(req, res, next) {
     dateCheckInTime.setHours(hours);
     dateCheckInTime.setMinutes(minutes);
     const minutesCheckInTime = dateCheckInTime.getMinutes();
-    console.log(minutesCheckInTime);
     if (minutesCheckInTime !== 0 && minutesCheckInTime !== 30) {
       throw generateError(
         "La hora de inicio de la reserva no es correcta",
@@ -174,6 +175,7 @@ async function newBooking(req, res, next) {
               check_out_day,
               frequenzy_time,
               units,
+              request,
               creating_date,
               update_date,
               credit_card_number,
@@ -186,7 +188,7 @@ async function newBooking(req, res, next) {
               id_user
               )
               VALUES(
-                ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
+                ?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
                 SHA2(?,512),
                 SHA2(?,512),
                 SHA2(?,512),
@@ -202,6 +204,7 @@ async function newBooking(req, res, next) {
             checkOutDayToDB,
             frequenzy,
             units,
+            request,
             creditCardNumber,
             holderName,
             expiryMonth,
@@ -222,6 +225,7 @@ async function newBooking(req, res, next) {
               check_out_day,
               frequenzy_time,
               units,
+              request,
               creating_date,
               update_date,
               credit_card_number,
@@ -234,7 +238,7 @@ async function newBooking(req, res, next) {
               id_user
               )
               VALUES(
-                ?, ?, ?, ?, 10000, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
+                ?, ?, ?, ?, 10000, ?, ?, UTC_TIMESTAMP, UTC_TIMESTAMP,
                 SHA2(?,512),
                 SHA2(?,512),
                 SHA2(?,512),
@@ -249,6 +253,7 @@ async function newBooking(req, res, next) {
             checkOutTimeToDB,
             checkOutDayToDB,
             units,
+            request,
             creditCardNumber,
             holderName,
             expiryMonth,
@@ -268,18 +273,40 @@ async function newBooking(req, res, next) {
       LIMIT 1;  
       `);
       const idNewBooking = newBookingData[0].id;
+      const bookingURL = `${process.env.FRONTEND_URL}/user/booking/${idNewBooking}`;
+      const bookingBusinessURL = `${process.env.FRONTEND_URL}/business/booking/${idNewBooking}`;
 
+      console.log(idNewBooking, date, emailUser, hours, minutes, units, businessName, bookingURL);
       //MANDAR EMAIL DE CONFIRMACIÓN
-      /*try {
+      try {
         await sendMail({
-          emailUser,
-          title: `Reserva ${idNewBooking} confirmada con check-in ${checkInTime} en ${businessName}`,
-          content: `Estamos encantados de confirmar tu reserva para la fecha ${checkInTime} en el negocio
-          ${businessName}. Puedes acceder en tu perfil a los datos de la reserva. `,
+          email: emailUser,
+          title: `Reserva ${idNewBooking} confirmada con check-in el día ${date} en ${businessName}`,
+          content: `Estamos encantados de confirmar tu reserva para el día ${date} a las ${hours}:${minutes}
+          con un total de plazas de ${units} en el establecimiento ${businessName}. Puedes acceder a tu reserva
+          mediante el siguiente link: ${bookingURL}.
+        Un saludo del equipo de Tempo`,
         });
       } catch (error) {
         throw generateError("Error en el envío del email", 405);
-      }*/
+      }
+
+      try {
+        await sendMail({
+          email: emailBusiness,
+          title: `Nueva reserva #${idNewBooking} confirmada con check-in el día ${date}`,
+          content: `Tienes una reserva para el día ${date} a las ${hours}:${minutes}
+          con un total de ${units} plazas. Puedes acceder a la reserva mediante el siguiente link:
+           ${bookingBusinessURL}.
+        Un saludo del equipo de Tempo`,
+        });
+      } catch (error) {
+        throw generateError("Error en el envío del email", 405);
+      }
+
+
+
+
       //ESTABLECER LA RESPUESTA DE CONFIRMACIÓN
       res.send({
         status: "RESERVA CONFIRMADA",

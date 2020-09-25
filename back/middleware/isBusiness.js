@@ -1,5 +1,7 @@
 const jsonwebtoken = require("jsonwebtoken");
 const { getConnection } = require("../db");
+const { generateError } = require("../helpers");
+
 
 async function isBusiness(req, res, next) {
   let connection;
@@ -53,6 +55,11 @@ async function isBusiness(req, res, next) {
 
     //meter ese contenido en el objeto de petición para futuro uso
     req.auth = tokenInfo;
+
+    if (!req.auth.category && !req.auth.role === 'admin') {
+      throw generateError("Para acceder a datos de negocio debes loguearte como tal", 400)
+    }
+
     next();
   } catch (error) {
     next(error);

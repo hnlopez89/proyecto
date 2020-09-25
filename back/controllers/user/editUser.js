@@ -17,8 +17,8 @@ async function editUser(req, res, next) {
 
     // comprobar que se reciben todos los datos necesarios
     const { id } = req.params;
-    const { name, surname, email, gender, telephone, birthday, city } = req.body;
-    if (!email || !name || !surname || !gender || !telephone || !birthday || !city) {
+    const { name, surname, email, gender, telephone, birthday, province } = req.body;
+    if (!email || !name || !surname || !gender || !telephone || !birthday || !province) {
       throw generateError("Faltan datos para poder registrarte", 400);
     }
 
@@ -112,10 +112,10 @@ async function editUser(req, res, next) {
 
       await connection.query(
         `UPDATE users
-        SET name = ?, surname = ?, email=?, picture=?, telephone=?, gender=?, birthday=?, age=?, city=?, registration_code=?, update_date=UTC_TIMESTAMP, active=false, last_auth_update=UTC_TIMESTAMP 
+        SET name = ?, surname = ?, email=?, picture=?, telephone=?, gender=?, birthday=?, age=?, province=?, registration_code=?, update_date=UTC_TIMESTAMP, active=false, last_auth_update=UTC_TIMESTAMP 
         WHERE id=?
                 `,
-        [name, surname, email, savedFileName, telephone, gender, birthdayDateDB, age, city, registrationCode, id]
+        [name, surname, email, savedFileName, telephone, gender, birthdayDateDB, age, province, registrationCode, id]
       );
       // Dar una respuesta
       res.send({
@@ -125,10 +125,10 @@ async function editUser(req, res, next) {
     } else {
       await connection.query(
         `UPDATE users
-          SET name = ?, surname = ?, email = ?, picture=?, gender=?, birthday=?, age=?, city=?, update_date=UTC_TIMESTAMP
+          SET name = ?, surname = ?, email = ?, picture=?, gender=?, birthday=?, age=?, province=?, update_date=UTC_TIMESTAMP
           WHERE id=?
                 `,
-        [name, surname, email, savedFileName, gender, birthdayDateDB, age, city, id]
+        [name, surname, email, savedFileName, gender, birthdayDateDB, age, province, id]
 
       );
 

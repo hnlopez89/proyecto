@@ -1,6 +1,6 @@
 <template>
-  <div id="profile">
-    <button @click="goBack()">Go Back</button>
+  <div v-if="isDetails" id="profile">
+    <button id="up" @click="goBack()">Volver</button>
     <div>
       <h1>{{details.name}}</h1>
       <ul class="rating">
@@ -20,7 +20,9 @@
           {{details.count}}
         </li>
         <li>
-          <router-link :to="{ name: 'BookingReviews', params: {id: details.id}}">Ver puntuaciones</router-link>
+          <router-link
+            :to="{ name: 'BookingReviews', params: {id: details.id}, hash: '#up'}"
+          >Ver puntuaciones</router-link>
         </li>
       </ul>
     </div>
@@ -33,118 +35,102 @@
     >
       <slide>
         <img
-          v-if="details.category === 'TERRAZA'"
-          :class="{hide: details.profile_picture !== null}"
+          v-if="details.category === 'TERRAZA' && !details.profile_picture"
           src="../../assets/TERRAZA.jpg"
-          height="100"
+          height="100%"
         />
         <img
-          v-else-if="details.category === 'BAR'"
-          :class="{hide: details.profile_picture !== null}"
+          v-else-if="details.category === 'BAR' && !details.profile_picture"
           src="../../assets/BAR.jpg"
-          height="100"
+          height="100%"
         />
         <img
-          v-else-if="details.category === 'RESTAURANTE'"
-          :class="{hide: details.profile_picture !== null}"
+          v-else-if="details.category === 'RESTAURANTE' && !details.profile_picture"
           src="../../assets/RESTAURANTE.jpg"
-          height="100"
+          height="100%"
         />
         <img
-          v-else-if="details.category === 'PELUQUERÍA'"
-          :class="{hide: details.profile_picture !== null}"
+          v-else-if="details.category === 'PELUQUERÍA' && !details.profile_picture&& !details.profile_picture"
           src="../../assets/PELUQUERIA.jpg"
-          height="100"
+          height="100%"
         />
-        <img :src="setImage(details.profile_picture)" alt="Foto de perfil" />
+        <img v-if="isPicture" :src="setImage(details.profile_picture)" alt="Foto de perfil" />
       </slide>
       <slide>
         <img
-          v-if="details.category === 'TERRAZA'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-if="details.category === 'TERRAZA' && !pictures[0]"
           src="../../assets/TERRAZA.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'BAR'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'BAR'  && !pictures[0]"
           src="../../assets/BAR.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'RESTAURANTE'"
-          :class="{hide: details.profile_picture !== null}"
+          v-else-if="details.category === 'RESTAURANTE'  && !pictures[0]"
           src="../../assets/RESTAURANTE.jpg"
-          height="100"
+          height="100%"
         />
         <img
-          v-else-if="details.category === 'PELUQUERÍA'"
-          :class="{hide: details.profile_picture !== null}"
+          v-else-if="details.category === 'PELUQUERÍA'  && !pictures[0]"
           src="../../assets/PELUQUERIA.jpg"
-          height="100"
+          height="100%"
         />
-        <img :src="setImage(pictures[0])" alt="Foto de perfil" />
+        <img v-else :src="setImage(pictures[0])" alt="Foto de perfil" />
       </slide>
       <slide>
         <img
-          v-if="details.category === 'TERRAZA'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-if="details.category === 'TERRAZA' && !pictures[1]"
           src="../../assets/TERRAZA.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'BAR'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'BAR' && !pictures[1]"
           src="../../assets/BAR.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'RESTAURANTE'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'RESTAURANTE' && !pictures[1]"
           src="../../assets/RESTAURANTE.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'PELUQUERÍA'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'PELUQUERÍA' && !pictures[1]"
           src="../../assets/PELUQUERIA.jpg"
-          height="100"
         />
-        <img :src="setImage(pictures[1])" alt="Foto de perfil" />
+        <img v-else-if="isPicture2" :src="setImage(pictures[1])" alt="Foto de perfil" />
       </slide>
       <slide>
         <img
-          v-if="details.category === 'TERRAZA'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-if="details.category === 'TERRAZA' && !pictures[2]"
           src="../../assets/TERRAZA.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'BAR'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'BAR' && !pictures[2]"
           src="../../assets/BAR.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'RESTAURANTE'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'RESTAURANTE' && !pictures[2]"
           src="../../assets/RESTAURANTE.jpg"
-          height="100"
         />
         <img
-          v-else-if="details.category === 'PELUQUERÍA'"
-          :class="{hide: details.profile_picture !== null}"
+          height="100%"
+          v-else-if="details.category === 'PELUQUERÍA' && !pictures[2]"
           src="../../assets/PELUQUERIA.jpg"
-          height="100"
         />
-        <img :src="setImage(pictures[2])" alt="Foto de perfil" />
+        <img height="100%" v-else-if="isPicture3" :src="setImage(pictures[2])" alt="Foto de perfil" />
       </slide>
       <hooper-navigation slot="hooper-addons"></hooper-navigation>
     </hooper>
     <div id="data">
       <p>
         <b>Categoría:</b>
-        {{details.category}}
+        {{details.category | lowcase}}
       </p>
       <p>
         <b>Descripción:</b>
@@ -156,7 +142,7 @@
           <b>Dirección:</b>
           {{details.line1}} {{details.line2}}, {{details.zip_code}}
         </p>
-        <p>{{details.city}}, {{details.province}}</p>
+        <p>{{details.city}}, {{details.province | underscore}}</p>
       </div>
       <p>
         El establecimiento abre de
@@ -165,63 +151,82 @@
       </p>
 
       <p>
-        <b>La duración de las citas de este establecimiento es de {{details.length_booking}} minutes</b>
+        <b>La duración de las citas de este establecimiento es de {{details.length_booking}} minutos</b>
       </p>
     </div>
 
-    <form id="hours">
-      <input v-model="date" type="date" placeholder="Datetime" />
-      <label for>Hora</label>
-      <select v-model="hours" id="units">
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
-        <option value="13">13</option>
-        <option value="14">14</option>
-        <option value="15">15</option>
-        <option value="16">16</option>
-        <option value="17">17</option>
-        <option value="18">18</option>
-        <option value="19">19</option>
-        <option value="20">20</option>
-        <option value="21">21</option>
-        <option value="22">22</option>
-        <option value="23">23</option>
-      </select>
-      <label for>Minutos</label>
-      <select v-model="minutes" id="units">
-        <option value="0">:00</option>
-        <option value="30">:30</option>
-      </select>
-      <label for>Plazas</label>
-      <select v-model="units" id="units">
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-      </select>
-      <button @click="query()">Comprobar disponibilidad</button>
-    </form>
-    <button id="checker" v-show="availability" @click="editTC = !editTC">Reservar</button>
-    <form v-show="editTC" id="newTC">
+    <ul id="hours">
+      <li>
+        <label for>Fecha</label>
+        <input v-model="date" type="date" placeholder="Datetime" />
+      </li>
+      <li>
+        <label for>Hora</label>
+        <select v-model="hours" id="units">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+        </select>
+        <label>:</label>
+        <select v-model="minutes" id="units">
+          <option value="0">:00</option>
+          <option value="30">:30</option>
+        </select>
+      </li>
+      <li>
+        <label for>Plazas</label>
+        <select v-model="units" id="units">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </li>
+      <button @click.prevent="query()">Comprobar disponibilidad</button>
+    </ul>
+    <button id="checker" v-show="availability" @click.prevent="editTC = !editTC">Reservar</button>
+    <textarea
+      v-show="editTC"
+      v-model="request"
+      cols="40"
+      rows="10"
+      placeholder="Indica tu petición especial"
+    ></textarea>
+    <p
+      v-show="editTC"
+      id="advice"
+    >Se te cargarán 3€ en tu tarjeta de crédito para confirmar la reserva</p>
+    <div v-show="editTC" id="newTC">
       <input v-model="creditCardNumber" type="text" placeholder="Inserta tu tarjeta de crédito" />
       <input v-model="holderName" type="text" placeholder="Inserta el titular de la tarjeta" />
+      <label>Mes</label>
       <select v-model="expiryMonth">
         <option value="01">01</option>
         <option value="02">02</option>
@@ -236,6 +241,7 @@
         <option value="11">11</option>
         <option value="12">12</option>
       </select>
+      <label>Año</label>
       <select v-model="expiryYear">
         <option value="2020">2020</option>
         <option value="2021">2021</option>
@@ -250,8 +256,8 @@
         <option value="2030">2030</option>
       </select>
       <input v-model="cvcCode" type="text" placeholder="Inserta tu CVV" />
-      <button @click="book()">Confirmar la reserva</button>
-    </form>
+      <button @click.prevent="book()">Confirmar la reserva</button>
+    </div>
   </div>
 </template>
 
@@ -271,8 +277,8 @@ export default {
   },
   data() {
     return {
-      details: {},
-      pictures: [],
+      details: null,
+      pictures: {},
       date: "",
       name: "",
       hours: "",
@@ -285,7 +291,26 @@ export default {
       expiryYear: "",
       cvcCode: "",
       editTC: "",
+      idBooking: "",
+      request: "",
     };
+  },
+  computed: {
+    isPicture() {
+      return this.details.profile_picture !== null;
+    },
+    isDetails() {
+      return this.details !== null;
+    },
+    isPicture1() {
+      return this.pictures[0].picture !== null;
+    },
+    isPicture2() {
+      return this.pictures[1].picture !== null;
+    },
+    isPicture3() {
+      return this.pictures[2].picture !== null;
+    },
   },
   methods: {
     setImage(img) {
@@ -325,15 +350,17 @@ export default {
             minutes: this.minutes,
           },
         });
-        console.log(response);
         if (response.data.data.length > 0) {
           this.availability = true;
         } else {
           this.availability = false;
         }
-        console.log(response.data.data.length);
       } catch (error) {
-        console.log(error.response);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
+        this.availability = false;
       }
     },
     async queryByDefault() {
@@ -352,7 +379,6 @@ export default {
         } else {
           this.availability = false;
         }
-        console.log(response.data.data.length);
       } catch (error) {
         console.log(error.response);
       }
@@ -361,7 +387,7 @@ export default {
       try {
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
         axios.defaults.headers.common["Authorization"] = `${token}`;
-        await axios.post(
+        const response = await axios.post(
           "http://localhost:3000/user/" +
             getIdToken(token) +
             "/business/" +
@@ -377,6 +403,7 @@ export default {
             expiryMonth: this.expiryMonth,
             expiryYear: this.expiryYear,
             cvcCode: this.cvcCode,
+            request: this.request,
           }
         );
         Swal.fire({
@@ -384,6 +411,8 @@ export default {
           title: "Has reservado satisfactoriamente",
           confirmButtonText: "OK",
         });
+        const idBooking = response.data.data[0].id;
+        await this.$router.push(`/user/booking/${idBooking}`);
       } catch (error) {
         Swal.fire({
           icon: "error",
@@ -404,6 +433,11 @@ export default {
   padding: 0.5rem;
 }
 
+#advice {
+  color: red;
+  font-size: 1.2rem;
+}
+
 .rating > li {
   list-style: none;
   margin: 0.2rem;
@@ -414,24 +448,36 @@ export default {
   display: none;
 }
 
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 a {
   text-decoration: none;
-  color: white;
+  color: coral;
   font-weight: bolder;
+  font-size: 1.3rem;
 }
 
 #profile {
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
+      rgba(241, 253, 254, 0.7),
+      rgba(241, 253, 254, 0.7)
     ),
-    url(../../assets/tempo.jpg);
+    url(../../assets/brick.jpeg);
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+}
+
+#hours > li {
+  list-style: none;
+  margin: 0.5rem;
 }
 
 #data {
@@ -443,35 +489,48 @@ a {
 }
 
 .hooper {
-  height: 300px;
+  height: 250px;
+  width: 100%;
+  background-color: grey;
 }
 img {
-  height: 300px;
-  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  margin: auto;
 }
 
 #hours {
   background-color: coral;
-  padding: 2rem;
+  padding: 1rem;
   margin: 1rem;
   border-radius: 1rem;
 }
 
-#hours > input,
-select {
-  margin: 1rem;
+#hours > li input,
+li select {
+  margin: 0.2rem;
   border-radius: 5px;
   border: 0;
+}
+#newTC > textarea {
+  display: inline;
+}
+
+#newTC > select,
+input {
+  margin: 3rem;
+  border-radius: 5px;
+  border: 0;
+  margin: auto;
 }
 
 #checker {
   display: block;
   margin: 1rem;
-  margin: 1rem auto 0 auto;
 }
 
 button {
@@ -487,18 +546,49 @@ button {
   text-align: center;
   margin-bottom: 0.5rem;
 }
+#newTC {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 2rem;
+  width: 80%;
+}
+
+@media (min-width: 420px) {
+  .hooper {
+    height: 350px;
+  }
+}
+
+@media (min-width: 700px) {
+  #hours {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  #hours > li {
+    margin-right: 1rem;
+  }
+  .hooper {
+    height: 460px;
+  }
+}
 
 @media (min-width: 1000px) {
   .hooper {
-    height: 600px;
+    width: 90%;
   }
-  img {
-    height: 600px;
-    width: 100%;
+}
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+@media (min-width: 1400px) {
+  .hooper {
+    height: 650px;
+    width: 70%;
   }
 }
 </style>

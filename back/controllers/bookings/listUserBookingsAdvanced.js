@@ -8,7 +8,7 @@ async function listUserBookingsAdvanced(req, res, next) {
 
     //OBTENER CRITORIOS DE BÚSQUEDA
     const { id } = req.params;
-    const { checkInDay, status, creatingDate, name, category, city, order, direction } = req.query;
+    const { checkInDay, status, creatingDate, name, category, city, province, order, direction } = req.query;
 
     //PROHÍBIR ACCEDER A DATOS AJENOS
     if (req.auth.id !== Number(id)) {
@@ -16,7 +16,7 @@ async function listUserBookingsAdvanced(req, res, next) {
     }
 
     //CONSTRUIR INICIO DE QUERY
-    let query = `SELECT B.id, B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, BU.name, BU.category, BU.city
+    let query = `SELECT B.id, B.check_in_day, B.check_in_time, B.check_out_time, B.status, B.units, BU.name, BU.category, BU.city, BU.province
             FROM booking B
             INNER JOIN business BU ON B.id_business = BU.id
             INNER JOIN users U ON B.id_user = U.id
@@ -44,6 +44,9 @@ async function listUserBookingsAdvanced(req, res, next) {
       case "city":
         orderBy = "BU.city";
         break;
+      case "province":
+        orderBy = "BU.province";
+        break;
       case "category":
         orderBy = "BU.category";
         break;
@@ -53,7 +56,7 @@ async function listUserBookingsAdvanced(req, res, next) {
 
     const params = [];
     //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-    if (checkInDay || status || creatingDate || name || category || city) {
+    if (checkInDay || status || creatingDate || name || category || city || province) {
       const conditions = [];
 
 
@@ -86,6 +89,10 @@ async function listUserBookingsAdvanced(req, res, next) {
 
       if (city) {
         conditions.push(` BU.city LIKE '${city}'`);
+        params.push(`'%${city}%'`);
+      }
+      if (province) {
+        conditions.push(` BU.province LIKE '${province}'`);
         params.push(`'%${city}%'`);
       }
 

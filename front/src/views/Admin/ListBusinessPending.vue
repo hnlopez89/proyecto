@@ -1,61 +1,52 @@
 <template>
   <div class="ListBusinessPending">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
 
     <h1>NEGOCIOS PENDIENTES DE ACTIVACIÓN</h1>
 
-    <!--<div>
-        <label>Categoría:</label>
-        <select v-model="category">
-          <option value="TERRAZA">Terraza</option>
-          <option value="BAR">Bar</option>
-          <option value="RESTAURANTE">Restaurante</option>
-          <option value="PELUQUERIA">Peluquería</option>
-          <option>(todas las categorías)</option>
+    <div v-if="business.length === 0">
+      <h3>*No tienes negocios pendientes de validación*</h3>
+    </div>
+    <div v-if="business.length !==0">
+      <form id="ordered">
+        <label>Ordenar por:</label>
+        <select @click="query()" id="orderBy">
+          <option value="id">ID</option>
+          <option value="name">Nombre</option>
+          <option value="province">Provincia</option>
+          <option value="category">Categoría</option>
         </select>
-        <label>Ciudad:</label>
-        <input v-model="city" type="text" placeholder="Ciudad Escogida" />
-        <input v-model="name" type="text" placeholder="Nombre del Establecimiento" />
+        <label>Sentido:</label>
+        <select @click="query()" id="direction">
+          <option value="ASC">ascendente</option>
+          <option value="DESC">descendente</option>
+        </select>
+      </form>
 
-    </div>-->
-    <form id="ordered">
-      <label>Ordenar por:</label>
-      <select @click="query()" id="orderBy">
-        <option value="name">Nombre</option>
-        <option value="id">ID</option>
-        <option value="category">Categoría</option>
-        <option value="city">Ciudad</option>
-      </select>
-      <label>Sentido:</label>
-      <select @click="query()" id="direction">
-        <option value="ASC">ascendente</option>
-        <option value="DESC">descendente</option>
-      </select>
-    </form>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID del negocio</th>
+            <th>Nombre</th>
+            <th>Ciudad</th>
+            <th>Categoría</th>
+            <th>Estado del negocio</th>
+          </tr>
+        </thead>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID del negocio</th>
-          <th>Nombre</th>
-          <th>Ciudad</th>
-          <th>Categoría</th>
-          <th>Estado del negocio</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr v-for="unit in business" :key="unit.id">
-          <td data-label="ID del negocio">
-            <router-link :to="{name: 'CheckBusiness', params: { id: unit.id}}">{{unit.id}}</router-link>
-          </td>
-          <td data-label="Nombre">{{unit.name}}</td>
-          <td data-label="Ciudad">{{unit.city}}</td>
-          <td data-label="Categoría">{{unit.category}}</td>
-          <td data-label="Estado del negocio">{{unit.status}}</td>
-        </tr>
-      </tbody>
-    </table>
+        <tbody>
+          <tr v-for="unit in business" :key="unit.id">
+            <td data-label="ID del negocio">
+              <router-link :to="{name: 'CheckBusiness', params: { id: unit.id}}">{{unit.id}}</router-link>
+            </td>
+            <td data-label="Nombre">{{unit.name}}</td>
+            <td data-label="Provincia">{{unit.province | underscore}}</td>
+            <td data-label="Categoría">{{unit.category | lowcase}}</td>
+            <td data-label="Estado del negocio">{{unit.status}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -69,7 +60,7 @@ export default {
     return {
       business: [],
       name: "",
-      city: "",
+      province: "",
       category: "",
       idBusiness: "",
       status: "",
@@ -96,6 +87,11 @@ export default {
     },
     async query() {
       try {
+        const firstSelect = document.getElementById("orderBy");
+        const orderBy = firstSelect.options[firstSelect.selectedIndex].value;
+        const secondSelect = document.getElementById("direction");
+        const direction =
+          secondSelect.options[secondSelect.selectedIndex].value;
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
         axios.defaults.headers.common["Authorization"] = `${token}`;
         const response = await axios.get(
@@ -151,6 +147,9 @@ h1 {
   margin-bottom: 3rem;
 }
 
+h3 {
+  color: red;
+}
 select {
   position: center;
   border-radius: 1rem;
@@ -169,6 +168,12 @@ button {
   color: coral;
   text-align: center;
   margin-top: 0.5rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 table {

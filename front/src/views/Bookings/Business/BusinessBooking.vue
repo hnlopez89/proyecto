@@ -1,6 +1,6 @@
 <template>
   <div id="businessBooking">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <div id="mask">
       <ul id="bookingData">
         <h2>Datos de la reserva</h2>
@@ -48,7 +48,7 @@
           <b>Petición Especial:</b>
           {{booking.request}}
         </li>
-        <ul id="ratingBox">
+        <ul v-if="booking.rating" id="ratingBox">
           <h3>Puntuación:</h3>
           <li>
             <star-rating
@@ -62,8 +62,12 @@
             ></star-rating>
           </li>
           <li id="opinion">
-            <b>Opinión:</b>
-            {{booking.ratingDescription}}
+            <b>Opinión del cliente:</b>
+            {{booking.rating_description}}
+          </li>
+          <li v-if="booking.rating_answer">
+            <b>Tu respuesta:</b>
+            {{booking.rating_answer}}
           </li>
         </ul>
       </ul>
@@ -95,9 +99,19 @@
             {{booking.age}}
           </li>
           <li>
-            <b>Ciudad de tu cliente:</b>
-            {{booking.city}}
+            <b>Provincia de tu cliente:</b>
+            {{booking.province | underscore}}
           </li>
+        </ul>
+        <button
+          v-if="!booking.rating_answer && booking.rating_description"
+          @click="isAnswer = !isAnswer"
+        >Responder a la opinión</button>
+        <ul v-if="isAnswer">
+          <li>
+            <textarea v-model="ratingAnswer" cols="45" rows="10"></textarea>
+          </li>
+          <button @click="answer">Envía respuesta</button>
         </ul>
         <ul id="action">
           <li>
@@ -128,6 +142,8 @@ export default {
       booking: [],
       confirmed: false,
       checkedIn: false,
+      isAnswer: false,
+      ratingAnswer: "",
     };
   },
 
@@ -216,6 +232,24 @@ export default {
         console.log(error);
       }
     },
+    async answer() {
+      try {
+        let token = localStorage.getItem("AUTH_TOKEN_KEY");
+        axios.defaults.headers.common["Authorization"] = `${token}`;
+        const response = await axios.put(
+          "http://localhost:3000/business/" +
+            getIdToken(token) +
+            "/booking/" +
+            this.$route.params.id +
+            "/answer",
+          { ratingAnswer: this.ratingAnswer }
+        );
+        this.booking = response.data.data[0];
+        console.log(this.booking);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     goBack() {
       window.history.back();
     },
@@ -235,6 +269,9 @@ h2 {
 .red {
   color: red;
   font-weight: bold;
+}
+div {
+  padding: 0;
 }
 
 .green {
@@ -326,7 +363,7 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    align-items: center;
+    align-items: top;
   }
   #bookingData {
     margin: 2rem;

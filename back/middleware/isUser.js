@@ -1,5 +1,6 @@
 const jsonwebtoken = require("jsonwebtoken");
 const { getConnection } = require("../db");
+const { generateError } = require("../helpers");
 
 async function isUser(req, res, next) {
   let connection;
@@ -53,6 +54,10 @@ async function isUser(req, res, next) {
 
     //meter ese contenido en el objeto de petición para futuro uso
     req.auth = tokenInfo;
+
+    if (req.auth.role !== 'admin' && req.auth.role !== 'customer') {
+      throw generateError("Para acceder a datos de usuario debes loguearte como tal", 400)
+    }
 
     //pasar al siguiente middleware
     next();

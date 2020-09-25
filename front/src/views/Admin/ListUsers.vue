@@ -1,26 +1,81 @@
 <template>
   <div class="ListUsers">
+    <button id="up" @click="goBack()">Volver</button>
     <h1>REGISTRO DE USUARIOS</h1>
-    <button @click="goBack()">Go Back</button>
     <fieldset action id="query">
       <input type="text" v-model="idUser" placeholder="Id del Usuario" />
       <input v-model="name" type="text" placeholder="Nombre del Usuario" />
       <input v-model="surname" type="text" placeholder="Apellido del Usuario" />
-      <input v-model="city" type="text" placeholder="Ciudad Escogida" />
+      <label>Provincia</label>
+      <select v-model="province" id="provincia">
+        <option value="Alava">Álava</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alicante">Alicante/Alacant</option>
+        <option value="Almeria">Almería</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Avila">Ávila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Caceres">Cáceres</option>
+        <option value="Cadiz">Cádiz</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castellon">Castellón/Castelló</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Ciudad_real">Ciudad Real</option>
+        <option value="Cordoba">Córdoba</option>
+        <option value="Cuenca">Cuenca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipuzcoa">Guipúzcoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Huesca">Huesca</option>
+        <option value="Islas_Baleares">Islas Balears</option>
+        <option value="Jaen">Jaén</option>
+        <option value="La_coruña">La Coruña</option>
+        <option value="La_rioja">La Rioja</option>
+        <option value="Las_palmas">Las Palmas</option>
+        <option value="Leon">León</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Malaga">Málaga</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Ourense">Ourense</option>
+        <option value="Palencia">Palencia</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Segovia">Segovia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Soria">Soria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Teruel">Teruel</option>
+        <option value="Toledo">Toledo</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Vizcaya">Vizcaya</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Zaragoza">Zaragoza</option>
+      </select>
       <label>Estado del usuario:</label>
       <select v-model="active">
         <option value="1">Activado</option>
         <option value="0">Desactivado</option>
       </select>
-      <button @click="query()">Buscar negocios</button>
+      <button @click="query()">Buscar usuarios</button>
     </fieldset>
     <form id="ordered">
       <label>Ordenar por:</label>
       <select @click="query()" id="orderBy">
-        <option value="idUser">ID</option>
-        <option value="city">Ciudad</option>
-        <option value="name">Nombre del establecimiento</option>
-        <option value="category">Categoria del establecimiento</option>
+        <option value="id">ID</option>
+        <option value="province">Provincia</option>
+        <option value="name">Nombre</option>
+        <option value="surname">Apellido</option>
+        <option value="active">Estado</option>
       </select>
       <label>Sentido:</label>
       <select @click="query()" id="direction">
@@ -35,7 +90,7 @@
           <th>ID de usuario</th>
           <th>Nombre</th>
           <th>Apellidos</th>
-          <th>Ciudad</th>
+          <th>Provincia</th>
           <th>Estado del usuario</th>
         </tr>
       </thead>
@@ -43,11 +98,11 @@
       <tbody>
         <tr v-for="user in showedUsers" :key="user.id">
           <td>
-            <router-link :to="{name: 'CheckUser', params: { id: user.id}}">{{user.id}}</router-link>
+            <router-link :to="{name: 'CheckUser', params: { id: user.id}, hash: '#up'}">{{user.id}}</router-link>
           </td>
           <td>{{user.name}}</td>
           <td>{{user.surname}}</td>
-          <td>{{user.city}}</td>
+          <td>{{user.province | underscore}}</td>
           <td>{{user.active | yesno}}</td>
         </tr>
       </tbody>
@@ -55,7 +110,7 @@
     <nav>
       <ul class="pagination">
         <li class="page-item" :class="{'disabled': currentPage === 0}">
-          <button class="page-link" @click="previousPage">Anterior</button>
+          <button class="page-link" @click="previousPage"><</button>
         </li>
 
         <li
@@ -68,7 +123,7 @@
         </li>
 
         <li class="page-item" :class="{'disabled': currentPage === pages.length - 1}">
-          <button class="page-link" @click="nextPage">Siguiente</button>
+          <button class="page-link" @click="nextPage">></button>
         </li>
       </ul>
     </nav>
@@ -86,7 +141,7 @@ export default {
       idUser: "",
       name: "",
       surname: "",
-      city: "",
+      province: "",
       active: "",
       currentIndex: 0,
       elementsPerPage: 20,
@@ -113,8 +168,8 @@ export default {
               idUser: this.idUser,
               name: this.name,
               surname: this.surname,
-              city: this.city,
-              active: this.active,
+              province: this.province,
+              status: this.active,
               order: orderBy,
               direction: direction,
             },
@@ -173,27 +228,41 @@ export default {
 </script>
 
 <style scoped>
+.disabled {
+  display: none;
+}
 .ListUsers {
+  padding-top: 1rem;
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.8)
     ),
-    url(../../assets/tempo.jpg);
+    url(../../assets/brick.jpeg);
   min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: black;
 }
 
 #ordered {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 30rem;
-  margin: auto;
+  width: 33rem;
+  margin: 1rem auto;
   justify-content: space-evenly;
 }
 #ordered > label {
   color: coral;
   margin: auto;
-  margin-right: 0.1rem;
+  margin: 0 0.1rem;
+  font-weight: bold;
+}
+
+#ordered > select {
+  background-color: white;
 }
 
 .pagination {
@@ -210,7 +279,7 @@ li {
 
 button {
   display: inline-block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem;
   border: 0.1rem solid white;
   border-radius: 0.12em;
   box-sizing: border-box;
@@ -218,7 +287,13 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
-  margin: 0.5rem;
+  margin: 1rem 0;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 fieldset {
@@ -256,7 +331,7 @@ label {
 table {
   border: 1px solid coral;
   background-color: #eeeeee;
-  width: 90%;
+  width: 70%;
   text-align: left;
   border-collapse: collapse;
   margin: 1rem auto;

@@ -1,6 +1,6 @@
 <template>
   <div class="EditBusiness">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>EDITAR MI NEGOCIO</h1>
     <div>
       <div class="intro">
@@ -24,26 +24,6 @@
             />
             <img v-show="!newProfilePicture && profilePicture" :src="profilePicture" />
             <img v-if="newProfilePicture" :src="newProfilePicture" />
-
-            <!-- 
-
-
-
-          <img v-if="newProfilePicture" :src="newProfilePicture" />
-          <img
-            v-else-if="profilePicture"
-            :src="profilePicture"
-            :class="{hide: profilePicture === null }"
-            height="400"
-          />
-          <img
-            v-else
-            src="../../assets/business.png"
-            :class="{hide: profilePicture !== null}"
-            height="200"
-          />
-            -->
-
             <label for="profile" id="profilePicture">Cambiar tu foto de perfil</label>
             <input id="profile" type="file" ref="profilePicture" @change="uploadImage" />
           </div>
@@ -55,7 +35,7 @@
               <option value="TERRAZA">Terraza</option>
               <option value="BAR">Bar</option>
               <option value="RESTAURANTE">Restaurante</option>
-              <option value="PELUQUERIA">Peluquería</option>
+              <option value="PELUQUERÍA">Peluquería</option>
             </select>
 
             <fieldset class="form">
@@ -116,16 +96,16 @@
               <option value="Cordoba">Córdoba</option>
               <option value="Cuenca">Cuenca</option>
               <option value="Girona">Girona</option>
-              <option value="Las_palmas">Las Palmas</option>
               <option value="Granada">Granada</option>
               <option value="Guadalajara">Guadalajara</option>
               <option value="Guipuzcoa">Guipúzcoa</option>
               <option value="Huelva">Huelva</option>
               <option value="Huesca">Huesca</option>
-              <option value="Islas_balears">Islas Balears</option>
+              <option value="Islas_Baleares">Islas Balears</option>
               <option value="Jaen">Jaén</option>
-              <option value="A_coruña">A Coruña</option>
+              <option value="La_coruña">La Coruña</option>
               <option value="La_rioja">La Rioja</option>
+              <option value="Las_palmas">Las Palmas</option>
               <option value="Leon">León</option>
               <option value="Lleida">Lleida</option>
               <option value="Lugo">Lugo</option>
@@ -142,7 +122,7 @@
               <option value="Sevilla">Sevilla</option>
               <option value="Soria">Soria</option>
               <option value="Tarragona">Tarragona</option>
-              <option value="Santa_cruz_de_tenerife">Santa Cruz de Tenerife</option>
+              <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
               <option value="Teruel">Teruel</option>
               <option value="Toledo">Toledo</option>
               <option value="Valencia">Valencia</option>
@@ -298,19 +278,21 @@
           </fieldset>
         </form>
       </div>
-      <button @click="updateData()">Actualizar Cliente</button>
-      <button class="deploy" @click="explanation = !explanation">Darte de baja</button>
-      <form v-show="explanation" id="quit">
-        <textarea v-model="reason" type="text" placeholder="¿Porqué quieres darte de baja?" />
-        <button @click="resign()">Confirmar darte de baja</button>
-      </form>
+      <div id="end">
+        <button @click="updateData()">Actualizar Cliente</button>
+        <button class="deploy" @click.prevent="explanation = !explanation">Darte de baja</button>
+        <form v-show="explanation" id="quit">
+          <textarea v-model="reason" type="text" placeholder="¿Porqué quieres darte de baja?" />
+          <button @click.prevent="resign()">Confirmar darte de baja</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import axios from "axios";
 import { format } from "date-fns";
-import { getIdToken } from "../../utils";
+import { getIdToken, logout } from "../../utils";
 import Swal from "sweetalert2";
 export default {
   name: "EditBusiness",
@@ -492,8 +474,7 @@ export default {
         );
         Swal.fire({
           icon: "success",
-          title:
-            "Tu usuario se ha dado de baja correctamente. Te echaremos de menos.",
+          title: "Tu usuario se ha actualizado correctamente.",
           confirmButtonText: "OK",
         });
       } catch (error) {
@@ -519,7 +500,7 @@ export default {
           let token = localStorage.getItem("AUTH_TOKEN_KEY");
           axios.defaults.headers.common["Authorization"] = `${token}`;
           const response = await axios.put(
-            "http://localhost:3000/user/" + getIdToken(token) + "/deactive",
+            "http://localhost:3000/business/" + getIdToken(token) + "/deactive",
             {
               resignReason: this.reason,
             }
@@ -528,9 +509,11 @@ export default {
           localStorage.removeItem("AUTH_TOKEN_KEY");
           localStorage.removeItem("ROLE");
           localStorage.removeItem("NAME");
+          this.$router.push("/home");
           Swal.fire({
             icon: "success",
-            title: "Tu usuario ha sido actualizado correctamente",
+            title:
+              "Tu has dado de bajo correctamente. Esperamos volver a verte de nuevo.",
             confirmButtonText: "OK",
           });
         } catch (error) {
@@ -580,7 +563,12 @@ export default {
 
 <style scoped>
 .EditBusiness {
-  background-color: coral;
+  background: linear-gradient(
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.5)
+    ),
+    url(../../assets/brick.jpeg);
+  padding: 1rem;
 }
 .hide {
   display: none;
@@ -696,6 +684,14 @@ button {
   padding: 0.65rem;
   width: 12rem;
 }
+
+button:hover,
+label#profilePicture:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 #profilePicture {
   display: inline-block;
   padding: 0.3rem 1rem;
@@ -712,6 +708,14 @@ button {
   display: none;
 }
 
+#end {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+}
+
 @media (min-width: 700px) {
   .intro {
     display: flex;
@@ -719,11 +723,6 @@ button {
     flex-wrap: wrap;
     justify-content: space-evenly;
     align-items: center;
-    background: linear-gradient(
-        rgba(141, 153, 174, 0.8),
-        rgba(141, 153, 174, 0.5)
-      ),
-      url(../../assets/tempo.jpg);
   }
 
   #first {

@@ -1,6 +1,6 @@
 <template>
   <div id="EditBusinessPictures">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <div>
       <div class="updateFile">
         <input type="file" ref="image" @change="uploadImage" id="file1" />
@@ -15,8 +15,8 @@
           src="../../assets/PELUQUERIA.jpg"
         />
         <img v-show="!update1 && !image && category==='TERRAZA'" src="../../assets/TERRAZA.jpg" />
-        <img v-show="!update1 && image" :src="setImage(image)" />
-        <img v-if="update1" :src="update1" />
+        <img v-if="!update1 && image && isImage" :src="setImage(image)" />
+        <img v-else-if="update1 && isUpdate" :src="update1" />
       </div>
 
       <div class="updateFile">
@@ -32,8 +32,8 @@
           src="../../assets/PELUQUERIA.jpg"
         />
         <img v-show="!update2 && !image2 && category==='TERRAZA'" src="../../assets/TERRAZA.jpg" />
-        <img v-show="!update2 && image2" :src="setImage(image2)" />
-        <img v-if="update2" :src="update2" />
+        <img v-if="!update2 && image2 && isImage2" :src="setImage(image2)" />
+        <img v-if="update2 && isUpdate2" :src="update2" />
       </div>
 
       <div class="updateFile">
@@ -49,8 +49,8 @@
           src="../../assets/PELUQUERIA.jpg"
         />
         <img v-show="!update3 && !image3 && category==='TERRAZA'" src="../../assets/TERRAZA.jpg" />
-        <img v-show="!update3 && image3" :src="setImage(image3)" />
-        <img v-if="update3" :src="update3" />
+        <img v-if="!update3 && image3 && isImage3" :src="setImage(image3)" />
+        <img v-if="update3 && isUpdate3" :src="update3" />
       </div>
     </div>
     <button @click="updateData()">Actualizar Cliente</button>
@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import { getIdToken } from "../../utils";
 import axios from "axios";
 
@@ -66,14 +67,34 @@ export default {
   data() {
     return {
       category: "",
-      image: "",
-      image2: "",
-      image3: "",
-      update1: "",
-      update2: "",
-      update3: "",
+      image: null,
+      image2: null,
+      image3: null,
+      update1: null,
+      update2: null,
+      update3: null,
       test: "",
     };
+  },
+  computed: {
+    isImage() {
+      return this.image !== null;
+    },
+    isImage2() {
+      return this.image2 !== null;
+    },
+    isImage3() {
+      return this.image3 !== null;
+    },
+    isUpdate() {
+      return this.update1 !== null;
+    },
+    isUpdate2() {
+      return this.update2 !== null;
+    },
+    isUpdate3() {
+      return this.update3 !== null;
+    },
   },
   methods: {
     goBack() {
@@ -123,24 +144,6 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    /* removeImage: function (e) {
-      this.image = "";
-    },
-    removeImage2: function (e) {
-      this.image2 = "";
-    },
-    removeImage3: function (e) {
-      this.image3 = "";
-    },
-    removeImageUpdate: function (e) {
-      this.imageUpdate = "";
-    },
-    removeImageUpdate2: function (e) {
-      this.imageUpdate2 = "";
-    },
-    removeImageUpdate3: function (e) {
-      this.imageUpdate3 = "";
-    },*/
     async getBusiness() {
       try {
         let token = localStorage.getItem("AUTH_TOKEN_KEY");
@@ -174,8 +177,17 @@ export default {
           }
         );
         console.log(response);
+        Swal.fire({
+          icon: "success",
+          title: " Las fotos de tu negocio se han actualizado correctamente",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
         console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
       location.reload;
     },
@@ -218,6 +230,13 @@ img {
 
 [type="file"] {
   display: none;
+}
+
+button:hover,
+label:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 label {
   display: inline-block;

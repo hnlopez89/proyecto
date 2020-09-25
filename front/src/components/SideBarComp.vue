@@ -2,76 +2,76 @@
   <nav class="burger">
     <ul id="sidebar" v-if="businessWay">
       <li>
-        <router-link :to="{name: 'Home'}">Inicio</router-link>
+        <router-link :to="{name: 'Home', hash: '#up'}">Inicio</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'GetBusiness'}">Mi negocio</router-link>
+        <router-link :to="{ name: 'GetBusiness', hash: '#up'}">Mi negocio</router-link>
       </li>
       <li @click="isBookings =! isBookings">Reservas</li>
       <ul v-if="isBookings" id="bookings" class="secondary">
         <li>
-          <router-link :to="{name: 'BookingBusinessToday'}">Hoy</router-link>
+          <router-link :to="{name: 'BookingBusinessToday', hash: '#up'}">Hoy</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingBusinessTomorrow'}">Mañana</router-link>
+          <router-link :to="{name: 'BookingBusinessTomorrow', hash: '#up'}">Mañana</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingsBusiness'}">Buscador</router-link>
+          <router-link :to="{name: 'BookingsBusiness', hash: '#up'}">Buscador</router-link>
         </li>
       </ul>
       <li @click="isEdit =! isEdit">Ajustes</li>
 
       <ul v-if="isEdit" id="edit" class="secondary">
         <li>
-          <router-link :to="{name: 'EditBusiness'}">Tus Datos</router-link>
+          <router-link :to="{name: 'EditBusiness', hash: '#up'}">Tus Datos</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'EditPicturesBusiness'}">Tus Fotos</router-link>
+          <router-link :to="{name: 'EditPicturesBusiness', hash: '#up'}">Tus Fotos</router-link>
         </li>
       </ul>
       <li @click="logoutBusiness">Cerrar Sesión</li>
     </ul>
     <ul id="sidebar" v-if="adminWay">
       <li>
-        <router-link :to="{name: 'Home'}">Inicio</router-link>
+        <router-link :to="{name: 'Home', hash: '#up'}">Inicio</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'GetUser'}">Perfil de admin</router-link>
+        <router-link :to="{ name: 'GetUser', hash: '#up'}">Perfil de admin</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'ListBookings'}">Reservas</router-link>
+        <router-link :to="{ name: 'ListBookings', hash: '#up'}">Reservas</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'ListBusiness'}">Negocios</router-link>
+        <router-link :to="{ name: 'ListBusiness', hash: '#up'}">Negocios</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'ListUsers'}">Usuarios</router-link>
+        <router-link :to="{ name: 'ListUsers', hash: '#up'}">Usuarios</router-link>
       </li>
       <li @click="logoutUser">Cerrar Sesión</li>
     </ul>
     <ul id="sidebar" v-if="userWay">
       <li>
-        <router-link :to="{name: 'Home'}">Inicio</router-link>
+        <router-link :to="{name: 'Home', hash: '#up'}">Inicio</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'GetUser'}">Mi usuario</router-link>
+        <router-link :to="{ name: 'GetUser', hash: '#up'}">Mi usuario</router-link>
       </li>
       <li @click="isEdit =! isEdit">Ajustes</li>
       <ul v-if="isEdit" id="edit" class="secondary">
         <li>
-          <router-link :to="{name: 'EditUser'}">Editar tu usuario</router-link>
+          <router-link :to="{name: 'EditUser', hash: '#up'}">Editar tu usuario</router-link>
         </li>
       </ul>
       <li @click="isBookings =! isBookings">Tus reservas</li>
       <ul v-if="isBookings" id="bookings" class="secondary">
         <li>
-          <router-link :to="{name: 'BookingUserConfirmed'}">Confirmadas</router-link>
+          <router-link :to="{name: 'BookingUserConfirmed', hash: '#up'}">Confirmadas</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingUserHistoric'}">Histórico</router-link>
+          <router-link :to="{name: 'BookingUserHistoric', hash: '#up'}">Histórico</router-link>
         </li>
         <li>
-          <router-link :to="{name: 'BookingsUser'}">Todas tus reservas</router-link>
+          <router-link :to="{name: 'BookingsUser', hash: '#up'}">Todas tus reservas</router-link>
         </li>
       </ul>
       <li @click="logoutUser">Cerrar Sesión</li>
@@ -173,6 +173,10 @@ li:hover {
   background: #61676a;
 }
 
+a:hover {
+  cursor: pointer;
+}
+
 #sidebar {
   display: flex;
   flex-direction: column;
@@ -231,8 +235,8 @@ li {
 
   #sidebar {
     padding: 0;
-    padding-top: 1rem;
-    margin-right: 0;
+    padding-top: 0.3rem;
+    margin: 0;
   }
 }
 </style>

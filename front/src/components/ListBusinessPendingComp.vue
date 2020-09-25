@@ -4,11 +4,13 @@
       <!-- ESCOGEMOS VALORES DEL ARRAY DEL COMPONENTE -->
       <li v-for="business in businesses" :key="business.id">
         <h4>
-          <router-link :to="{name: 'CheckBusiness', params: { id: business.id}}">{{business.name}}</router-link>
+          <router-link
+            :to="{name: 'CheckBusiness', params: { id: business.id}, hash: '#up'}"
+          >{{business.name}}</router-link>
         </h4>
-        <p id="category">Categoría: {{business.category}}</p>
+        <p id="category">Categoría: {{business.category | lowcase}}</p>
         <p>Id:{{business.id}}</p>
-        <p>Ciudad: {{business.city}}</p>
+        <p>Provincia: {{business.province | underscore}}</p>
         <p>Abre de {{business.opening_time}}:00 a {{business.closing_time}}:00</p>
       </li>
     </ul>

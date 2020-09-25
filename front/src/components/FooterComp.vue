@@ -33,11 +33,11 @@ footer {
   padding-top: 2rem;
   align-items: stretch;
   height: 5rem;
-  background-color: black;
+  background-color: coral;
   width: 100%;
 }
 a {
-  color: coral;
+  color: black;
   text-decoration: none;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div id="ListBusinessBookingsToday">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>MIS RESERVAS PARA HOY</h1>
     <div v-if="bookings.length === 0">
       <h3>No tienes reservas para hoy</h3>
@@ -25,7 +25,9 @@
       <tbody>
         <tr v-for="booking in bookings" :key="booking.id">
           <td data-label="ID reserva">
-            <router-link :to="{name: 'BookingUser', params: { id: booking.id}}">{{booking.id}}</router-link>
+            <router-link
+              :to="{name: 'BookingBusiness', params: { id: booking.id}, hash: '#up'}"
+            >{{booking.id}}</router-link>
           </td>
           <td data-label="Estado reserva">{{booking.status}}</td>
           <td data-label="Nombre Cliente">{{booking.name}}</td>
@@ -103,6 +105,7 @@ export default {
     url(../../../assets/tempo.jpg);
   width: 100%;
   min-height: 100vh;
+  padding: 1rem;
 }
 
 button {
@@ -116,6 +119,12 @@ button {
   color: coral;
   text-align: center;
   margin: 1rem 0 2rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 table {

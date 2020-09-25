@@ -4,11 +4,11 @@
     <form>
       <input v-model="email" type="email" placeholder="Email de usuario" />
       <input v-model="password" type="password" placeholder="Password de usuario" />
-      <button id="login" @click="login()">LogIn Usuario</button>
-      <button @click="recover =! recover">¿Has olvidado tu contraseña?</button>
+      <button id="login" @click.prevent="login()">LogIn Usuario</button>
+      <button @click.prevent="recover =! recover">¿Has olvidado tu contraseña?</button>
       <div v-show="recover">
         <input v-model="emailToRecover" type="email" placeholder="Escribe tu email " />
-        <button @click="validatingMail()">Recupera tu contraseña</button>
+        <button @click.prevent="validatingMail()">Recupera tu contraseña</button>
       </div>
     </form>
   </div>
@@ -19,6 +19,7 @@ import { loginUser } from "../../utils";
 import { isLoggedInUser } from "../../utils";
 import { getNameUser } from "../../utils";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   name: "LoginUser",
@@ -31,11 +32,14 @@ export default {
       errorMsg: false,
       recover: "",
       logged: "",
+      name: "",
     };
   },
   methods: {
     setUsername() {
-      this.name = getNameUser();
+      if (isLoggedInUser() === true) {
+        this.name = getNameUser();
+      }
     },
     async login() {
       if (this.email === "" || this.password === "") {
@@ -43,7 +47,9 @@ export default {
       } else {
         await loginUser(this.email, this.password);
         this.$router.push("/home");
-        this.$emit("login", true);
+        this.setUsername();
+        let name = this.name;
+        this.$emit("login", name);
       }
     },
     getLoginUser() {
@@ -69,9 +75,17 @@ export default {
               email: this.emailToRecover,
             }
           );
-          console.log(response);
+          Swal.fire({
+            icon: "success",
+            title:
+              "Te hemos mandado un email para que puedas resetear tu contraseña",
+            confirmButtonText: "OK",
+          });
         } catch (error) {
-          console.log(error.response.data);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
         }
       }
     },
@@ -126,6 +140,13 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
+}
+
+button:hover,
+#back:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 input {

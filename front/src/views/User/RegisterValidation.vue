@@ -2,8 +2,8 @@
   <div id="RegisterValidation">
     <div v-show="!showError">
       <h1>Enhorabuena, tu usuario está activado</h1>
-      <h5>Inicia sesión</h5>
-      <router-link :to="{name: 'Login'}" tag="button">Login</router-link>
+      <h3>Inicia sesión</h3>
+      <router-link :to="{name: 'LogInUser'}" tag="button">Login</router-link>
     </div>
     <div v-show="showError">
       <h3>{{errorMsg}}</h3>
@@ -51,7 +51,7 @@ div {
 #RegisterValidation {
   min-height: 100vh;
   background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
+      rgba(141, 153, 174, 0.5),
       rgba(141, 153, 174, 0.5)
     ),
     url(../../assets/tempo.jpg);
@@ -60,7 +60,8 @@ div {
   background-repeat: no-repeat;
 }
 h1 {
-  margin: 3rem auto;
+  padding-top: 2rem;
+  margin: 3rem auto 1rem;
 }
 
 input {
@@ -74,11 +75,11 @@ input {
 }
 
 h3 {
-  color: red;
+  color: coral;
 }
 
 button {
-  margin-top: 3rem;
+  margin-top: 1rem;
   display: inline-block;
   padding: 0.5rem 1.5rem;
   border: 0.1rem solid white;
@@ -89,5 +90,11 @@ button {
   color: coral;
   text-align: center;
   margin-bottom: 0.5rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

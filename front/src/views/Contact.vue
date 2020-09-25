@@ -1,11 +1,11 @@
 <template>
   <div id="contact">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <h1>Contacta con nosotros</h1>
     <div id="contacData">
       <input v-model="emailAddress" type="email" placeholder="Indica tu dirección de email" />
       <input v-model="subject" type="text" placeholder="Indica el asunto" />
-      <textarea v-model="text" cols="80" rows="20"></textarea>
+      <textarea v-model="text" cols="150" rows="60"></textarea>
       <button @click="sendMail">Enviar</button>
     </div>
   </div>
@@ -17,7 +17,9 @@ import axios from "axios";
 export default {
   data() {
     return {
-      email: "",
+      emailAddress: "",
+      subject: "",
+      text: "",
     };
   },
   methods: {
@@ -31,9 +33,17 @@ export default {
           subject: this.subject,
           text: this.text,
         });
-        console.log(response);
+        Swal.fire({
+          icon: "success",
+          title:
+            "Nos ha llegado tu mensaje correctamente, ¡gracias! Te contactaremos de vuelta lo más rápido posible",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
   },
@@ -70,6 +80,12 @@ button {
   color: coral;
   text-align: center;
   margin: 3rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 h1 {
   color: white;

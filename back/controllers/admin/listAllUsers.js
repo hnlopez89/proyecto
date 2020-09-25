@@ -13,7 +13,7 @@ async function listBusinessBookings(req, res, next) {
             throw error;
         }
 
-        const { idUser, name, surname, city, status, order, direction } = req.query;
+        const { idUser, name, surname, city, province, status, order, direction } = req.query;
 
         let query = `SELECT * FROM users`;
 
@@ -29,6 +29,9 @@ async function listBusinessBookings(req, res, next) {
             case "city":
                 orderBy = "city";
                 break;
+            case "province":
+                orderBy = "province";
+                break;
             case "surname":
                 orderBy = "surname";
                 break;
@@ -40,7 +43,7 @@ async function listBusinessBookings(req, res, next) {
         }
         const params = [];
         //ESTABLECER CRITERIOS DE BÚSQUEDA SI ESTOS HAN SIDO DEFINIDOS
-        if (idUser || name || surname || city || status) {
+        if (idUser || name || surname || city || province || status) {
             const conditions = [];
             if (idUser) {
                 conditions.push(` id LIKE '${idUser}'`);
@@ -58,8 +61,12 @@ async function listBusinessBookings(req, res, next) {
                 conditions.push(` city LIKE '${city}'`);
                 params.push(`'%${city}%'`);
             }
+            if (province) {
+                conditions.push(` province LIKE '${province}'`);
+                params.push(`'%${province}%'`);
+            }
             if (status) {
-                conditions.push(` status LIKE '${status}'`);
+                conditions.push(` active LIKE '${status}'`);
                 params.push(`'%${status}%'`);
             }
 

@@ -1,13 +1,14 @@
 <template>
   <div class="plantilla">
     <div id="cover">
-      <h1>Tempo</h1>
+      <img id="logo1" src="../assets/clock2.png" width="250px" height="200px" />
+      <img id="logo2" src="../assets/clock.png" width="250px" height="200px" />
       <h2>
         Pide tu cita y gestiona tu
         <b>Tempo</b>
       </h2>
       <form id="advance" v-if="advanced">
-        <button class="toggle" @click="advanced =! advanced">Buscar por nombre</button>
+        <button class="toggle" @click.prevent="advanced =! advanced">Buscar por nombre</button>
 
         <label>Categoría:</label>
         <select class="criteria" v-model="category">
@@ -16,12 +17,65 @@
           <option value="RESTAURANTE">Restaurante</option>
           <option value="PELUQUERIA">Peluquería</option>
         </select>
-        <label>Ciudad:</label>
-        <input class="criteria" v-model="city" type="text" placeholder="Ciudad Escogida" />
+        <label>Provincia:</label>
+        <select v-model="province" id="provincia">
+          <option value="Alava">Álava</option>
+          <option value="Albacete">Albacete</option>
+          <option value="Alicante">Alicante/Alacant</option>
+          <option value="Almeria">Almería</option>
+          <option value="Asturias">Asturias</option>
+          <option value="Avila">Ávila</option>
+          <option value="Badajoz">Badajoz</option>
+          <option value="Barcelona">Barcelona</option>
+          <option value="Burgos">Burgos</option>
+          <option value="Caceres">Cáceres</option>
+          <option value="Cadiz">Cádiz</option>
+          <option value="Cantabria">Cantabria</option>
+          <option value="Castellon">Castellón/Castelló</option>
+          <option value="Ceuta">Ceuta</option>
+          <option value="Ciudad_real">Ciudad Real</option>
+          <option value="Cordoba">Córdoba</option>
+          <option value="Cuenca">Cuenca</option>
+          <option value="Girona">Girona</option>
+          <option value="Granada">Granada</option>
+          <option value="Guadalajara">Guadalajara</option>
+          <option value="Guipuzcoa">Guipúzcoa</option>
+          <option value="Huelva">Huelva</option>
+          <option value="Huesca">Huesca</option>
+          <option value="Islas_Baleares">Islas Balears</option>
+          <option value="Jaen">Jaén</option>
+          <option value="La_coruña">La Coruña</option>
+          <option value="La_rioja">La Rioja</option>
+          <option value="Las_palmas">Las Palmas</option>
+          <option value="Leon">León</option>
+          <option value="Lleida">Lleida</option>
+          <option value="Lugo">Lugo</option>
+          <option value="Madrid">Madrid</option>
+          <option value="Malaga">Málaga</option>
+          <option value="Melilla">Melilla</option>
+          <option value="Murcia">Murcia</option>
+          <option value="Navarra">Navarra</option>
+          <option value="Ourense">Ourense</option>
+          <option value="Palencia">Palencia</option>
+          <option value="Pontevedra">Pontevedra</option>
+          <option value="Salamanca">Salamanca</option>
+          <option value="Segovia">Segovia</option>
+          <option value="Sevilla">Sevilla</option>
+          <option value="Soria">Soria</option>
+          <option value="Tarragona">Tarragona</option>
+          <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+          <option value="Teruel">Teruel</option>
+          <option value="Toledo">Toledo</option>
+          <option value="Valencia">Valencia</option>
+          <option value="Valladolid">Valladolid</option>
+          <option value="Vizcaya">Vizcaya</option>
+          <option value="Zamora">Zamora</option>
+          <option value="Zaragoza">Zaragoza</option>
+        </select>
         <label>Fecha:</label>
         <input class="criteria" v-model="date" type="date" placeholder="Datetime" />
         <div id="time">
-          <label for>Hora</label>
+          <label for>Escoge hora</label>
           <select v-model="hours">
             <option value="0">0</option>
             <option value="1">1</option>
@@ -49,7 +103,7 @@
             <option value="23">23</option>
           </select>
 
-          <label for>Minutos</label>
+          <label>:</label>
           <select v-model="minutes">
             <option value="0">:00</option>
             <option value="30">:30</option>
@@ -68,14 +122,14 @@
             <option value="8">8</option>
             <option value="9">9</option>
           </select>
-          <button class="search" @click="query()">Buscar</button>
+          <button class="search" @click.prevent="query()">Buscar</button>
         </div>
       </form>
       <form id="byName" v-if="!advanced">
-        <button class="toggle" @click="advanced =! advanced">Busqueda Avanzada</button>
-        <legend>Nombre:</legend>
+        <button class="toggle" @click.prevent="advanced =! advanced">Busqueda Avanzada</button>
+        <label>Nombre:</label>
         <input v-model="name" type="text" />
-        <button class="search" @click="queryByName()">Buscar</button>
+        <button class="search" @click.prevent="queryByName()">Buscar</button>
       </form>
     </div>
     <div id="ordered" v-show="isQuery">
@@ -99,7 +153,7 @@
       v-if="!isQuery"
       :progress="true"
       :autoPlay="true"
-      :playSpeed="6000"
+      :playSpeed="15000"
       :infiniteScroll="true"
       :wheelControl="false"
     >
@@ -108,18 +162,11 @@
           <h1>¡Empieza a reservar con nosotros!</h1>
           <h4>Conoce los mejores establecimientos</h4>
           <p>¡Swipe derecha o izquiera y verás los negocios mejor valorados y los más nuevos!</p>
-          <img src="../assets/RESTAURANTE.jpg" />
         </div>
         <ul id="top">
           <li>
-            <h4>El mejor valorado.</h4>
-            <p>
-              ¡Reserva
-              <b>{{top.name}}</b>
-              ,
-              {{top.category}} en
-              <b>{{top.city}}</b>!
-            </p>
+            <img class="icon" src="../assets/best.png" />
+            <h2>El mejor valorado.</h2>
             <img v-show="!top.profile_picture && top.category ==='BAR'" src="../assets/BAR.jpg" />
             <img
               v-show="!top.profile_picture && top.category==='RESTAURANTE'"
@@ -133,23 +180,17 @@
               v-show="!top.profile_picture && top.category==='TERRAZA'"
               src="../assets/TERRAZA.jpg"
             />
-            <img v-show="top.profile_picture" :src="setImage(top.profile_picture)" />
+            <img v-if="top.profile_picture && isTop" :src="setImage(top.profile_picture)" />
             <p>
               <router-link
                 tag="button"
-                :to="{name: 'BusinessProfile', params: { id: top.id}}"
+                :to="{name: 'BusinessProfile', params: { id: top.id}, hash: '#up'}"
               >Conoce {{top.name}}</router-link>
             </p>
           </li>
           <li>
-            <h4>El más visitado.</h4>
-            <p>
-              ¡Reserva
-              <b>{{popular.name}}</b>
-              , {{popular.category}} en
-              <b>{{popular.city}}</b>
-              !
-            </p>
+            <img class="icon" src="../assets/popular.png" />
+            <h2>El más visitado.</h2>
             <img
               v-show="!popular.profile_picture && popular.category ==='BAR'"
               src="../assets/BAR.jpg"
@@ -166,19 +207,21 @@
               v-show="!popular.profile_picture && popular.category==='TERRAZA'"
               src="../assets/TERRAZA.jpg"
             />
-            <img v-show="popular.profile_picture" :src="setImage(popular.profile_picture)" />
-            <router-link
-              tag="button"
-              :to="{name: 'BusinessProfile', params: { id: popular.id}}"
-            >Conoce {{popular.name}}</router-link>
+            <img
+              v-if="popular.profile_picture && isPopular"
+              :src="setImage(popular.profile_picture)"
+            />
+            <p>
+              <router-link
+                tag="button"
+                :to="{name: 'BusinessProfile', params: { id: popular.id}, hash: '#up'}"
+              >Conoce {{popular.name}}</router-link>
+            </p>
           </li>
           <li>
-            <h4>Lo más novedoso.</h4>
-            <p>
-              ¡Sé el primero en reservar
-              <b>{{newest.name}}</b>
-              , {{newest.category}} en {{newest.city}}
-            </p>
+            <img class="icon" src="../assets/new.png" />
+
+            <h2>Lo más novedoso.</h2>
             <img
               v-show="!newest.profile_picture && newest.category ==='BAR'"
               src="../assets/BAR.jpg"
@@ -195,11 +238,13 @@
               v-show="!newest.profile_picture && newest.category==='TERRAZA'"
               src="../assets/TERRAZA.jpg"
             />
-            <img v-show="newest.profile_picture" :src="setImage(newest.profile_picture)" />
-            <router-link
-              tag="button"
-              :to="{name: 'BusinessProfile', params: { id: newest.id}}"
-            >Conoce {{newest.name}}</router-link>
+            <img v-if="newest.profile_picture && isNewest" :src="setImage(newest.profile_picture)" />
+            <p>
+              <router-link
+                tag="button"
+                :to="{name: 'BusinessProfile', params: { id: newest.id}, hash: '#up'}"
+              >Conoce {{newest.name}}</router-link>
+            </p>
           </li>
         </ul>
       </slide>
@@ -207,7 +252,7 @@
         <section>
           <div>
             <h3>
-              ¡Reserva {{top.name}} en {{top.city}}, tiene la
+              ¡Reserva {{top.name}} en {{top.province | underscore}}, tiene la
               <b>mejor valoración</b>!
             </h3>
             <p>
@@ -217,7 +262,7 @@
               >¡la</span>
               <span v-else>¡el</span>
               <b></b>
-              {{top.category}} con
+              {{top.category | lowcase}} con
               <b>la puntuación más alta</b> de
               <b>Tempo</b>!
             </p>
@@ -230,48 +275,52 @@
                 :fixed-point="1.8"
                 :star-size="20"
                 :inline="true"
+                :border-width="3"
                 :show-rating="true"
               ></star-rating>
             </p>
             <p>
               <router-link
                 tag="button"
-                :to="{name: 'BusinessProfile', params: { id: top.id}}"
+                :to="{name: 'BusinessProfile', params: { id: top.id}, hash: '#up'}"
               >Conoce {{top.name}}</router-link>
             </p>
           </div>
-          <img
-            class="presentation"
-            v-show="!top.profile_picture && top.category ==='BAR'"
-            src="../assets/BAR.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!top.profile_picture && top.category==='RESTAURANTE'"
-            src="../assets/RESTAURANTE.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!top.profile_picture && top.category==='PELUQUERÍA'"
-            src="../assets/PELUQUERIA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!top.profile_picture && top.category==='TERRAZA'"
-            src="../assets/TERRAZA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="top.profile_picture"
-            :src="setImage(top.profile_picture)"
-          />
+          <div class="parent">
+            <img
+              class="presentation"
+              v-show="!top.profile_picture && top.category ==='BAR'"
+              src="../assets/BAR.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!top.profile_picture && top.category==='RESTAURANTE'"
+              src="../assets/RESTAURANTE.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!top.profile_picture && top.category==='PELUQUERÍA'"
+              src="../assets/PELUQUERIA.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!top.profile_picture && top.category==='TERRAZA'"
+              src="../assets/TERRAZA.jpg"
+            />
+            <img
+              class="presentation"
+              v-if="top.profile_picture && isTop"
+              :src="setImage(top.profile_picture)"
+            />
+            <img class="iconOver" src="../assets/best.png" />
+          </div>
         </section>
       </slide>
       <slide>
         <section>
           <div>
             <h3>
-              ¡Reserva {{popular.name}}, en {{popular.city}}, es
+              ¡Reserva {{popular.name}}, en {{popular.province | underscore}}, es
               <b>lo más popular</b>!
             </h3>
             <p>
@@ -280,7 +329,7 @@
                 v-if="popular.category === 'PELUQUERÍA' || popular.category === 'TERRAZA'"
               >¡la</span>
               <span v-else>el</span>
-              {{popular.category}} con
+              {{popular.category | lowcase}} con
               <b>más puntuaciones</b>
               <b></b> de
               <b>Tempo</b>!
@@ -295,56 +344,60 @@
                 :star-size="20"
                 :inline="true"
                 :show-rating="true"
+                :border-width="3"
               ></star-rating>, con un total de
               <b>{{popular.count}} votos.</b>
             </p>
             <p>
               <router-link
                 tag="button"
-                :to="{name: 'BusinessProfile', params: { id: popular.id}}"
+                :to="{name: 'BusinessProfile', params: { id: popular.id} , hash: '#up'}"
               >Conoce {{popular.name}}</router-link>
             </p>
           </div>
-          <img
-            class="presentation"
-            v-show="!popular.profile_picture && popular.category ==='BAR'"
-            src="../assets/BAR.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!popular.profile_picture && popular.category==='RESTAURANTE'"
-            src="../assets/RESTAURANTE.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!popular.profile_picture && popular.category==='PELUQUERÍA'"
-            src="../assets/PELUQUERIA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!popular.profile_picture && popular.category==='TERRAZA'"
-            src="../assets/TERRAZA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="popular.profile_picture"
-            :src="setImage(popular.profile_picture)"
-          />
+          <div class="parent">
+            <img
+              class="presentation"
+              v-show="!popular.profile_picture && popular.category ==='BAR'"
+              src="../assets/BAR.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!popular.profile_picture && popular.category==='RESTAURANTE'"
+              src="../assets/RESTAURANTE.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!popular.profile_picture && popular.category==='PELUQUERÍA'"
+              src="../assets/PELUQUERIA.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!popular.profile_picture && popular.category==='TERRAZA'"
+              src="../assets/TERRAZA.jpg"
+            />
+            <img
+              class="presentation"
+              v-if="popular.profile_picture && isPopular"
+              :src="setImage(popular.profile_picture)"
+            />
+            <img class="iconOver" src="../assets/popular.png" />
+          </div>
         </section>
       </slide>
       <slide>
         <section>
           <div>
             <h3>
-              ¡Reserva {{newest.name}}, en {{newest.city}}, es
+              ¡Reserva {{newest.name}}, en {{newest.province | underscore}}, es
               <b>lo más novedoso</b>!
             </h3>
             <p>
               Descubre {{newest.name}},
               <b
                 v-if="newest.category === 'PELUQUERÍA' || newest.category === 'TERRAZA'"
-              >la nueva {{newest.category}}</b>
-              <b v-else>el nuevo {{newest.category}}</b>
+              >la nueva {{newest.category | lowcase}}</b>
+              <b v-else>el nuevo {{newest.category | lowcase}}</b>
               que se ha unido a
               <b>Tempo</b>!
             </p>
@@ -352,41 +405,43 @@
             <p>
               <router-link
                 tag="button"
-                :to="{name: 'BusinessProfile', params: { id: newest.id}}"
+                :to="{name: 'BusinessProfile', params: { id: newest.id}, hash: '#up'}"
               >Conoce {{newest.name}}</router-link>
             </p>
           </div>
-          <img
-            class="presentation"
-            v-show="!newest.profile_picture && newest.category ==='BAR'"
-            src="../assets/BAR.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!newest.profile_picture && newest.category==='RESTAURANTE'"
-            src="../assets/RESTAURANTE.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!newest.profile_picture && newest.category==='PELUQUERÍA'"
-            src="../assets/PELUQUERIA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="!newest.profile_picture && newest.category==='TERRAZA'"
-            src="../assets/TERRAZA.jpg"
-          />
-          <img
-            class="presentation"
-            v-show="newest.profile_picture"
-            :src="setImage(newest.profile_picture)"
-          />
+          <div class="parent">
+            <img
+              class="presentation"
+              v-show="!newest.profile_picture && newest.category ==='BAR'"
+              src="../assets/BAR.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!newest.profile_picture && newest.category==='RESTAURANTE'"
+              src="../assets/RESTAURANTE.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!newest.profile_picture && newest.category==='PELUQUERÍA'"
+              src="../assets/PELUQUERIA.jpg"
+            />
+            <img
+              class="presentation"
+              v-show="!newest.profile_picture && newest.category==='TERRAZA'"
+              src="../assets/TERRAZA.jpg"
+            />
+            <img
+              class="presentation"
+              v-if="newest.profile_picture && isNewest"
+              :src="setImage(newest.profile_picture)"
+            />
+            <img class="iconOver" src="../assets/new.png" />
+          </div>
         </section>
       </slide>
       <hooper-navigation slot="hooper-addons"></hooper-navigation>
     </hooper>
     <businesses
-      v-on:data="booking"
       :businesses="business"
       :date="date"
       :selectedDate="selectedDate"
@@ -401,9 +456,9 @@
 import { Hooper, Slide, Navigation as HooperNavigation } from "hooper";
 import "hooper/dist/hooper.css";
 import { getIdToken } from "../utils";
-
 import businesses from "@/components/ListBusinessComp.vue";
 import axios from "axios";
+import { MoonLoader } from "@saeris/vue-spinners";
 
 export default {
   name: "Home",
@@ -412,13 +467,14 @@ export default {
     Hooper,
     Slide,
     HooperNavigation,
+    MoonLoader,
   },
   data() {
     return {
       business: [],
       profile_picture: "",
       name: "",
-      city: "",
+      province: "",
       category: "",
       hours: "",
       minutes: "",
@@ -429,6 +485,15 @@ export default {
       top: "",
       popular: "",
       newest: "",
+      topProfilePicture: null,
+      popularProfilePicture: null,
+      newestProfilePicture: null,
+      loading: false,
+    };
+  },
+  render() {
+    return {
+      loading: true,
     };
   },
   computed: {
@@ -444,39 +509,19 @@ export default {
     selectedUnit() {
       return this.units;
     },
+    isTop() {
+      return this.topProfilePicture !== null;
+    },
+    isPopular() {
+      return this.popularProfilePicture !== null;
+    },
+    isNewest() {
+      return this.newestProfilePicture !== null;
+    },
   },
   methods: {
     setImage(img) {
       return process.env.VUE_APP_STATIC + img;
-    },
-    async booking(bookingData) {
-      try {
-        console.log(this.date, bookingData.creditCardNumber);
-        let token = localStorage.getItem("AUTH_TOKEN_KEY");
-        axios.defaults.headers.common["Authorization"] = `${token}`;
-        const response = await axios.post(
-          "http://localhost:3000/user/" +
-            getIdToken(token) +
-            "/business/" +
-            bookingData.idBusiness +
-            "/booking/",
-          {
-            date: this.date,
-            hours: this.hours,
-            minutes: this.minutes,
-            units: this.units,
-            minutes: this.minutes,
-            creditCardNumber: bookingData.creditCardNumber,
-            holderName: bookingData.holderName,
-            expiryMonth: bookingData.expiryMonth,
-            expiryYear: bookingData.expiryYear,
-            cvcCode: bookingData.cvcCode,
-          }
-        );
-        console.log(response);
-      } catch (error) {
-        console.log(error.response);
-      }
     },
     toggleQuery() {
       this.name = true;
@@ -492,7 +537,7 @@ export default {
           params: {
             name: this.name,
             category: this.category,
-            city: this.city,
+            province: this.province,
             date: this.date,
             units: this.units,
             hours: this.hours,
@@ -503,7 +548,6 @@ export default {
         });
         this.business = response.data.data;
         this.isQuery = true;
-        console.log(response);
       } catch (error) {
         console.log(error.response.data);
       }
@@ -516,7 +560,7 @@ export default {
           },
         });
         this.business = response.data.data;
-        this.isQuery = false;
+        this.isQuery = true;
         console.log(response);
       } catch (error) {
         console.log(error.response.data);
@@ -532,12 +576,10 @@ export default {
     },
     async passData() {
       let params = this.units;
-      console.log(params);
       this.$emit("data", params);
     },
     async getBusiness() {
       const idBusiness = this.businesses[index].id;
-      console.log(idBusiness);
       try {
         const response = await axios.get(
           "http://localhost:3000/business/" + idBusiness
@@ -557,11 +599,12 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/viewTopBusiness"
         );
-        console.log(response);
-        console.log(response.data);
         this.top = response.data.top;
+        this.topProfilePicture = response.data.top.profile_picture;
         this.popular = response.data.popular;
+        this.popularProfilePicture = response.data.popular.profile_picture;
         this.newest = response.data.newest;
+        this.newestProfilePicture = response.data.newest.profile_picture;
       } catch (error) {
         console.log(error);
       }
@@ -576,42 +619,24 @@ export default {
 <style scoped>
 .plantilla {
   min-height: 100vh;
-}
-
-#responsive > img {
-  margin-top: 2rem;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 1rem;
-  border: 0.1rem coral solid;
-}
-h2 > b {
-  color: coral;
-}
-#responsive > h1 {
-  color: black;
+  padding: 0;
+  margin: 0;
 }
 
 #top {
   display: none;
 }
 
-section {
-  display: flex;
-  flex-direction: column-reverse;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: center;
+#top > li img.icon {
+  margin: 0;
+  border: inherit;
+  height: 100px;
+  width: 100px;
 }
-
-.hooper {
-  height: 500px;
-}
-
-.hooper > li {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+#top > li h2 {
+  position: inherit;
+  margin-bottom: 1rem;
+  color: coral;
 }
 
 #cover {
@@ -622,15 +647,22 @@ section {
   justify-content: center;
   align-items: center;
 }
-h1,
+
+#cover > h2 {
+  margin-top: 6rem;
+}
 h2 {
   padding: 0.5rem;
   color: white;
   text-align: center;
 }
 
+#cover b {
+  color: black;
+}
+
 b {
-  color: white;
+  color: coral;
 }
 form {
   padding: 1rem;
@@ -639,35 +671,31 @@ form {
   flex-direction: column;
   align-items: flex-start;
   color: black;
-  height: 16.5rem;
+  height: 15.5rem;
   width: 12rem;
   border-radius: 1rem;
   background-color: rgba(24, 9, 4, 0.8);
   margin: 0 1rem;
   justify-items: center;
 }
-
-.hooper {
-  margin-top: 5rem;
-  background: linear-gradient(
-      rgba(141, 153, 174, 0.8),
-      rgba(141, 153, 174, 0.5)
-    ),
-    url(../assets/tempo.jpg);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: inherit;
-}
-
 label {
   color: white;
+}
+
+#logo1 {
+  position: absolute;
+  top: 5%;
+  left: 15%;
+}
+#logo2 {
+  display: none;
 }
 .toggle {
   display: inline-block;
   padding: 0.3rem 1rem;
   border: 0.1rem solid #000000;
-  margin: 0 0 1.5rem 1rem;
+  margin: 0.8rem auto;
+  margin-top: 0;
   border-radius: 0.12em;
   box-sizing: border-box;
   font-weight: bolder;
@@ -698,6 +726,14 @@ label {
   border: 1rem;
   margin: 0.2rem 0.2rem;
 }
+
+select {
+  border-radius: 1rem;
+  border: 1rem;
+  margin: 0.2rem 0.2rem;
+  background-color: white;
+}
+
 #units {
   border-radius: 1rem;
   border: 0rem;
@@ -747,11 +783,71 @@ label {
   margin: 0;
 }
 
+.hooper {
+  margin-top: 5rem;
+  background: linear-gradient(
+      rgba(241, 253, 254, 0.8),
+      rgba(241, 253, 254, 0.5)
+    ),
+    url(../assets/tempo.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: inherit;
+  height: 650px;
+  padding: 0 0.2rem;
+}
+section {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hooper > li {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+#responsive > img {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 1rem;
+  border: 0.1rem coral solid;
+}
+#responsive > h1 {
+  color: black;
+}
+
+.parent {
+  position: relative;
+  height: auto;
+  width: 90%;
+  top: 0%;
+  left: 0;
+  padding: 0;
+}
+
 img.presentation {
-  margin-top: 0.5rem;
-  height: 10rem;
   border-radius: 1rem;
   border: solid 0.1rem coral;
+  position: relative;
+  margin-top: 1rem;
+  left: 0%;
+  width: 100%;
+  height: 14rem;
+}
+section > div {
+  padding: 0 0.4rem;
+}
+.iconOver {
+  position: absolute;
+  top: 10%;
+  left: 2%;
+  width: 80px;
+  height: 80px;
 }
 
 button {
@@ -767,13 +863,67 @@ button {
   margin-bottom: 0.5rem;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
+p > button:hover {
+  background-color: coral;
+  color: white;
+}
+
+@media (min-width: 450px) {
+  .hooper {
+    height: 625px;
+  }
+
+  img.presentation {
+    left: 0%;
+    width: 100%;
+    height: 20rem;
+  }
+
+  .iconOver {
+    top: 7%;
+    left: 2%;
+    width: 80px;
+    height: 80px;
+  }
+}
+
 @media (min-width: 700px) {
   #cover {
-    background-image: url(../assets/portada.jpg);
+    background: linear-gradient(
+        rgba(241, 253, 254, 0.3),
+        rgba(241, 253, 254, 0.3)
+      ),
+      url(../assets/portada.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     display: inherit;
+    padding-top: 10rem;
+  }
+  #cover > h2 {
+    margin-top: 1rem;
+    top: 22%;
+    left: 35%;
+    position: absolute;
+  }
+
+  #logo2 {
+    display: inherit;
+    position: absolute;
+    top: 5%;
+    left: 40%;
+  }
+
+  #cover b {
+    color: coral;
+  }
+
+  .hooper {
+    height: 350px;
   }
   section {
     display: flex;
@@ -786,17 +936,11 @@ button {
 
   section > div {
     width: 40%;
+    padding: 1.5rem;
   }
 
   label {
     color: black;
-  }
-
-  img.presentation {
-    margin-top: 0.5rem;
-    height: 20rem;
-    border-radius: 1rem;
-    border: solid 0.1rem coral;
   }
 
   #advance {
@@ -821,18 +965,55 @@ button {
     font-weight: bold;
     padding: 1rem;
   }
+  .parent {
+    position: relative;
+    height: auto;
+    width: 60%;
+    top: 0;
+    left: 0;
+    padding: 0;
+  }
+
+  img.presentation {
+    margin-top: 0rem;
+    top: 10%;
+    left: -5%;
+    width: 90%;
+    height: 18rem;
+  }
+  .iconOver {
+    top: 3%;
+    left: 1%;
+    width: 70px;
+    height: 70px;
+  }
+  #logo1 {
+    display: none;
+  }
 }
 
 @media (min-width: 1000px) {
   .hooper {
     height: 550px;
   }
-
+  section > div {
+    width: 35%;
+  }
   #responsive {
     display: none;
   }
 
+  #logo2 {
+    top: 5%;
+    left: 50%;
+  }
+
+  #cover > h2 {
+    left: 45%;
+  }
+
   #top {
+    padding: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -844,18 +1025,12 @@ button {
   #top > li {
     width: 30%;
     list-style: none;
-  }
-
-  img.presentation {
-    margin-top: 0.5rem;
-    height: 20rem;
-    border-radius: 1rem;
-    border: solid 0.1rem coral;
+    margin: auto;
   }
 
   #top > li img {
-    width: 70%;
-    height: 15rem;
+    width: 100%;
+    height: 12rem;
     border-radius: 1rem;
     border: coral solid 0.1rem;
     background-size: stretch;
@@ -867,10 +1042,42 @@ button {
     margin-bottom: 0;
     padding-bottom: 0;
   }
+  img.presentation {
+    top: 10%;
+    left: -5%;
+    height: 20rem;
+  }
+  .iconOver {
+    top: 3%;
+    left: 1%;
+    width: 90px;
+    height: 90px;
+  }
+}
+@media (min-width: 1200px) {
+  #top > li img {
+    height: 15rem;
+  }
+  img.presentation {
+    height: 25rem;
+  }
+  .iconOver {
+    left: 3%;
+    width: 110px;
+    height: 110px;
+  }
 }
 @media (min-width: 1400px) {
+  #top > li img {
+    height: 16rem;
+  }
+
   img.presentation {
     height: 30rem;
+  }
+  .iconOver {
+    width: 120px;
+    height: 120px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div id="page">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <!--<vue-headful title=" Añade un cliente | Formulario " /> -->
 
     <h1>Introduce tus datos:</h1>
@@ -10,14 +10,68 @@
         <label>Categoría</label>
         <select v-model="category">
           <option value="TERRAZA">Terraza</option>
-          <option value="PELUQUERIA">Peluquería</option>
+          <option value="PELUQUERÍA">Peluquería</option>
           <option value="BAR">Bar</option>
           <option value="RESTAURANTE">Restaurante</option>
         </select>
       </p>
       <input type="text" v-model="name" placeholder="Nombre del establecimiento" />
       <input type="text" v-model="manager" placeholder="Encargad@" />
-      <input type="text" v-model="city" placeholder="Ciudad" />
+      <label>Provincia</label>
+      <select v-model="province" id="provincia">
+        <option value="Alava">Álava</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alicante">Alicante/Alacant</option>
+        <option value="Almeria">Almería</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Avila">Ávila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Caceres">Cáceres</option>
+        <option value="Cadiz">Cádiz</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castellon">Castellón/Castelló</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Ciudad_real">Ciudad Real</option>
+        <option value="Cordoba">Córdoba</option>
+        <option value="Cuenca">Cuenca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipuzcoa">Guipúzcoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Huesca">Huesca</option>
+        <option value="Islas_Baleares">Islas Balears</option>
+        <option value="Jaen">Jaén</option>
+        <option value="La_coruña">La Coruña</option>
+        <option value="La_rioja">La Rioja</option>
+        <option value="Las_palmas">Las Palmas</option>
+        <option value="Leon">León</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Malaga">Málaga</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Murcia">Murcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Ourense">Ourense</option>
+        <option value="Palencia">Palencia</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Segovia">Segovia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Soria">Soria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Teruel">Teruel</option>
+        <option value="Toledo">Toledo</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Vizcaya">Vizcaya</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Zaragoza">Zaragoza</option>
+      </select>
       <input type="text" v-model="telephone" placeholder="Número de telefóno" />
       <input type="text" v-model="email" placeholder="Dirección de email" />
       <input type="password" v-model="password" placeholder="Contraseña" />
@@ -40,7 +94,7 @@ export default {
       manager: "",
       category: "",
       telephone: "",
-      city: "",
+      province: "",
       email: "",
       password: "",
       createClient: false,
@@ -58,7 +112,7 @@ export default {
         this.manager === "" ||
         this.category === "" ||
         this.telephone === "" ||
-        this.city === "" ||
+        this.province === "" ||
         this.email === "" ||
         this.password === ""
       ) {
@@ -77,7 +131,7 @@ export default {
             name: this.name,
             manager: this.manager,
             category: this.category,
-            city: this.city,
+            province: this.province,
             telephone: this.telephone,
             email: this.email,
             password: this.password,
@@ -98,7 +152,7 @@ export default {
         this.name === "";
         this.manager === "";
         this.category === "";
-        this.city === "";
+        this.province === "";
         this.email === "";
         this.password === "";
       } else {
@@ -166,5 +220,10 @@ button {
   background-color: black;
   color: coral;
   text-align: center;
+}
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

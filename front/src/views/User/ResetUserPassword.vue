@@ -10,7 +10,7 @@
 
 <script>
 import axios from "axios";
-
+import Swal from "sweetalert2";
 export default {
   name: "ResetUserPassword",
   data() {
@@ -30,8 +30,17 @@ export default {
           }
         );
         this.$router.push("/loginuser");
+        Swal.fire({
+          icon: "success",
+          title:
+            "Has creado tu usuario correctamente, ¡bienvenido! Revisa tu email para validar tu usuario y editar tu disponibilidad",
+          confirmButtonText: "OK",
+        });
       } catch (error) {
-        console.log(error.response.data);
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.message}`,
+        });
       }
     },
   },
@@ -76,5 +85,11 @@ button {
   color: coral;
   text-align: center;
   margin-bottom: 0.5rem;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 </style>

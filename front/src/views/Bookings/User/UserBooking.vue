@@ -1,53 +1,63 @@
 <template>
-  <div id="ÜserBooking">
-    <button @click="goBack()">Go Back</button>
+  <div id="ÜserBooking" v-if="isTime">
+    <button id="up" @click="goBack()">Volver</button>
     <div id="screen">
       <div class="page">
-        <h1>Tu reserva en {{booking.name}}</h1>
+        <h1>Tu reserva en {{ booking.name }}</h1>
         <ul class="booking">
-          <h3>Numero de reserva: {{booking.id}}</h3>
+          <h3>Numero de reserva: {{ booking.id }}</h3>
           <li>
             <b>Estado:</b>
             <span
-              :class="{red: booking.status === 'PENDIENTE_DE_PAGO' ||booking.status === 'CANCELADO' || booking.status === 'NO_SHOW' ,
-            green: booking.status === 'CONFIRMADO' || booking.status === 'MODIFICADO', 
-            yellow: booking.status === 'CHECK_IN' || booking.status === 'CHECK_OUT'}"
-            >{{booking.status}}</span>
+              :class="{
+                red:
+                  booking.status === 'PENDIENTE_DE_PAGO' ||
+                  booking.status === 'CANCELADO' ||
+                  booking.status === 'NO_SHOW',
+                green:
+                  booking.status === 'CONFIRMADO' ||
+                  booking.status === 'MODIFICADO',
+                yellow:
+                  booking.status === 'CHECK_IN' ||
+                  booking.status === 'CHECK_OUT',
+              }"
+              >{{ booking.status }}</span
+            >
           </li>
           <li>
             <b>Unidades:</b>
-            {{booking.id}}
+            {{ booking.units }}
           </li>
         </ul>
       </div>
       <div class="page">
         <img
           v-if="booking.category === 'TERRAZA'"
-          :class="{hide: booking.profile_picture !== null}"
+          :class="{ hide: booking.profile_picture !== null }"
           src="../../../assets/TERRAZA.jpg"
           height="200"
         />
         <img
           v-else-if="booking.category === 'BAR'"
-          :class="{hide: booking.profile_picture !== null}"
+          :class="{ hide: booking.profile_picture !== null }"
           src="../../../assets/BAR.jpg"
           height="200"
         />
         <img
           v-else-if="booking.category === 'RESTAURANTE'"
-          :class="{hide: booking.profile_picture !== null}"
+          :class="{ hide: booking.profile_picture !== null }"
           src="../../../assets/RESTAURANTE.jpg"
           height="200"
         />
         <img
           v-else-if="booking.category === 'PELUQUERÍA'"
-          :class="{hide: booking.profile_picture !== null}"
+          :class="{ hide: booking.profile_picture !== null }"
           src="../../../assets/PELUQUERIA.jpg"
           height="200"
         />
 
         <img
-          :class="{hide: booking.profile_picture === null }"
+          :class="{ hide: booking.profile_picture === null }"
           :src="getProfilePicture(booking.profile_picture)"
           height="200"
         />
@@ -55,59 +65,104 @@
           <h3>El establecimiento:</h3>
           <li>
             Categoría del establecimiento
-            <b>{{booking.name}}</b>
-            :{{booking.category}}
+            <b>{{ booking.name }}</b>
+            :{{ booking.category | lowcase }}
           </li>
           <li>
             <b>Horario:</b>
-            de {{booking.opening_time}} a {{booking.closing_time}}
+            de {{ booking.opening_time }} a {{ booking.closing_time }}
           </li>
         </ul>
       </div>
-      <div class="page">
-        <ul id="date">
-          <h3>¡Acuerdate!</h3>
-          <li>
-            Tu cita es el
-            <b>día {{formatDate(booking.check_in_day)}}</b>
-          </li>
-          <li>
-            Tú cita comienza a las
-            <b>{{formatDateTime(booking.check_in_time)}}</b> y acaba a las
-            <b>{{formatDateTime(booking.check_out_time)}}</b>
-          </li>
-        </ul>
+      <div id="secondary">
+        <div class="page">
+          <ul id="date" v-if="isTime">
+            <h3>¡Acuerdate!</h3>
+            <li>
+              Tu cita es el
+              <b>día {{ formatDate(booking.check_in_day) }}</b>
+            </li>
+            <li>
+              Tú cita comienza a las
+              <b>{{ formatDateTime(booking.check_in_time) }}</b> y acaba a las
+              <b>{{ formatDateTime(booking.check_out_time) }}</b>
+            </li>
+          </ul>
+        </div>
+        <div class="page" v-if="isVoted">
+          <ul>
+            <h3>Puntuación:</h3>
+            <li>
+              <star-rating
+                read-only
+                :rating="Number(booking.rating)"
+                :increment="1"
+                :fixed-point="1.8"
+                :star-size="30"
+                :inline="true"
+                :show-rating="true"
+              ></star-rating>
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="page">
         <ul id="direction">
           <h3>Ubicación:</h3>
           <li>
             <b>Dirección:</b>
-            {{booking.line1}} {{booking.line2}}, {{booking.zip_code}}
+            {{ booking.line1 }} {{ booking.line2 }}, {{ booking.zip_code }}
           </li>
-          <li>{{booking.city}}, {{booking.province}}</li>
+          <li>{{ booking.city }}, {{ booking.province | underscore }}</li>
         </ul>
         <ul id="contact">
           <h3>Datos de contacto:</h3>
-          <li>Dirección de email: {{booking.email}}</li>
-          <li>Número de telefóno: {{booking.telephone}}</li>
+          <li>Dirección de email: {{ booking.email }}</li>
+          <li>Número de telefóno: {{ booking.telephone }}</li>
         </ul>
         <p v-if="booking.request > 0">
           <b>Tu petición especial:</b>
-          {{booking.request}}
+          {{ booking.request }}
         </p>
       </div>
       <h4>Gracias por reservar con Tempo</h4>
     </div>
+    <ul v-if="ratingDescription || ratingAnswer" id="ratingSummary">
+      <h3>Valoración:</h3>
+      <li v-if="ratingDescription">
+        <b>Opinión:</b>
+        {{ booking.rating_description }}
+      </li>
+      <li v-if="ratingAnswer">
+        <b>El establecimiento respondió tu opinión:</b>
+        {{ booking.rating_answer }}
+      </li>
+    </ul>
     <div id="actions">
-      <button v-show="confirmed" @click="cancelBooking()">Cancela tu reserva</button>
-      <button v-show="newTC" @click="editTC = !editTC">Cambia tu tarjeta de crédito</button>
-      <button v-show="confirmed" @click="edit = !edit">Cambia la fecha de tu reserva</button>
-      <button v-show="checkOut" @click="voting =! voting">Valora tu reserva!</button>
+      <button v-show="confirmed" @click="cancelBooking()">
+        Cancela tu reserva
+      </button>
+      <button v-show="newTC" @click="editTC = !editTC">
+        Cambia tu tarjeta de crédito
+      </button>
+      <button v-show="confirmed" @click="edit = !edit">
+        Cambia la fecha de tu reserva
+      </button>
+      <button v-show="checkOut && !booking.rating" @click="voting = !voting">
+        Valora tu reserva!
+      </button>
     </div>
     <form v-show="editTC" id="newTC">
-      <input v-model="creditCardNumber" type="text" placeholder="Inserta tu tarjeta de crédito" />
-      <input v-model="holderName" type="text" placeholder="Inserta el titular de la tarjeta" />
+      <input
+        v-model="creditCardNumber"
+        type="text"
+        placeholder="Inserta tu tarjeta de crédito"
+      />
+      <input
+        v-model="holderName"
+        type="text"
+        placeholder="Inserta el titular de la tarjeta"
+      />
       <select v-model="expiryMonth">
         <option value="01">01</option>
         <option value="02">02</option>
@@ -136,7 +191,9 @@
         <option value="2030">2030</option>
       </select>
       <input v-model="cvcCode" type="text" placeholder="Inserta tu CVV" />
-      <button @click="editCreditCard()">Confirma el cambio de tarjeta</button>
+      <button @click.prevent="editCreditCard()">
+        Confirma el cambio de tarjeta
+      </button>
     </form>
     <form v-show="edit" id="NewDate">
       <form id="editDate">
@@ -185,14 +242,16 @@
           <option value="8">8</option>
           <option value="9">9</option>
         </select>
-        <button @click="query()">Comprobar disponibilidad</button>
+        <button @click.prevent="query()">Comprobar disponibilidad</button>
       </form>
-      <button v-if="isAvailable" @click="book()">Confirmar cambio de fechas</button>
+      <button v-if="isAvailable" @click.prevent="book()">
+        Confirmar cambio de fechas
+      </button>
     </form>
     <form v-show="voting" id="rate">
       <star-rating
         v-model="rating"
-        :increment="0.5"
+        :increment="1"
         :fixed-point="1.8"
         :star-size="80"
         :inline="true"
@@ -204,7 +263,7 @@
         rows="4"
         cols="40"
       ></textarea>
-      <button @click="vote()">Envía tu puntuación</button>
+      <button @click.prevent="vote()">Envía tu puntuación</button>
     </form>
     <fieldset v-show="adminWay">
       <legend>Cambiar el estado de la reserva</legend>
@@ -218,8 +277,25 @@
         <option value="PENDIENTE_DE_PAGO">Pendiente de pago</option>
         <option value="MODIFICADO">Modificado</option>
       </select>
-      <button @click="editStatus()">Confirmar cambio de Estado de la reserva</button>
+      <button @click.prevent="editStatus()">
+        Confirmar cambio de Estado de la reserva
+      </button>
     </fieldset>
+    <button v-show="adminWay && booking.rating" @click="editing = !editing">
+      Cambia la valoración de reserva
+    </button>
+    <ul v-if="editing" id="editRatingBox">
+      <h4>Edita opiniones y respuestas de puntuaciones</h4>
+      <li>
+        <label>Opinión del cliente:</label>
+        <input v-model="ratingDescription" type="text" />
+      </li>
+      <li>
+        <label>Respuesta del establecimiento:</label>
+        <input v-model="ratingAnswer" type="text" />
+      </li>
+      <button @click="editRating">Actualizar</button>
+    </ul>
   </div>
 </template>
 
@@ -230,11 +306,11 @@ import { format } from "date-fns";
 import Swal from "sweetalert2";
 
 export default {
-  name: "Home",
+  name: "UserBooking",
   components: {},
   data() {
     return {
-      booking: [],
+      booking: null,
       confirmed: false,
       newTC: false,
       checkOut: false,
@@ -253,10 +329,19 @@ export default {
       expiryMonth: "",
       expiryYear: "",
       cvcCode: "",
+      editRate: "",
       rating: "",
       ratingDescription: "",
+      ratingAnswer: "",
       status: "",
+      isVoted: false,
+      editing: false,
     };
+  },
+  computed: {
+    isTime() {
+      return this.booking !== null;
+    },
   },
 
   methods: {
@@ -289,8 +374,12 @@ export default {
         ) {
           this.confirmed = true;
         }
+        if (response.data.data[0].rating > 0) {
+          this.isVoted = true;
+        }
         this.booking = response.data.data[0];
-        console.log(this.booking);
+        this.ratingDescription = response.data.data[0].rating_description;
+        this.ratingAnswer = response.data.data[0].rating_answer;
       } catch (error) {
         console.log(error);
       }
@@ -443,6 +532,63 @@ export default {
         });
       }
     },
+    async editRating() {
+      const result = await Swal.fire({
+        title:
+          "Estás seguro de cambiar la descripción de puntuación de la reserva",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, estoy seguro",
+        cancelButtonText: "No, cancelar",
+        reverseButtons: true,
+      });
+      if (result.value) {
+        try {
+          let token = localStorage.getItem("AUTH_TOKEN_KEY");
+          axios.defaults.headers.common["Authorization"] = `${token}`;
+          if (this.ratingAnswer) {
+            const response = await axios.put(
+              "http://localhost:3000/admin/" +
+                getIdToken(token) +
+                "/booking/" +
+                this.$route.params.id +
+                "/status",
+              {
+                ratingDescription: this.ratingDescription,
+                ratingAnswer: this.ratingAnswer,
+              }
+            );
+          } else {
+            const response = await axios.put(
+              "http://localhost:3000/admin/" +
+                getIdToken(token) +
+                "/booking/" +
+                this.$route.params.id +
+                "/status",
+              {
+                ratingDescription: this.ratingDescription,
+              }
+            );
+          }
+          Swal.fire({
+            icon: "success",
+            title: "Reserva actualizada correctamente",
+            confirmButtonText: "OK",
+          });
+        } catch (error) {
+          console.log(error.response.data.message);
+          Swal.fire({
+            icon: "error",
+            title: `${error.response.data.message}`,
+          });
+        }
+      } else {
+        Swal.fire({
+          title: "Actualización cancelada",
+          icon: "error",
+        });
+      }
+    },
     async query() {
       try {
         const response = await axios.get("http://localhost:3000/business", {
@@ -454,14 +600,11 @@ export default {
             units: this.units,
           },
         });
-        console.log(response);
-        console.log(response.data.data.length);
         if (response.data.data.length > 0) {
           this.isAvailable = true;
         } else {
           this.isAvailable = false;
         }
-        console.log(this.isAvailable);
       } catch (error) {}
     },
     async book() {
@@ -543,6 +686,12 @@ h3,
 h4,
 b {
   color: coral;
+}
+
+button:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
 }
 
 h3,
@@ -636,6 +785,13 @@ form#editDate {
     align-items: center;
     justify-content: space-evenly;
     width: auto;
+  }
+
+  #secondary {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
   }
 
   #newTC {

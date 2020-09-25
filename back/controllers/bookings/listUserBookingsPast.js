@@ -12,7 +12,7 @@ async function listUserBookings(req, res, next) {
       throw error;
     }
     const [result] = await connection.query(
-      `SELECT booking.id, booking.check_in_day, booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city
+      `SELECT booking.id, booking.check_in_day, booking.units, booking.check_in_time, booking.check_out_time, booking.status, business.name, business.category, business.city, business.province
             FROM booking 
             INNER JOIN business ON booking.id_business = business.id
             INNER JOIN users ON booking.id_user = users.id

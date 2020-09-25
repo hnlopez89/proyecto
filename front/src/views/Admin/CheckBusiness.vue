@@ -1,6 +1,6 @@
 <template>
   <div id="checkBusiness">
-    <button @click="goBack()">Go Back</button>
+    <button id="up" @click="goBack()">Volver</button>
     <div class="intro">
       <div id="head">
         <div id="picture">
@@ -34,7 +34,7 @@
             <option value="TERRAZA">Terraza</option>
             <option value="BAR">Bar</option>
             <option value="RESTAURANTE">Restaurante</option>
-            <option value="PELUQUERIA">Peluquería</option>
+            <option value="PELUQUERÍA">Peluquería</option>
           </select>
 
           <fieldset class="form">
@@ -55,16 +55,12 @@
         </form>
       </div>
 
-      <!--      <input type="text" v-model="pricingList" placeholder="Tu lista de precios" />
-      <br />
-      -->
       <form>
         <label>Descripción</label>
         <textarea
-          rows="10"
+          rows="15"
           minlength="20"
           cols="40"
-          type="texta"
           v-model="description"
           placeholder="Tu descripción"
         />
@@ -95,16 +91,16 @@
             <option value="Cordoba">Córdoba</option>
             <option value="Cuenca">Cuenca</option>
             <option value="Girona">Girona</option>
-            <option value="Las_palmas">Las Palmas</option>
             <option value="Granada">Granada</option>
             <option value="Guadalajara">Guadalajara</option>
             <option value="Guipuzcoa">Guipúzcoa</option>
             <option value="Huelva">Huelva</option>
             <option value="Huesca">Huesca</option>
-            <option value="Islas_balears">Islas Balears</option>
+            <option value="Islas_Baleares">Islas Balears</option>
             <option value="Jaen">Jaén</option>
-            <option value="A_coruña">A Coruña</option>
+            <option value="La_coruña">La Coruña</option>
             <option value="La_rioja">La Rioja</option>
+            <option value="Las_palmas">Las Palmas</option>
             <option value="Leon">León</option>
             <option value="Lleida">Lleida</option>
             <option value="Lugo">Lugo</option>
@@ -121,7 +117,7 @@
             <option value="Sevilla">Sevilla</option>
             <option value="Soria">Soria</option>
             <option value="Tarragona">Tarragona</option>
-            <option value="Santa_cruz_de_tenerife">Santa Cruz de Tenerife</option>
+            <option value="Santa_cruz_de_Tenerife">Santa Cruz de Tenerife</option>
             <option value="Teruel">Teruel</option>
             <option value="Toledo">Toledo</option>
             <option value="Valencia">Valencia</option>
@@ -524,7 +520,7 @@ export default {
         userNewData.append("day7", this.day7);
 
         const response = await axios.put(
-          "http://localhost:3000/business/" + getIdToken(token),
+          "http://localhost:3000/business/" + this.$route.params.id,
           userNewData,
           {
             header: { "Content-type": "multipart/form-data" },
@@ -562,6 +558,13 @@ export default {
   min-height: 100vh;
 }
 
+button:hover,
+#profilePicture:hover {
+  background-color: coral;
+  color: white;
+  cursor: pointer;
+}
+
 #picture {
   display: flex;
   flex-direction: column;
@@ -589,8 +592,8 @@ export default {
 }
 img {
   display: block;
-  height: 20rem;
-  margin: 3rem;
+  width: 18rem;
+  height: 100%;
   margin-bottom: 1rem;
 }
 span {
@@ -625,7 +628,7 @@ fieldset {
 }
 
 fieldset > input {
-  width: 20rem;
+  width: 15rem;
   margin-bottom: 0.3rem;
   border-radius: 5px;
   border: 0;
@@ -771,7 +774,6 @@ button {
   }
   img {
     border-radius: 1rem;
-    border: solid 0.1rem coral;
   }
 }
 </style>

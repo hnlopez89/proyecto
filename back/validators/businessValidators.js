@@ -9,7 +9,7 @@ const newBusinessSchema = Joi.object().keys({
     email: Joi.string().email().required().error(generateError("La dirección de email debe ser válida", 400)),
     password: Joi.string().min(8).required().error(generateError("La password debe de tener un mínimo de 8 caracteres", 400)),
     status: Joi.string().valid('SIN_VALIDAR').error(generateError("Sólo el administrador puede cambiar el status del negocio", 400)),
-    city: Joi.string().min(3).max(30).required().error(generateError("La provincia no es válida", 400)),
+    province: Joi.string().min(3).max(30).required().error(generateError("La provincia no es válida", 400)),
 
 })
 
@@ -31,7 +31,7 @@ const editBusinessSchema = Joi.object().keys({
     profilePicture: Joi.any().error(generateError("La ruta debe ser válida", 400)),
     province: Joi.string().min(3).max(30).error(generateError("La ciudad no es válida", 400)),
     zipCode: Joi.string().min(3).max(10).error(generateError("El código postal debe ser válido", 400)),
-    city: Joi.string().min(3).max(30).required().error(generateError("La provincia no es válida", 400)),
+    city: Joi.string().min(3).max(30).required().error(generateError("La ciudad no es válida", 400)),
     line1: Joi.string().error(generateError("La dirección debe ser válida", 400)),
     line2: Joi.string().error(generateError("La dirección debe ser válida", 400)),
     day1: Joi.number().integer().min(0).max(7).error(generateError("El dia que está abierto es incorrecto", 400)),

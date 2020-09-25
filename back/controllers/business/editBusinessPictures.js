@@ -32,17 +32,18 @@ async function editBusinessPictures(req, res, next) {
     const images = [];
     if (pictures.length > 2) {
       if (req.files && Object.keys(req.files).length > 0) {
-        await connection.query(
-          `DELETE FROM pictures 
-          WHERE id_business = ?               
-              `,
-          [id]
-        );
         for (const [imageName, imageData] of Object.entries(req.files).slice(
           0,
           3
         )) {
           try {
+            await connection.query(
+              `DELETE FROM pictures 
+                        WHERE id_business = ?
+                        ORDER BY id ASC limit 1               
+                            `,
+              [id]
+            );
             showDebug(imageName);
             const processedImage = await processAndSaveImage(imageData);
             images.push(processedImage);

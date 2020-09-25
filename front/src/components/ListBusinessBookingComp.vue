@@ -29,7 +29,7 @@
           {{data.check_out_time}}
         </p>
         <router-link
-          :to="{ name: 'BookingBusiness', params: {id: data.id}}"
+          :to="{ name: 'BookingBusiness', params: {id: data.id} , hash: '#up'}"
           tag="button"
         >Ver tú reserva</router-link>
       </li>
