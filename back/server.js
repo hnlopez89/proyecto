@@ -4,10 +4,9 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-const cors = require("cors")
+const cors = require("cors");
 
 // CONTROLADORES
-
 // USUARIOS
 const newUser = require("./controllers/user/newUser");
 const validateUser = require("./controllers/user/validateUser");
@@ -39,7 +38,7 @@ const businessMarketShare = require("./controllers/business/businessMarketShare"
 //const listBusiness = require("./controllers/business/listBusiness");
 const searchBusinessAvailable = require("./controllers/search/searchBusinessAvailable");
 const viewBusiness = require("./controllers/search/viewBusiness");
-const viewTopBusiness = require("./controllers/search/viewTopBusiness")
+const viewTopBusiness = require("./controllers/search/viewTopBusiness");
 const viewBusinessRating = require("./controllers/search/viewBusinessRating");
 
 // RESERVAS
@@ -74,7 +73,7 @@ const listBusinessPending = require("./controllers/admin/listAdminBusinessPendin
 const listBookings = require("./controllers/admin/listAllBookings");
 const listBusiness = require("./controllers/admin/listAllBusiness");
 const listUsers = require("./controllers/admin/listAllUsers");
-const activateAdmin = require("./controllers/admin/activateAdmin")
+const activateAdmin = require("./controllers/admin/activateAdmin");
 const listBookingsPending = require("./controllers/admin/listBookingsPending");
 const listBusinessBadRating = require("./controllers/admin/listBusinessBadRating");
 const editAdminBooking = require("./controllers/admin/editAdminBooking");
@@ -83,21 +82,20 @@ const sendContactMail = require("./controllers/contact");
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
 
 app.use(morgan("dev"));
-
-// Procesado de body tipo json
-app.use(bodyParser.json());
 
 //procesado de body tipo form-data
 app.use(fileUpload());
 
-app.use(express.static('static'));
+app.use(express.static("static"));
+// Procesado de body tipo json
+app.use(bodyParser.json());
 
 //CONTACTO CON ADMINISTRADOR POR EMAIL
 //POST - ANONIMO
-app.post("/contact", sendContactMail)
+app.post("/contact", sendContactMail);
 
 /* ********************************************* */
 //USER ENDPOINTS
@@ -203,7 +201,6 @@ app.put("/business/:id/deactive", isBusiness, deactiveBusiness);
 //PRIVADO
 app.get("/business/:id/market_share", isBusiness, businessMarketShare);
 
-
 /* ********************************************* */
 
 //BOOKING ENDPOINTS
@@ -232,39 +229,39 @@ app.get("/user/:id/booking/previous", isUser, listUserBookingsPast);
 //CANCELAR RESERVA POR PARTE DEL CLIENTE
 //PUT -/user/:idUser/booking/:idBooking
 app.put(
-  "/user/:idUser/booking/:idBooking/cancelate",
-  isUser,
-  bookingExists,
-  cancelUserBooking
+	"/user/:idUser/booking/:idBooking/cancelate",
+	isUser,
+	bookingExists,
+	cancelUserBooking
 );
 
 //EDITAR UNA RESERVA DETERMINADA DE UN USUARIO
 //PUT -/booking/:id
 //sólo el usuario que reservó
 app.put(
-  "/user/:idUser/booking/:idBooking",
-  isUser,
-  bookingExists,
-  editUserBooking
+	"/user/:idUser/booking/:idBooking",
+	isUser,
+	bookingExists,
+	editUserBooking
 );
 
 //EDITAR LA TC DE UNA RESERVA DETERMINADA POR ERROR EN EL PAGO
 //PUT -/bookings/:id/credit-card
 //sólo el usuario que reservó
 app.put(
-  "/user/:idUser/booking/:idBooking/credit_card",
-  isUser,
-  bookingExists,
-  editUserBookingTC
+	"/user/:idUser/booking/:idBooking/credit_card",
+	isUser,
+	bookingExists,
+	editUserBookingTC
 );
 
 //VALORAR UNA RESERVA
 //PUT -/bookings/:id
 app.put(
-  "/user/:idUser/booking/:idBooking/value",
-  isUser,
-  bookingExists,
-  voteBooking
+	"/user/:idUser/booking/:idBooking/value",
+	isUser,
+	bookingExists,
+	voteBooking
 );
 
 /* ********************************************* */
@@ -280,100 +277,93 @@ app.get("/business/:id/booking", isBusiness, listBusinessBookings);
 //LISTAR FILTRANDO BOOKINGS DE NEGOCIO
 //GET -/BUSINESS/:id/BOOKING/ADVANCED
 app.get(
-  "/business/:idBusiness/booking_advanced",
-  isBusiness,
-  listBusinessBookingsAdvanced
+	"/business/:idBusiness/booking_advanced",
+	isBusiness,
+	listBusinessBookingsAdvanced
 );
 
 //BUSCAR DISPONIBILIDAD
 //GET -/BUSINESS/:id/AVAILABILITY
 app.get(
-  "/business/:idBusiness/availability",
-  isBusiness,
-  checkBusinessAvailability
+	"/business/:idBusiness/availability",
+	isBusiness,
+	checkBusinessAvailability
 );
 
 //BUSCAR DISPONIBILIDAD MENSUAL
 //GET -/BUSINESS/:id/AVAILABILITY_MONTHLY
 app.get(
-  "/business/:idBusiness/availability_monthly",
-  isBusiness,
-  checkBusinessAvailabilityMonthly
+	"/business/:idBusiness/availability_monthly",
+	isBusiness,
+	checkBusinessAvailabilityMonthly
 );
-
 
 //LISTAR BOOKINGS DE NEGOCIO
 //GET - /BUSINESS/:ID/BOOKING
 //sólo el negocio
 app.get(
-  "/business/:idBusiness/booking/:idBooking",
-  isBusiness,
-  bookingExists,
-  getBusinessBooking
+	"/business/:idBusiness/booking/:idBooking",
+	isBusiness,
+	bookingExists,
+	getBusinessBooking
 );
 
 //LISTAR BOOKINGS CON LLEGADA DE HOY DE NEGOCIO
 //GET - /BUSINESS/:ID/BOOKING/TODAY
-app.get(
-  "/business/:id/booking_today/",
-  isBusiness,
-  listBusinessTodayBookings
-);
+app.get("/business/:id/booking_today/", isBusiness, listBusinessTodayBookings);
 //LISTAR BOOKINGS CON LLEGADA DE MAÑANA DE NEGOCIO
 //GET - /BUSINESS/:ID/BOOKING/TOMORROW
 app.get(
-  "/business/:id/booking_tomorrow/",
-  isBusiness,
-  listBusinessTomorrowBookings
+	"/business/:id/booking_tomorrow/",
+	isBusiness,
+	listBusinessTomorrowBookings
 );
 
 //CHECK IN BOOKING
 //PUT -/BUSINESS/:ID/BOOKING/CHECKIN
 app.put(
-  "/business/:idBusiness/booking/:idBooking/checkin",
-  isBusiness,
-  bookingExists,
-  checkInBooking
+	"/business/:idBusiness/booking/:idBooking/checkin",
+	isBusiness,
+	bookingExists,
+	checkInBooking
 );
 
 //MOSTRAR UNA RESERVA DETERMINADA DE UN USUARIO
 //GET - /bookings/:
 //sólo el usuario
 app.get(
-  "/user/:idUser/booking/:idBooking/",
-  isUser,
-  bookingExists,
-  getUserBooking
+	"/user/:idUser/booking/:idBooking/",
+	isUser,
+	bookingExists,
+	getUserBooking
 );
 
 //CHECK OUT BOOKING
 //PUT - /BUSINESS/:ID/BOOKING/CHECKOUT
 app.put(
-  "/business/:idBusiness/booking/:idBooking/checkout",
-  isBusiness,
-  bookingExists,
-  checkOutBooking
+	"/business/:idBusiness/booking/:idBooking/checkout",
+	isBusiness,
+	bookingExists,
+	checkOutBooking
 );
 
 //NO SHOW BOOKING
 //PUT - /BUSINESS/:ID/BOOKING/NOSHOW
 app.put(
-  "/business/:idBusiness/booking/:idBooking/no-show",
-  isBusiness,
-  bookingExists,
-  noShowBooking
+	"/business/:idBusiness/booking/:idBooking/no-show",
+	isBusiness,
+	bookingExists,
+	noShowBooking
 );
 
 //NO SHOW BOOKING
 //PUT - /BUSINESS/:ID/BOOKING/NOSHOW
 app.put(
-  "/business/:idBusiness/booking/:idBooking/answer",
-  isBusiness,
-  bookingExists,
-  answerBusinessRating
+	"/business/:idBusiness/booking/:idBooking/answer",
+	isBusiness,
+	bookingExists,
+	answerBusinessRating
 );
-
-
 
 /* ********************************************* */
 
@@ -405,112 +395,96 @@ app.get("/viewTopBusiness", viewTopBusiness);
 //LISTADO NEGOCIOS PENDIENTES DE VALIDAR
 //GET -/admin/:idAdmin/business/:id/
 app.get(
-  "/admin/:idAdmin/business-to-activate/",
-  isUser,
-  isAdmin,
-  listBusinessPending
+	"/admin/:idAdmin/business-to-activate/",
+	isUser,
+	isAdmin,
+	listBusinessPending
 );
 
 //CHECK BUSINESS
 //GET -/admin/:idAdmin/business/:id/
 app.get(
-  "/admin/:idAdmin/business-to-activate/:idBusiness/check",
-  isUser,
-  isAdmin,
-  checkBusiness
+	"/admin/:idAdmin/business-to-activate/:idBusiness/check",
+	isUser,
+	isAdmin,
+	checkBusiness
 );
 
 //VALIDACION DE BUSINESS
 //PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
 app.put(
-  "/admin/:idAdmin/business-to-activate/:idBusiness/activate",
-  isUser,
-  isAdmin,
-  activateBusiness
+	"/admin/:idAdmin/business-to-activate/:idBusiness/activate",
+	isUser,
+	isAdmin,
+	activateBusiness
 );
 
 //VER TODAS LAS RESERVAS
 //PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
-app.get(
-  "/admin/:idAdmin/bookings",
-  isUser,
-  isAdmin,
-  listBookings
-);
+app.get("/admin/:idAdmin/bookings", isUser, isAdmin, listBookings);
 
 //VER TODAS LAS RESERVAS PENDIENTES DE PAGO
 //PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
 app.get(
-  "/admin/:idAdmin/bookings_pending",
-  isUser,
-  isAdmin,
-  listBookingsPending
+	"/admin/:idAdmin/bookings_pending",
+	isUser,
+	isAdmin,
+	listBookingsPending
 );
 
 //VER TODAS LAS RESERVAS PENDIENTES DE PAGO
 //PUT -/BUSINESS/VALIDATION/REGISTRATIONCODE
 app.put(
-  "/admin/:idAdmin/booking/:idBooking/status",
-  isUser,
-  isAdmin,
-  editAdminBooking
+	"/admin/:idAdmin/booking/:idBooking/status",
+	isUser,
+	isAdmin,
+	editAdminBooking
 );
-
 
 //VER TODOS LOS NEGOCIOS
 //GET -/ADMIN/ID/BUSINESS
-app.get(
-  "/admin/:idAdmin/business",
-  isUser,
-  isAdmin,
-  listBusiness
-);
+app.get("/admin/:idAdmin/business", isUser, isAdmin, listBusiness);
 
 //VER TODOS LOS NEGOCIOS CON PUNTUACIÓN SUSPENSA
 //GET -/ADMIN/ID/BUSINESS
 app.get(
-  "/admin/:idAdmin/business_bad_reviews",
-  isUser,
-  isAdmin,
-  listBusinessBadRating
+	"/admin/:idAdmin/business_bad_reviews",
+	isUser,
+	isAdmin,
+	listBusinessBadRating
 );
 
 //VER TODOS LOS USUARIOS
 //GET -/ADMIN/ID/USERS
-app.get(
-  "/admin/:idAdmin/users",
-  isUser,
-  isAdmin,
-  listUsers
-);
+app.get("/admin/:idAdmin/users", isUser, isAdmin, listUsers);
 
 //ACTIVAR USUARIO COMO ADMINISTRADOR
 //PUT -/ADMIN/IDADMIN/USER/IDUSER/ACTIVATE
 app.put(
-  "/admin/:idAdmin/users/:idUser/activate_admin",
-  isUser,
-  isAdmin,
-  activateAdmin
+	"/admin/:idAdmin/users/:idUser/activate_admin",
+	isUser,
+	isAdmin,
+	activateAdmin
 );
 
 /* ********************************************* */
 
 // Error middleware
 app.use((error, req, res, next) => {
-  console.error(error);
+	console.error(error);
 
-  res.status(error.httpStatus || 500).send({
-    status: "error",
-    message: error.message,
-  });
+	res.status(error.httpStatus || 500).send({
+		status: "error",
+		message: error.message,
+	});
 });
 
 // Not found
 app.use((req, res) => {
-  res.status(404).send({
-    status: "error",
-    message: "Not found",
-  });
+	res.status(404).send({
+		status: "error",
+		message: "Not found",
+	});
 });
 
 /* ********************************************* */
@@ -518,5 +492,5 @@ app.use((req, res) => {
 const port = process.env.PORT;
 
 app.listen(port, () => {
-  console.log(`API funcionando en http://localhost:${port} 🙈`);
+	console.log(`API funcionando en http://localhost:${port} 🙈`);
 });
