@@ -35,7 +35,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",
     "@vue/cli-plugin-router": "~4.4.0",
-    "@vue/cli-service": "~4.4.0",
+    "@vue/cli-service": "~5.0.8",
     "nodemon": "^2.0.6",
     "vue-template-compiler": "^2.6.12",
     "vue2-slideout-panel": "^2.12.0"
